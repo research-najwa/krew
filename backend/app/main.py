@@ -35,16 +35,23 @@ async def lifespan(app: FastAPI):
     print("🚀 Krew backend starting...")
     print(f"   Environment: {settings.app_env}")
     print(f"   LLM model: {settings.llm_model}")
-    if settings.app_env != "development" and settings.jwt_secret == "change-this":
+
+    is_development = settings.app_env == "development"
+
+    # JWT secret check — only enforce in non-development environments
+    if not is_development and settings.jwt_secret == "change-this":
         raise RuntimeError("FATAL: jwt_secret must be changed from default in non-development environments")
+    if is_development and settings.jwt_secret == "change-this":
+        logger.warning("SECURITY WARNING: jwt_secret is still set to the default value. Set JWT_SECRET to a strong random secret.")
+
     # Verify webhook secrets are configured in non-development environments
-    if settings.app_env != "development":
+    if not is_development:
         if not settings.whatsapp_app_secret:
             raise RuntimeError("FATAL: whatsapp_app_secret must be set in non-development environments")
         if not settings.slack_signing_secret:
             raise RuntimeError("FATAL: slack_signing_secret must be set in non-development environments")
     else:
-        # In development, warn if secrets are missing
+        # In development, warn if secrets are missing or placeholder values are used
         if not settings.whatsapp_app_secret:
             if settings.webhook_skip_verification:
                 logger.warning("SECURITY WARNING: WhatsApp webhook signature verification is DISABLED (development mode, webhook_skip_verification=True)")
