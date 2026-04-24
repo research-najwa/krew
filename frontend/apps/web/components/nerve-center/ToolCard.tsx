@@ -1236,8 +1236,8 @@ function renderTeamAttendance(data: Record<string, unknown>, locale: Locale = 'e
           </div>
         </div>
       )}
-      {data.date_range && <div className="text-[10px] text-ink-faint">{safeStr(data.date_range)}</div>}
-      {data.note && <div className="text-[10px] text-ink-dim italic">{safeStr(data.note)}</div>}
+      {data.date_range ? <div className="text-[10px] text-ink-faint">{safeStr(data.date_range)}</div> : null}
+      {data.note ? <div className="text-[10px] text-ink-dim italic">{safeStr(data.note)}</div> : null}
     </div>
   )
 }
