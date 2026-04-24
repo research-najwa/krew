@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -69,6 +70,13 @@ class Settings(BaseSettings):
 
     # Security — webhooks
     webhook_skip_verification: bool = False  # must be explicitly True to skip in development
+
+    @field_validator("database_url", mode="after")
+    @classmethod
+    def ensure_async_driver(cls, v: str) -> str:
+        if v.startswith("postgresql://"):
+            v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 
