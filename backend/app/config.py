@@ -1,4 +1,4 @@
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -36,12 +36,12 @@ class Settings(BaseSettings):
     whatsapp_phone_number_id: str = ""
     whatsapp_access_token: str = ""
     whatsapp_verify_token: str = "krew-webhook-verify"
-    whatsapp_app_secret: str = ""
+    whatsapp_app_secret: str = Field(default="", alias="WHATSAPP_APP_SECRET")
     slack_bot_token: str = ""
-    slack_signing_secret: str = ""
+    slack_signing_secret: str = Field(default="", alias="SLACK_SIGNING_SECRET")
 
     # Auth
-    jwt_secret: str = "change-this"
+    jwt_secret: str = Field(default="change-this", alias="JWT_SECRET")
     jwt_algorithm: str = "HS256"
     jwt_expiry_hours: int = 24
 
@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
 
     # App
-    app_env: str = "production"  # Default to production so security is ON; set APP_ENV=development explicitly for dev mode
+    app_env: str = Field(default="production", alias="APP_ENV")  # Default to production so security is ON; set APP_ENV=development explicitly for dev mode
     app_port: int = 8000
     cors_origins: str = "http://localhost:3000,https://krew.sa"
 
@@ -82,6 +82,7 @@ class Settings(BaseSettings):
         "env_file": ".env",
         "env_file_encoding": "utf-8",
         "case_sensitive": False,
+        "populate_by_name": True,
         "extra": "ignore",
     }
 
