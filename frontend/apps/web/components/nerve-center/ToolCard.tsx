@@ -197,10 +197,7 @@ const AR_LABELS: Record<string, string> = {
   // Headcount
   'employees': 'موظفين',
   'Headcount': 'عدد الموظفين',
-  'Non-Saudi': 'غير سعودي',
-  'Saudization': 'السعودة',
   'Budget': 'الميزانية',
-  'Avg Salary': 'متوسط الراتب',
   // Turnover
   'turnover rate': 'معدل الدوران',
   'Voluntary': 'طوعي',
