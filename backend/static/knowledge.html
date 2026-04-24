@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krew — Knowledge Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f5f4;
+            --surface: #ffffff;
+            --surface2: #fafaf9;
+            --surface3: #f0f0ee;
+            --border: #e5e5e5;
+            --border2: #d4d4d4;
+            --text: #1a1a1a;
+            --text2: #6b7280;
+            --text3: #9ca3af;
+            --text4: #c5c5c5;
+            --accent: #4f46e5;
+            --accent2: #6366f1;
+            --accent-light: rgba(79,70,229,0.08);
+            --accent-lighter: rgba(79,70,229,0.04);
+            --green: #16a34a;
+            --green-light: rgba(22,163,74,0.08);
+            --red: #dc2626;
+            --red-light: rgba(220,38,38,0.08);
+            --orange: #ea580c;
+            --orange-light: rgba(234,88,12,0.08);
+            --yellow: #ca8a04;
+            --yellow-light: rgba(202,138,4,0.08);
+            --blue: #2563eb;
+            --blue-light: rgba(37,99,235,0.08);
+            --pink: #db2777;
+            --pink-light: rgba(219,39,119,0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+            --sidebar-w: 260px;
+            --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .dark {
+            --bg: #0f0f14;
+            --surface: #1a1a24;
+            --surface2: #22222e;
+            --surface3: #2a2a38;
+            --border: #2e2e3e;
+            --border2: #3a3a4e;
+            --text: #e8e8ec;
+            --text2: #9a9ab0;
+            --text3: #6a6a80;
+            --text4: #4a4a5e;
+            --accent-light: rgba(99,102,241,0.15);
+            --accent-lighter: rgba(99,102,241,0.08);
+            --green-light: rgba(22,163,74,0.15);
+            --red-light: rgba(220,38,38,0.15);
+            --orange-light: rgba(234,88,12,0.15);
+            --yellow-light: rgba(202,138,4,0.15);
+            --blue-light: rgba(37,99,235,0.15);
+            --pink-light: rgba(219,39,119,0.15);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        /* ---- SIDEBAR ---- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            color: var(--text3);
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text2);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .sidebar-nav a:hover { background: var(--surface3); color: var(--text); }
+        .sidebar-nav a.active { background: var(--accent-light); color: var(--accent); }
+
+        .sidebar-section {
+            padding: 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-section h3 {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text3);
+            padding: 8px 12px 4px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text2);
+            transition: background var(--transition);
+        }
+        .filter-item:hover { background: var(--surface3); }
+        .filter-item.active { background: var(--accent-light); color: var(--accent); }
+        .filter-item .count {
+            font-size: 11px;
+            background: var(--surface3);
+            padding: 2px 6px;
+            border-radius: 10px;
+            color: var(--text3);
+        }
+
+        .sidebar-bottom {
+            padding: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text2);
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: background var(--transition);
+        }
+        .theme-toggle:hover { background: var(--surface3); }
+
+        /* ---- MAIN ---- */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .topbar h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            transition: all var(--transition);
+        }
+        .btn:hover { background: var(--surface3); }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .btn-danger { color: var(--red); border-color: var(--red); }
+        .btn-danger:hover { background: var(--red-light); }
+
+        /* ---- CONTENT ---- */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* ---- CAPTURE SECTION ---- */
+        .capture-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .capture-section h2 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .capture-section p {
+            font-size: 13px;
+            color: var(--text2);
+            margin-bottom: 16px;
+        }
+
+        .capture-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .capture-textarea {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface2);
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color var(--transition);
+        }
+        .capture-textarea:focus { outline: none; border-color: var(--accent); }
+
+        .capture-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            cursor: pointer;
+            font-size: 18px;
+            transition: all var(--transition);
+            position: relative;
+        }
+        .btn-icon:hover { background: var(--surface3); }
+        .btn-icon.recording {
+            border-color: var(--red);
+            background: var(--red-light);
+            animation: pulse-recording 1.5s infinite;
+        }
+
+        @keyframes pulse-recording {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
+        }
+
+        .voice-unsupported {
+            font-size: 10px;
+            color: var(--text3);
+            text-align: center;
+            max-width: 40px;
+        }
+
+        /* ---- PREVIEW CARD ---- */
+        .preview-card {
+            background: var(--surface);
+            border: 2px solid var(--accent);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .preview-card.visible { display: block; }
+
+        .preview-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+
+        .preview-fields {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 8px 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .preview-fields label {
+            color: var(--text3);
+            font-weight: 500;
+        }
+
+        .preview-fields input, .preview-fields select {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text);
+            background: var(--surface2);
+            font-family: inherit;
+        }
+
+        .preview-content {
+            padding: 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .preview-agents {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .agent-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text2);
+            transition: all var(--transition);
+        }
+        .agent-chip.selected {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .confidence-bar {
+            height: 4px;
+            background: var(--surface3);
+            border-radius: 2px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .confidence-bar .fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        /* ---- LIBRARY ---- */
+        .library-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .library-header h2 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .search-input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            background: var(--surface);
+            color: var(--text);
+            width: 240px;
+            font-family: inherit;
+            position: relative;
+        }
+        .search-input:focus { outline: none; border-color: var(--accent); }
+
+        .search-wrapper {
+            position: relative;
+        }
+        .search-wrapper::before {
+            content: '\1F50D';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            z-index: 1;
+        }
+
+        .source-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 8px;
+            transition: box-shadow var(--transition), border-color var(--transition);
+            cursor: pointer;
+        }
+        .source-card:hover { box-shadow: var(--shadow-md); border-color: var(--border2); }
+
+        .source-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .source-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .source-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text3);
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .badge-category { background: var(--blue-light); color: var(--blue); }
+        .badge-type { background: var(--accent-light); color: var(--accent); }
+        .badge-status-complete { background: var(--green-light); color: var(--green); }
+        .badge-status-processing { background: var(--yellow-light); color: var(--yellow); }
+        .badge-status-pending { background: var(--surface3); color: var(--text3); }
+        .badge-status-failed { background: var(--red-light); color: var(--red); }
+
+        .source-agents {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .source-agent-tag {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--accent-lighter);
+            color: var(--accent);
+        }
+
+        .source-inactive {
+            opacity: 0.5;
+        }
+
+        /* ---- DETAIL PANEL ---- */
+        .detail-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-panel.open { transform: translateX(0); }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-header h3 { font-size: 15px; font-weight: 600; }
+
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .detail-field {
+            margin-bottom: 16px;
+        }
+        .detail-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text3);
+            margin-bottom: 4px;
+        }
+        .detail-field .value {
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .detail-agents-section h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .detail-agent-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .detail-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ---- EMPTY STATE ---- */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text3);
+        }
+        .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 16px; color: var(--text2); margin-bottom: 8px; }
+        .empty-state p { font-size: 13px; }
+
+        /* ---- TOAST ---- */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            font-size: 13px;
+            animation: toast-in 0.3s ease;
+            max-width: 360px;
+        }
+        .toast.success { border-color: var(--green); color: var(--green); }
+        .toast.error { border-color: var(--red); color: var(--red); }
+
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ---- LOADING ---- */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ---- PAGINATION ---- */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 0;
+        }
+        .pagination button {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            color: var(--text2);
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .pagination button:hover { background: var(--surface3); }
+        .pagination button:disabled { opacity: 0.4; cursor: default; }
+        .pagination .current {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* ---- MODAL ---- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .modal {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 480px;
+            max-width: 90%;
+            box-shadow: var(--shadow-lg);
+        }
+        .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .modal .form-group {
+            margin-bottom: 12px;
+        }
+        .modal .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text2);
+            margin-bottom: 4px;
+        }
+        .modal .form-group input,
+        .modal .form-group select,
+        .modal .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text);
+            background: var(--surface2);
+            font-family: inherit;
+        }
+        .modal .form-group textarea { min-height: 80px; resize: vertical; }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .detail-panel { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Krew Platform</h2>
+            <p>Knowledge Management</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/chat">Chat</a>
+            <a href="/knowledge" class="active">Knowledge</a>
+            <a href="/admin">Admin</a>
+        </nav>
+        <div class="sidebar-section">
+            <h3>Categories</h3>
+            <div id="categoryFilters"></div>
+            <h3 style="margin-top:12px">Status</h3>
+            <div class="filter-item" data-status="" onclick="filterByStatus('')">All</div>
+            <div class="filter-item" data-status="complete" onclick="filterByStatus('complete')">Complete</div>
+            <div class="filter-item" data-status="processing" onclick="filterByStatus('processing')">Processing</div>
+            <div class="filter-item" data-status="pending" onclick="filterByStatus('pending')">Pending</div>
+            <div class="filter-item" data-status="failed" onclick="filterByStatus('failed')">Failed</div>
+        </div>
+        <div class="sidebar-bottom">
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="themeIcon">&#x263E;</span> <span id="themeLabel">Dark mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="topbar">
+            <h1>Knowledge Base</h1>
+            <div class="topbar-actions">
+                <button class="btn btn-primary" onclick="openCreateModal()">+ New Source</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- AI Capture Section -->
+            <div class="capture-section">
+                <h2>AI-Assisted Knowledge Capture</h2>
+                <p>Type, speak, or upload content. AI will structure it into a knowledge entry.</p>
+                <div class="capture-input-row">
+                    <textarea id="captureInput" class="capture-textarea" placeholder="Type or speak to add knowledge..."></textarea>
+                    <div class="capture-actions">
+                        <button class="btn-icon" id="voiceBtn" onclick="toggleVoice()" title="Voice input">
+                            <span id="voiceIcon">&#x1F3A4;</span>
+                        </button>
+                        <label class="btn-icon" title="Upload .md file" style="cursor:pointer">
+                            &#x1F4CE;
+                            <input type="file" accept=".md" style="display:none" onchange="handleFileUpload(event)">
+                        </label>
+                        <button class="btn btn-primary btn-sm" onclick="captureKnowledge()" id="captureBtn">Submit</button>
+                    </div>
+                </div>
+                <div id="voiceStatus" style="font-size:12px;color:var(--text3);margin-top:4px;display:none"></div>
+            </div>
+
+            <!-- AI Preview Card -->
+            <div class="preview-card" id="previewCard">
+                <h3>Structured Preview</h3>
+                <div class="confidence-bar"><div class="fill" id="confidenceFill"></div></div>
+                <div class="preview-fields">
+                    <label>Title</label>
+                    <input type="text" id="previewTitle">
+                    <label>Category</label>
+                    <select id="previewCategory">
+                        <option value="leave">Leave</option>
+                        <option value="attendance">Attendance</option>
+                        <option value="conduct">Conduct</option>
+                        <option value="compensation">Compensation</option>
+                        <option value="benefits">Benefits</option>
+                        <option value="safety">Safety</option>
+                        <option value="general">General</option>
+                        <option value="onboarding">Onboarding</option>
+                        <option value="recruitment">Recruitment</option>
+                        <option value="compliance">Compliance</option>
+                    </select>
+                </div>
+                <label style="font-size:12px;font-weight:500;color:var(--text3);display:block;margin-bottom:4px">Assign to agents</label>
+                <div class="preview-agents" id="previewAgents">
+                    <span class="agent-chip" data-agent="deema" onclick="toggleAgentChip(this)">Deema</span>
+                    <span class="agent-chip" data-agent="waleed" onclick="toggleAgentChip(this)">Waleed</span>
+                    <span class="agent-chip" data-agent="mohammad" onclick="toggleAgentChip(this)">Mohammad</span>
+                    <span class="agent-chip" data-agent="ahmad" onclick="toggleAgentChip(this)">Ahmad</span>
+                    <span class="agent-chip" data-agent="yara" onclick="toggleAgentChip(this)">Yara</span>
+                </div>
+                <div class="preview-content" id="previewContent"></div>
+                <div class="preview-actions">
+                    <button class="btn" onclick="cancelPreview()">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmCapture()">Confirm & Save</button>
+                </div>
+            </div>
+
+            <!-- Library -->
+            <div class="library-header">
+                <h2>Knowledge Library</h2>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <div class="search-wrapper">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search..." oninput="debounceSearch()">
+                    </div>
+                </div>
+            </div>
+
+            <div id="sourcesList"></div>
+            <div id="pagination" class="pagination"></div>
+            <div id="emptyState" class="empty-state" style="display:none">
+                <div class="icon">&#x1F4DA;</div>
+                <h3>No knowledge sources yet</h3>
+                <p>Use the capture area above or click "New Source" to add your first entry.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Side Panel -->
+    <div class="detail-panel" id="detailPanel">
+        <div class="detail-header">
+            <h3>Source Details</h3>
+            <button class="btn btn-sm" onclick="closeDetail()">&times;</button>
+        </div>
+        <div class="detail-body" id="detailBody"></div>
+        <div class="detail-footer">
+            <button class="btn btn-danger btn-sm" onclick="deactivateSource()">Deactivate</button>
+            <button class="btn btn-sm" onclick="closeDetail()">Close</button>
+        </div>
+    </div>
+
+    <!-- Create Modal -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <h3>New Knowledge Source</h3>
+            <div class="form-group">
+                <label>Title *</label>
+                <input type="text" id="newTitle" placeholder="e.g. Annual Leave Policy">
+            </div>
+            <div class="form-group">
+                <label>Title (Arabic)</label>
+                <input type="text" id="newTitleAr" placeholder="e.g. &#1587;&#1610;&#1575;&#1587;&#1577; &#1575;&#1604;&#1573;&#1580;&#1575;&#1586;&#1575;&#1578;" dir="rtl">
+            </div>
+            <div class="form-group">
+                <label>Source Type *</label>
+                <select id="newSourceType">
+                    <option value="markdown">Markdown</option>
+                    <option value="custom_text">Custom Text</option>
+                    <option value="policy">Policy</option>
+                    <option value="document">Document</option>
+                    <option value="url">URL</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="newCategory">
+                    <option value="">-- Select --</option>
+                    <option value="leave">Leave</option>
+                    <option value="attendance">Attendance</option>
+                    <option value="conduct">Conduct</option>
+                    <option value="compensation">Compensation</option>
+                    <option value="benefits">Benefits</option>
+                    <option value="safety">Safety</option>
+                    <option value="general">General</option>
+                    <option value="onboarding">Onboarding</option>
+                    <option value="recruitment">Recruitment</option>
+                    <option value="compliance">Compliance</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeCreateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createSource()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+    /* ======= STATE ======= */
+    let authToken = localStorage.getItem('admin_token') || '';
+    let tenantId = localStorage.getItem('admin_tenant_id') || '';
+    let sources = [];
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentFilter = { source_type: '', category: '', status: '' };
+    let searchQuery = '';
+    let searchTimeout = null;
+    let selectedSourceId = null;
+    let capturedData = null;
+    let isRecording = false;
+    let recognition = null;
+
+    /* ======= INIT ======= */
+    document.addEventListener('DOMContentLoaded', () => {
+        // Theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('themeIcon').textContent = '\u2600';
+            document.getElementById('themeLabel').textContent = 'Light mode';
+        }
+        // Check voice support
+        if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+            const btn = document.getElementById('voiceBtn');
+            btn.title = 'Voice input requires Chrome or Edge';
+            btn.style.opacity = '0.4';
+            btn.style.cursor = 'default';
+            btn.onclick = () => showToast('Voice input requires Chrome or Edge browser', 'error');
+        }
+        loadSources();
+    });
+
+    /* ======= AUTH HEADER ======= */
+    function headers(extra) {
+        const h = { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' };
+        if (tenantId) h['X-Tenant-ID'] = tenantId;
+        return Object.assign(h, extra || {});
+    }
+
+    /* ======= API CALLS ======= */
+    async function apiGet(path) {
+        const resp = await fetch(`/api/v1/knowledge${path}`, { headers: headers() });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${await resp.text()}`);
+        return resp.json();
+    }
+
+    async function apiPost(path, body, extraHeaders) {
+        const h = headers(extraHeaders);
+        const opts = { method: 'POST', headers: h };
+        if (body instanceof FormData) {
+            delete h['Content-Type'];
+            opts.body = body;
+            opts.headers = h;
+        } else {
+            opts.body = JSON.stringify(body);
+        }
+        const resp = await fetch(`/api/v1/knowledge${path}`, opts);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${await resp.text()}`);
+        return resp.json();
+    }
+
+    async function apiPatch(path, body) {
+        const resp = await fetch(`/api/v1/knowledge${path}`, {
+            method: 'PATCH', headers: headers(), body: JSON.stringify(body)
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${await resp.text()}`);
+        return resp.json();
+    }
+
+    async function apiDelete(path) {
+        const resp = await fetch(`/api/v1/knowledge${path}`, {
+            method: 'DELETE', headers: headers()
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${await resp.text()}`);
+        return resp.json();
+    }
+
+    /* ======= LOAD SOURCES ======= */
+    async function loadSources() {
+        try {
+            let params = `?page=${currentPage}&page_size=20`;
+            if (currentFilter.source_type) params += `&source_type=${currentFilter.source_type}`;
+            if (currentFilter.category) params += `&category=${currentFilter.category}`;
+            if (currentFilter.status) params += `&status=${currentFilter.status}`;
+            const data = await apiGet(`/sources${params}`);
+            sources = data.items;
+            totalPages = Math.ceil(data.total / data.page_size) || 1;
+            renderSources();
+            renderPagination();
+            renderCategoryFilters();
+        } catch (err) {
+            console.error('Failed to load sources:', err);
+            if (err.message.includes('401') || err.message.includes('403')) {
+                showToast('Authentication required. Please log in via Admin panel first.', 'error');
+            }
+        }
+    }
+
+    /* ======= RENDER ======= */
+    function renderSources() {
+        const container = document.getElementById('sourcesList');
+        const empty = document.getElementById('emptyState');
+
+        // Filter by search query client-side
+        let filtered = sources;
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = sources.filter(s =>
+                s.title.toLowerCase().includes(q) ||
+                (s.category || '').toLowerCase().includes(q) ||
+                (s.title_ar || '').includes(q)
+            );
+        }
+
+        if (filtered.length === 0 && currentPage === 1) {
+            container.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+
+        container.innerHTML = filtered.map(s => `
+            <div class="source-card ${s.is_active ? '' : 'source-inactive'}" onclick="openDetail('${s.id}')">
+                <div class="source-card-header">
+                    <div>
+                        <div class="source-title">${escHtml(s.title)}</div>
+                        ${s.title_ar ? `<div style="font-size:12px;color:var(--text3);margin-top:2px" dir="rtl">${escHtml(s.title_ar)}</div>` : ''}
+                    </div>
+                    <div class="source-meta">
+                        <span class="badge badge-type">${escHtml(s.source_type)}</span>
+                        ${s.category ? `<span class="badge badge-category">${escHtml(s.category)}</span>` : ''}
+                        <span class="badge badge-status-${escHtml(s.embedding_status)}">${escHtml(s.embedding_status)}</span>
+                    </div>
+                </div>
+                <div class="source-meta">
+                    <span>${s.chunk_count} chunks</span>
+                    <span>${s.assignment_count} agent(s)</span>
+                    <span>${new Date(s.created_at).toLocaleDateString()}</span>
+                    ${!s.is_active ? '<span style="color:var(--red)">(inactive)</span>' : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderPagination() {
+        const container = document.getElementById('pagination');
+        if (totalPages <= 1) { container.innerHTML = ''; return; }
+        let html = '';
+        html += `<button ${currentPage===1?'disabled':''} onclick="goPage(${currentPage-1})">Prev</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="${i===currentPage?'current':''}" onclick="goPage(${i})">${i}</button>`;
+        }
+        html += `<button ${currentPage===totalPages?'disabled':''} onclick="goPage(${currentPage+1})">Next</button>`;
+        container.innerHTML = html;
+    }
+
+    function renderCategoryFilters() {
+        const cats = {};
+        sources.forEach(s => { if (s.category) cats[s.category] = (cats[s.category]||0) + 1; });
+        const container = document.getElementById('categoryFilters');
+        let html = `<div class="filter-item ${!currentFilter.category?'active':''}" onclick="filterByCategory('')">All</div>`;
+        for (const [cat, count] of Object.entries(cats).sort()) {
+            html += `<div class="filter-item ${currentFilter.category===cat?'active':''}" data-cat="${escHtml(cat)}" onclick="filterByCategory(this.dataset.cat)">${escHtml(cat)} <span class="count">${count}</span></div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function goPage(p) { currentPage = p; loadSources(); }
+
+    function filterByCategory(cat) {
+        currentFilter.category = cat;
+        currentPage = 1;
+        loadSources();
+    }
+
+    function filterByStatus(st) {
+        currentFilter.status = st;
+        currentPage = 1;
+        // Update active state
+        document.querySelectorAll('[data-status]').forEach(el => {
+            el.classList.toggle('active', el.dataset.status === st);
+        });
+        loadSources();
+    }
+
+    function debounceSearch() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchQuery = document.getElementById('searchInput').value.trim();
+            renderSources();
+        }, 300);
+    }
+
+    /* ======= DETAIL PANEL ======= */
+    async function openDetail(sourceId) {
+        selectedSourceId = sourceId;
+        try {
+            const source = await apiGet(`/sources/${sourceId}`);
+            const body = document.getElementById('detailBody');
+            body.innerHTML = `
+                <div class="detail-field">
+                    <label>Title</label>
+                    <div class="value">${escHtml(source.title)}</div>
+                </div>
+                ${source.title_ar ? `<div class="detail-field"><label>Title (AR)</label><div class="value" dir="rtl">${escHtml(source.title_ar)}</div></div>` : ''}
+                <div class="detail-field">
+                    <label>Type</label>
+                    <div class="value"><span class="badge badge-type">${source.source_type}</span></div>
+                </div>
+                <div class="detail-field">
+                    <label>Category</label>
+                    <div class="value">${source.category || 'None'}</div>
+                </div>
+                <div class="detail-field">
+                    <label>Status</label>
+                    <div class="value"><span class="badge badge-status-${source.embedding_status}">${source.embedding_status}</span></div>
+                </div>
+                <div class="detail-field">
+                    <label>Chunks</label>
+                    <div class="value">${source.chunk_count}</div>
+                </div>
+                <div class="detail-field">
+                    <label>Agents Assigned</label>
+                    <div class="value">${source.assignment_count}</div>
+                </div>
+                <div class="detail-field">
+                    <label>Active</label>
+                    <div class="value">${source.is_active ? 'Yes' : 'No'}</div>
+                </div>
+                <div class="detail-field">
+                    <label>Created</label>
+                    <div class="value">${new Date(source.created_at).toLocaleString()}</div>
+                </div>
+
+                <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+
+                <div class="detail-field">
+                    <label>Upload Markdown</label>
+                    <div style="display:flex;gap:8px;margin-top:4px">
+                        <label class="btn btn-sm" style="cursor:pointer">
+                            Choose .md file
+                            <input type="file" accept=".md" style="display:none" onchange="uploadToSource(event, '${sourceId}')">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="detail-field">
+                    <label>Ingest Raw Text</label>
+                    <textarea id="ingestText" style="width:100%;min-height:60px;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;background:var(--surface2);color:var(--text);margin-top:4px" placeholder="Paste text content here..."></textarea>
+                    <button class="btn btn-sm btn-primary" style="margin-top:4px" onclick="ingestTextContent('${sourceId}')">Ingest</button>
+                </div>
+            `;
+            document.getElementById('detailPanel').classList.add('open');
+        } catch (err) {
+            showToast('Failed to load details: ' + err.message, 'error');
+        }
+    }
+
+    function closeDetail() {
+        document.getElementById('detailPanel').classList.remove('open');
+        selectedSourceId = null;
+    }
+
+    async function deactivateSource() {
+        if (!selectedSourceId) return;
+        try {
+            await apiDelete(`/sources/${selectedSourceId}`);
+            showToast('Source deactivated', 'success');
+            closeDetail();
+            loadSources();
+        } catch (err) {
+            showToast('Failed to deactivate: ' + err.message, 'error');
+        }
+    }
+
+    async function uploadToSource(event, sourceId) {
+        const file = event.target.files[0];
+        if (!file) return;
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            await apiPost(`/sources/${sourceId}/upload`, formData);
+            showToast('File uploaded, ingestion started', 'success');
+            loadSources();
+        } catch (err) {
+            showToast('Upload failed: ' + err.message, 'error');
+        }
+    }
+
+    async function ingestTextContent(sourceId) {
+        const text = document.getElementById('ingestText').value.trim();
+        if (!text) return showToast('No text to ingest', 'error');
+        try {
+            await apiPost(`/sources/${sourceId}/ingest-text`, { content: text });
+            showToast('Ingestion started', 'success');
+            loadSources();
+        } catch (err) {
+            showToast('Ingestion failed: ' + err.message, 'error');
+        }
+    }
+
+    /* ======= CREATE SOURCE ======= */
+    function openCreateModal() { document.getElementById('createModal').classList.add('open'); }
+    function closeCreateModal() { document.getElementById('createModal').classList.remove('open'); }
+
+    async function createSource() {
+        const title = document.getElementById('newTitle').value.trim();
+        if (!title) return showToast('Title is required', 'error');
+        const body = {
+            title,
+            title_ar: document.getElementById('newTitleAr').value.trim() || null,
+            source_type: document.getElementById('newSourceType').value,
+            category: document.getElementById('newCategory').value || null,
+        };
+        try {
+            await apiPost('/sources', body);
+            showToast('Source created', 'success');
+            closeCreateModal();
+            loadSources();
+        } catch (err) {
+            showToast('Failed to create: ' + err.message, 'error');
+        }
+    }
+
+    /* ======= AI CAPTURE ======= */
+    async function captureKnowledge() {
+        const input = document.getElementById('captureInput').value.trim();
+        if (!input) return showToast('Enter some content first', 'error');
+
+        const btn = document.getElementById('captureBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>';
+
+        try {
+            const data = await apiPost('/capture', { content: input, language: 'en' });
+            capturedData = data;
+            showPreview(data);
+        } catch (err) {
+            showToast('AI capture failed: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Submit';
+        }
+    }
+
+    function showPreview(data) {
+        document.getElementById('previewTitle').value = data.suggested_title;
+        document.getElementById('previewCategory').value = data.suggested_category;
+        document.getElementById('previewContent').textContent = data.structured_content;
+
+        // Confidence bar
+        const pct = Math.round(data.confidence * 100);
+        const fill = document.getElementById('confidenceFill');
+        fill.style.width = pct + '%';
+        fill.style.background = pct > 70 ? 'var(--green)' : pct > 40 ? 'var(--yellow)' : 'var(--red)';
+
+        // Agent chips
+        document.querySelectorAll('#previewAgents .agent-chip').forEach(chip => {
+            chip.classList.toggle('selected', data.suggested_agents.includes(chip.dataset.agent));
+        });
+
+        document.getElementById('previewCard').classList.add('visible');
+    }
+
+    function toggleAgentChip(el) { el.classList.toggle('selected'); }
+
+    function cancelPreview() {
+        document.getElementById('previewCard').classList.remove('visible');
+        capturedData = null;
+    }
+
+    async function confirmCapture() {
+        const title = document.getElementById('previewTitle').value.trim();
+        const category = document.getElementById('previewCategory').value;
+        const content = document.getElementById('previewContent').textContent;
+        const agents = [];
+        document.querySelectorAll('#previewAgents .agent-chip.selected').forEach(c => agents.push(c.dataset.agent));
+
+        if (!title) return showToast('Title is required', 'error');
+
+        try {
+            // 1. Create source
+            const source = await apiPost('/sources', {
+                title,
+                source_type: 'custom_text',
+                category: category || null,
+                content_text: content,
+            });
+
+            // 2. Ingest text
+            await apiPost(`/sources/${source.id}/ingest-text`, { content });
+
+            showToast('Knowledge saved and ingestion started', 'success');
+            cancelPreview();
+            document.getElementById('captureInput').value = '';
+            loadSources();
+        } catch (err) {
+            showToast('Failed to save: ' + err.message, 'error');
+        }
+    }
+
+    /* ======= VOICE INPUT ======= */
+    function toggleVoice() {
+        if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+            return showToast('Voice input requires Chrome or Edge', 'error');
+        }
+
+        if (isRecording) {
+            stopVoice();
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US'; // Default to English; user can switch
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        const voiceBtn = document.getElementById('voiceBtn');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const textarea = document.getElementById('captureInput');
+
+        recognition.onstart = () => {
+            isRecording = true;
+            voiceBtn.classList.add('recording');
+            voiceStatus.style.display = 'block';
+            voiceStatus.textContent = 'Listening...';
+        };
+
+        recognition.onresult = (event) => {
+            let transcript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            textarea.value = transcript;
+            voiceStatus.textContent = 'Listening... (speak now)';
+        };
+
+        recognition.onerror = (event) => {
+            voiceStatus.textContent = 'Voice error: ' + event.error;
+            stopVoice();
+        };
+
+        recognition.onend = () => {
+            stopVoice();
+        };
+
+        // Detect if textarea already has Arabic content to switch language
+        const existing = textarea.value.trim();
+        if (/[\u0600-\u06FF]/.test(existing)) {
+            recognition.lang = 'ar-SA';
+            voiceStatus.textContent = 'Listening (Arabic)...';
+        }
+
+        recognition.start();
+    }
+
+    function stopVoice() {
+        isRecording = false;
+        const voiceBtn = document.getElementById('voiceBtn');
+        voiceBtn.classList.remove('recording');
+        document.getElementById('voiceStatus').style.display = 'none';
+        if (recognition) {
+            try { recognition.stop(); } catch(e) {}
+            recognition = null;
+        }
+    }
+
+    /* ======= FILE UPLOAD (Capture Area) ======= */
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (!file.name.toLowerCase().endsWith('.md')) {
+            showToast('Only .md files are supported', 'error');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('captureInput').value = e.target.result;
+            showToast('File loaded into capture area', 'success');
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    /* ======= THEME ======= */
+    function toggleTheme() {
+        const html = document.documentElement;
+        html.classList.toggle('dark');
+        const isDark = html.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        document.getElementById('themeIcon').textContent = isDark ? '\u2600' : '\u263E';
+        document.getElementById('themeLabel').textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+
+    /* ======= UTILS ======= */
+    function escHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function showToast(msg, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type || ''}`;
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+    </script>
+</body>
+</html>

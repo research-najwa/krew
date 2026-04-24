@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krew — AI HR Department</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface2: #f5f5f4;
+    --surface3: #e7e5e4;
+    --border: #e5e5e5;
+    --border2: #d4d4d4;
+    --text: #1a1a1a;
+    --text2: #6b7280;
+    --text3: #9ca3af;
+    --accent: #4f46e5;
+    --accent2: #6366f1;
+    --accent-dim: rgba(79,70,229,0.06);
+    --green: #16a34a;
+    --green-dim: rgba(22,163,74,0.06);
+    --red: #dc2626;
+    --red-dim: rgba(220,38,38,0.06);
+    --yellow: #ca8a04;
+    --yellow-dim: rgba(202,138,4,0.06);
+    --orange: #ea580c;
+    --blue: #2563eb;
+    --blue-dim: rgba(37,99,235,0.06);
+    --pink: #db2777;
+    --pink-dim: rgba(219,39,119,0.06);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── TAB BAR ─── */
+  .tab-bar {
+    display: flex;
+    gap: 2px;
+    padding: 8px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    color: var(--text2);
+  }
+
+  .tab:hover { background: var(--surface2); color: var(--text); }
+  .tab.active { background: var(--text); color: white; }
+
+  /* ─── PANELS ─── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .panel-header {
+    padding: 32px 40px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .panel-header h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.3px; }
+  .panel-header p { font-size: 14px; color: var(--text2); max-width: 600px; line-height: 1.6; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge.rec { background: var(--accent-dim); color: var(--accent); }
+  .badge.chro { background: var(--yellow-dim); color: var(--yellow); }
+  .badge.div { background: var(--surface2); color: var(--text2); }
+
+  .mockup-frame {
+    max-width: 1400px;
+    margin: 0 auto 40px;
+    padding: 0 40px;
+  }
+
+  .mockup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ─── SHARED COMPONENTS ─── */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .top-bar .left { display: flex; align-items: center; gap: 12px; }
+  .top-bar .logo { font-weight: 700; font-size: 15px; letter-spacing: -0.5px; }
+  .top-bar .logo span { color: var(--accent); }
+  .top-bar .divider { width: 1px; height: 18px; background: var(--border); }
+  .top-bar .page-title { font-size: 13px; font-weight: 500; color: var(--text2); }
+
+  .top-bar .right { display: flex; align-items: center; gap: 8px; }
+  .top-bar .notif-btn {
+    width: 32px; height: 32px; border-radius: 6px; background: var(--surface2);
+    border: none; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; cursor: pointer; position: relative;
+  }
+  .top-bar .notif-btn .dot {
+    position: absolute; top: 5px; right: 5px; width: 5px; height: 5px;
+    background: var(--red); border-radius: 50%;
+  }
+  .top-bar .user-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px 4px 4px; border-radius: 20px;
+    background: var(--surface2); font-size: 12px; cursor: pointer;
+  }
+  .top-bar .user-avatar {
+    width: 24px; height: 24px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 10px;
+    font-weight: 600; background: var(--accent); color: white;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .card-title { font-size: 13px; font-weight: 600; }
+  .card-subtitle { font-size: 11px; color: var(--text3); }
+
+  .metric-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .metric-row:last-child { border-bottom: none; }
+  .metric-row .label { color: var(--text2); }
+  .metric-row .value { font-weight: 600; }
+
+  .mini-stat {
+    text-align: center;
+    padding: 14px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .mini-stat .num { font-size: 26px; font-weight: 700; display: block; letter-spacing: -0.5px; }
+  .mini-stat .desc { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+  }
+
+  .status-dot.green { background: var(--green); }
+  .status-dot.yellow { background: var(--yellow); }
+  .status-dot.red { background: var(--red); }
+
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 500;
+  }
+
+  .pill.green { background: var(--green-dim); color: var(--green); }
+  .pill.red { background: var(--red-dim); color: var(--red); }
+  .pill.yellow { background: var(--yellow-dim); color: var(--yellow); }
+  .pill.blue { background: var(--blue-dim); color: var(--blue); }
+  .pill.accent { background: var(--accent-dim); color: var(--accent); }
+
+  .agent-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .agent-row:last-child { border-bottom: none; }
+
+  .agent-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0; background: var(--surface2);
+  }
+
+  .agent-info { flex: 1; }
+  .agent-info .name { font-weight: 600; font-size: 13px; }
+  .agent-info .role { font-size: 11px; color: var(--text3); }
+
+  .btn {
+    padding: 6px 14px; border-radius: 6px; font-size: 12px;
+    font-weight: 500; cursor: pointer; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); transition: all 0.15s;
+  }
+
+  .btn:hover { background: var(--surface2); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn.primary:hover { opacity: 0.9; }
+
+  .progress-bar {
+    height: 4px; background: var(--surface2); border-radius: 2px;
+    overflow: hidden; margin-top: 6px;
+  }
+
+  .progress-bar .fill { height: 100%; border-radius: 2px; }
+
+  .table-simple {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+
+  .table-simple th {
+    text-align: left; padding: 8px 10px; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    color: var(--text3); border-bottom: 1px solid var(--border); font-weight: 500;
+  }
+
+  .table-simple td {
+    padding: 10px; border-bottom: 1px solid var(--border);
+  }
+
+  /* ─── LAYOUT: RECOMMENDED (C+E) ─── */
+  .rec-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 680px;
+  }
+
+  .rec-sidebar {
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rec-sidebar .team-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text3); margin: 14px 0 6px; padding: 0 4px; font-weight: 500;
+  }
+
+  .rec-sidebar .team-label:first-child { margin-top: 0; }
+
+  .rec-agent-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    transition: all 0.15s; margin-bottom: 1px;
+  }
+
+  .rec-agent-item:hover { background: var(--surface); }
+  .rec-agent-item.active { background: var(--surface); border: 1px solid var(--border); }
+
+  .rec-agent-item .av {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0; position: relative;
+    background: var(--accent-dim); color: var(--accent);
+    font-weight: 700; font-size: 12px;
+  }
+
+  .rec-agent-item .av .online {
+    position: absolute; bottom: -1px; right: -1px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); border: 2px solid var(--bg);
+  }
+
+  .rec-agent-item .a-name { font-size: 13px; font-weight: 500; }
+  .rec-agent-item .a-role { font-size: 11px; color: var(--text3); }
+  .rec-agent-item .a-badge {
+    margin-left: auto; padding: 2px 7px; border-radius: 10px;
+    font-size: 10px; font-weight: 600; background: var(--red-dim); color: var(--red);
+  }
+
+  .rec-channels {
+    margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+  }
+
+  .rec-channels .ch-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text3); margin-bottom: 6px; font-weight: 500;
+  }
+
+  .rec-channel {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border-radius: 6px; font-size: 12px;
+    color: var(--text2); cursor: pointer; margin-bottom: 1px;
+  }
+
+  .rec-channel:hover { background: var(--surface); }
+  .rec-channel .ch-count { margin-left: auto; font-weight: 600; font-size: 11px; }
+
+  .rec-main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rec-chat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+  }
+
+  .rec-chat-header .av {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; background: var(--accent-dim); color: var(--accent);
+  }
+
+  .rec-chat-header .info .name { font-size: 14px; font-weight: 600; }
+  .rec-chat-header .info .status { font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+
+  .rec-chat-body {
+    flex: 1; padding: 24px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .msg { display: flex; gap: 10px; max-width: 70%; }
+  .msg.from-agent { align-self: flex-start; }
+  .msg.from-user { align-self: flex-end; flex-direction: row-reverse; }
+
+  .msg .m-avatar {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0; font-weight: 600;
+  }
+
+  .msg .m-bubble {
+    padding: 10px 14px; border-radius: 12px;
+    font-size: 13px; line-height: 1.6;
+  }
+
+  .msg.from-agent .m-bubble {
+    background: var(--surface2);
+    border-top-left-radius: 4px;
+  }
+
+  .msg.from-user .m-bubble {
+    background: var(--accent); color: white;
+    border-top-right-radius: 4px;
+  }
+
+  .msg .m-time { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+  .msg .inline-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .msg .inline-card .ic-title {
+    font-weight: 600; margin-bottom: 8px; font-size: 12px;
+  }
+
+  .rec-input-bar {
+    padding: 14px 20px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: center;
+  }
+
+  .rec-input-bar .channel-tag {
+    padding: 4px 10px; border-radius: 4px; font-size: 11px;
+    background: rgba(37,211,102,0.08); color: #16a34a;
+    font-weight: 600; flex-shrink: 0;
+  }
+
+  .rec-input-bar input {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; color: var(--text);
+    font-size: 13px; outline: none;
+  }
+
+  .rec-input-bar input:focus { border-color: var(--accent); }
+
+  .rec-input-bar .send {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--accent); border: none; color: white;
+    font-size: 16px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+  }
+
+  /* ─── CHRO ─── */
+  .chro-layout { padding: 24px; min-height: 680px; }
+
+  .chro-greeting { margin-bottom: 24px; }
+  .chro-greeting h2 { font-size: 20px; font-weight: 400; }
+  .chro-greeting h2 strong { font-weight: 700; }
+  .chro-greeting .date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  .chro-briefing {
+    background: var(--accent-dim);
+    border: 1px solid rgba(79,70,229,0.1);
+    border-radius: 10px; padding: 20px; margin-bottom: 24px;
+  }
+
+  .chro-briefing .brief-header {
+    font-size: 13px; font-weight: 600; margin-bottom: 10px;
+  }
+
+  .chro-briefing .brief-body {
+    font-size: 13px; line-height: 1.7; color: var(--text2);
+  }
+
+  .chro-briefing .brief-body strong { color: var(--text); }
+
+  .chro-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .chro-div-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .chro-div-card:hover { border-color: var(--accent); }
+
+  .chro-div-card .div-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; margin-bottom: 10px;
+  }
+
+  .chro-div-card .div-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .chro-div-card .div-officers { font-size: 11px; color: var(--text3); margin-bottom: 12px; }
+
+  .chro-div-card .div-health {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px;
+  }
+
+  .chro-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .chro-decision {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+
+  .chro-decision:last-child { border-bottom: none; }
+
+  .chro-decision .dec-icon {
+    width: 30px; height: 30px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+
+  .chro-decision .dec-text { font-size: 13px; line-height: 1.5; flex: 1; }
+  .chro-decision .dec-meta { font-size: 10px; color: var(--text3); margin-top: 3px; }
+
+  .chro-kpi-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .chro-kpi-row:last-child { border-bottom: none; }
+  .chro-kpi-row .kpi-label { color: var(--text2); }
+  .chro-kpi-row .kpi-val { font-weight: 600; }
+  .chro-kpi-row .kpi-trend { font-size: 11px; margin-left: 6px; }
+
+  /* ─── OFFICER ─── */
+  .feed-item {
+    display: flex; gap: 10px; padding: 10px 0;
+    border-bottom: 1px solid var(--border); font-size: 12px;
+  }
+
+  .feed-item:last-child { border-bottom: none; }
+
+  .feed-item .feed-icon {
+    width: 26px; height: 26px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0;
+  }
+
+  .feed-item .feed-text { line-height: 1.5; color: var(--text2); }
+  .feed-item .feed-text strong { color: var(--text); }
+  .feed-item .feed-time { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .panel-header { padding: 24px 24px 16px; }
+    .panel-header h1 { font-size: 18px; }
+    .mockup-frame { padding: 0 16px; }
+
+    /* Krew Live: stack sidebar below chat */
+    .rec-layout {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .rec-sidebar {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      max-height: 180px;
+      overflow-y: auto;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 12px;
+    }
+    .rec-sidebar .team-label { display: none; }
+    .rec-sidebar .rec-channels { display: none; }
+    .rec-agent-item { padding: 6px 8px; }
+    .rec-agent-item .a-role { display: none; }
+    .rec-main { min-height: 400px; }
+
+    /* CHRO: 4-col → 2-col */
+    .chro-grid { grid-template-columns: repeat(2, 1fr); }
+    .chro-bottom-grid { grid-template-columns: 1fr; }
+
+    /* Shared Services / CoE / Analytics: 3-col → 1-col stack */
+    [style*="grid-template-columns: 1fr 1fr 320px"],
+    [style*="grid-template-columns: 1fr 360px"] {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+    }
+
+    /* 5-col stats → 3-col */
+    [style*="grid-template-columns: repeat(5, 1fr)"] {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    /* 4-col stats → 2-col */
+    [style*="grid-template-columns: repeat(4, 1fr)"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .tab-bar { padding: 6px 12px; gap: 1px; }
+    .tab { padding: 6px 10px; font-size: 11px; }
+    .panel-header { padding: 16px 16px 12px; }
+    .panel-header h1 { font-size: 16px; }
+    .panel-header p { font-size: 13px; }
+    .mockup-frame { padding: 0 12px; margin-bottom: 24px; }
+
+    .top-bar { padding: 8px 12px; }
+    .top-bar .page-title { font-size: 11px; }
+    .top-bar .divider { display: none; }
+
+    .rec-sidebar {
+      max-height: 100px;
+      padding: 8px;
+    }
+    .rec-agent-item .av { width: 26px; height: 26px; font-size: 11px; }
+    .rec-agent-item .a-name { font-size: 12px; }
+    .rec-chat-header { padding: 10px 12px; gap: 8px; }
+    .rec-chat-header .av { width: 28px; height: 28px; font-size: 11px; }
+    .rec-chat-header .info .name { font-size: 13px; }
+    .rec-chat-body { padding: 12px; gap: 12px; }
+    .msg { max-width: 90%; }
+    .msg .m-bubble { font-size: 12px; padding: 8px 12px; }
+    .rec-input-bar { padding: 8px 12px; }
+
+    .chro-layout { padding: 16px; }
+    .chro-greeting h2 { font-size: 16px; }
+    .chro-grid { grid-template-columns: 1fr; }
+    .chro-briefing { font-size: 12px; padding: 14px; }
+    .chro-briefing .brief-body { font-size: 12px; }
+
+    .mini-stat .num { font-size: 18px; }
+    .mini-stat .desc { font-size: 10px; }
+
+    [style*="grid-template-columns: repeat(5, 1fr)"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+    [style*="grid-template-columns: repeat(4, 1fr)"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    [style*="padding: 20px"] { padding: 12px !important; }
+
+    .table-simple th, .table-simple td {
+      padding: 6px 4px;
+      font-size: 11px;
+    }
+
+    .agent-row { padding: 8px 0; }
+    .agent-icon { width: 28px; height: 28px; font-size: 12px; }
+    .agent-info .name { font-size: 12px; }
+    .agent-info .role { font-size: 10px; }
+
+    .card { padding: 12px; }
+    .card-title { font-size: 12px; }
+
+    .feed-item { font-size: 11px; }
+    .feed-icon { width: 22px; height: 22px; font-size: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .tab { padding: 5px 8px; font-size: 10px; }
+    .panel-header h1 { font-size: 14px; }
+    .rec-main { min-height: 300px; }
+    .rec-chat-header [style*="margin-left: auto"] { display: none; }
+    .msg .inline-card { font-size: 11px; padding: 8px; }
+    .msg .inline-card .metric-row { flex-direction: column; gap: 2px; }
+    .chro-decision .dec-text { font-size: 12px; }
+    .mini-stat { padding: 8px 6px; }
+    .mini-stat .num { font-size: 16px; }
+
+    [style*="grid-template-columns: repeat(5, 1fr)"],
+    [style*="grid-template-columns: repeat(4, 1fr)"],
+    [style*="grid-template-columns: repeat(3, 1fr)"] {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <div class="tab active" onclick="showPanel('rec')">Krew Live</div>
+  <div class="tab" onclick="showPanel('chro')">Krew — CHRO View</div>
+  <div class="tab" onclick="showPanel('shared')">Krew — Shared Services</div>
+  <div class="tab" onclick="showPanel('coe')">Krew — Centers of Excellence</div>
+  <div class="tab" onclick="showPanel('analytics')">Krew — Analytics & Finance</div>
+  <div class="tab" onclick="showPanel('factory')">Krew — Agent Factory</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- RECOMMENDED: C+E COMBINED -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="panel active" id="panel-rec">
+  <div class="panel-header">
+    <div class="badge rec">KREW LIVE</div>
+    <h1>Krew is available 24/7 for your employees</h1>
+    <p>Your virtual HR team lives where your employees already work — WhatsApp, Slack, Teams, email. They talk to colleagues, not software.</p>
+  </div>
+  <div class="mockup-frame">
+    <div class="mockup">
+      <div class="top-bar">
+        <div class="left">
+          <span class="logo"><span>Krew</span></span>
+          <div class="divider"></div>
+          <span class="page-title">Conversations</span>
+        </div>
+        <div class="right">
+          <div class="notif-btn">🔔<div class="dot"></div></div>
+          <div class="user-pill">
+            <div class="user-avatar">JD</div>
+            <span>Admin</span>
+          </div>
+        </div>
+      </div>
+      <div class="rec-layout">
+        <!-- Left: Team + Channels -->
+        <div class="rec-sidebar">
+          <div class="team-label">Your HR Team</div>
+
+          <div class="rec-agent-item active">
+            <div class="av">N<div class="online"></div></div>
+            <div><div class="a-name">Nora</div><div class="a-role">Employee Services</div></div>
+            <span class="a-badge">3</span>
+          </div>
+          <div class="rec-agent-item">
+            <div class="av" style="background: var(--pink-dim); color: var(--pink);">L<div class="online"></div></div>
+            <div><div class="a-name">Layla</div><div class="a-role">Onboarding</div></div>
+          </div>
+          <div class="rec-agent-item">
+            <div class="av" style="background: var(--blue-dim); color: var(--blue);">K<div class="online"></div></div>
+            <div><div class="a-name">Karim</div><div class="a-role">Recruitment</div></div>
+          </div>
+          <div class="rec-agent-item">
+            <div class="av" style="background: var(--green-dim); color: var(--green);">A<div class="online"></div></div>
+            <div><div class="a-name">Adam</div><div class="a-role">Compliance</div></div>
+            <span class="a-badge" style="background: var(--yellow-dim); color: var(--yellow);">1</span>
+          </div>
+          <div class="rec-agent-item">
+            <div class="av" style="background: rgba(234,88,12,0.06); color: var(--orange);">D<div class="online"></div></div>
+            <div><div class="a-name">Dana</div><div class="a-role">Finance</div></div>
+          </div>
+          <div class="rec-agent-item">
+            <div class="av" style="background: var(--pink-dim); color: #a855f7;">R<div class="online"></div></div>
+            <div><div class="a-name">Raya</div><div class="a-role">Agent Factory</div></div>
+          </div>
+
+          <div class="rec-channels">
+            <div class="ch-label">Channels</div>
+            <div class="rec-channel">WhatsApp <span class="ch-count" style="color: #16a34a;">312</span></div>
+            <div class="rec-channel">Slack <span class="ch-count" style="color: var(--blue);">89</span></div>
+            <div class="rec-channel">Teams <span class="ch-count" style="color: #7c3aed;">45</span></div>
+            <div class="rec-channel">Email <span class="ch-count" style="color: var(--orange);">67</span></div>
+          </div>
+        </div>
+
+        <!-- Right: Chat -->
+        <div class="rec-main">
+          <div class="rec-chat-header">
+            <div class="av">N</div>
+            <div class="info">
+              <div class="name">Nora — Employee Services</div>
+              <div class="status"><span class="status-dot green"></span> Online · 3 conversations</div>
+            </div>
+            <div style="margin-left: auto; display: flex; gap: 6px;">
+              <button class="btn">Performance</button>
+              <button class="btn">Settings</button>
+            </div>
+          </div>
+
+          <div class="rec-chat-body">
+            <div class="msg from-agent">
+              <div class="m-avatar" style="background: var(--accent-dim); color: var(--accent); font-weight: 600;">N</div>
+              <div>
+                <div class="m-bubble">
+                  Hi Omar! You have <strong>12 vacation days</strong> remaining out of 20 this year. Would you like to request time off?
+                </div>
+                <div class="m-time">via WhatsApp · 9:02 AM</div>
+              </div>
+            </div>
+
+            <div class="msg from-user">
+              <div class="m-avatar" style="background: var(--surface2); color: var(--text2); font-weight: 600;">O</div>
+              <div>
+                <div class="m-bubble">ايه، من ٢٠ لـ ٢٤ ديسمبر</div>
+                <div class="m-time" style="text-align: right;">WhatsApp · Arabic · 9:03 AM</div>
+              </div>
+            </div>
+
+            <div class="msg from-agent">
+              <div class="m-avatar" style="background: var(--accent-dim); color: var(--accent); font-weight: 600;">N</div>
+              <div>
+                <div class="m-bubble">
+                  Got it! Let me check the calendar and submit that for you.
+                </div>
+                <div class="inline-card">
+                  <div class="ic-title">Leave Request Submitted</div>
+                  <div class="metric-row"><span class="label">Employee</span><span class="value">Omar H.</span></div>
+                  <div class="metric-row"><span class="label">Type</span><span class="value">Vacation</span></div>
+                  <div class="metric-row"><span class="label">Dates</span><span class="value">Dec 20 – 24 (3 business days)</span></div>
+                  <div class="metric-row"><span class="label">Approver</span><span class="value">Ahmad M. (notified)</span></div>
+                  <div class="metric-row"><span class="label">Status</span><span class="value"><span class="pill yellow">Pending</span></span></div>
+                </div>
+                <div class="m-time">via WhatsApp · 9:03 AM</div>
+              </div>
+            </div>
+
+            <div class="msg from-agent">
+              <div class="m-avatar" style="background: var(--accent-dim); color: var(--accent); font-weight: 600;">N</div>
+              <div>
+                <div class="m-bubble">
+                  Ahmad approved your leave.<br><br>
+                  <strong>Dec 20-24 confirmed</strong><br>
+                  Remaining balance: 9 days<br><br>
+                  Enjoy your time off, Omar!
+                </div>
+                <div class="m-time">via WhatsApp · 11:30 AM</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rec-input-bar">
+            <span class="channel-tag">WhatsApp</span>
+            <input type="text" placeholder="Nora is replying to Omar via WhatsApp...">
+            <button class="send">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CHRO EXECUTIVE VIEW -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-chro">
+  <div class="panel-header">
+    <div class="badge chro">CHRO VIEW</div>
+    <h1>Krew — CHRO Executive Dashboard</h1>
+    <p>Weekly briefing, pending decisions, and division health at a glance.</p>
+  </div>
+  <div class="mockup-frame">
+    <div class="mockup">
+      <div class="top-bar">
+        <div class="left">
+          <span class="logo"><span>Krew</span></span>
+          <div class="divider"></div>
+          <span class="page-title">Executive View</span>
+        </div>
+        <div class="right">
+          <div class="notif-btn">🔔<div class="dot"></div></div>
+          <div class="user-pill">
+            <div class="user-avatar" style="background: var(--yellow); color: white;">N</div>
+            <span>CHRO</span>
+          </div>
+        </div>
+      </div>
+      <div class="chro-layout">
+        <div class="chro-greeting">
+          <h2>Good morning, <strong>Dr. Najwa</strong></h2>
+          <div class="date">Friday, Feb 21, 2026 · Week 8 Briefing</div>
+        </div>
+
+        <div class="chro-briefing">
+          <div class="brief-header">Weekly Briefing from Your Krew</div>
+          <div class="brief-body">
+            This week your AI HR department handled <strong>847 employee interactions</strong> across WhatsApp, Slack, and email with <strong>94% auto-resolution</strong>. Key highlights:<br><br>
+            <strong>Nora</strong> (Employee Services) resolved 312 queries — top topics: PTO balance (34%), benefits enrollment (28%), policy questions (22%)<br>
+            <strong>Layla</strong> (Onboarding) completed onboarding for 2 new hires — both rated 4.8/5<br>
+            <strong>Adam</strong> (Compliance) flagged a new CA overtime regulation — draft ready for your review<br>
+            <strong>Dana</strong> (Finance) reports Marketing is 12% over headcount budget — recommends freezing 1 open role<br>
+            <strong>Raya</strong> (Agent Factory) analyzed 4 new JDs — 2 fully automatable, 1 hybrid, 1 needs a human<br><br>
+            <strong>3 decisions need your attention below.</strong>
+          </div>
+        </div>
+
+        <div class="chro-grid">
+          <div class="chro-div-card" onclick="showPanel('shared')">
+            <div class="div-icon" style="background: var(--accent-dim);">🎧</div>
+            <div class="div-name">Shared Services</div>
+            <div class="div-officers">Nora, Layla, Karim + 3</div>
+            <div class="mini-stat" style="margin-bottom: 10px; border: none; padding: 8px 0;">
+              <span class="num" style="font-size: 20px; color: var(--green);">94%</span>
+              <span class="desc">Auto-resolution</span>
+            </div>
+            <div class="div-health"><span class="status-dot green"></span> Healthy</div>
+          </div>
+          <div class="chro-div-card" onclick="showPanel('coe')">
+            <div class="div-icon" style="background: var(--green-dim);">🎓</div>
+            <div class="div-name">Centers of Excellence</div>
+            <div class="div-officers">Adam + 5 CoE agents</div>
+            <div class="mini-stat" style="margin-bottom: 10px; border: none; padding: 8px 0;">
+              <span class="num" style="font-size: 20px; color: var(--yellow);">1</span>
+              <span class="desc">Policy pending</span>
+            </div>
+            <div class="div-health"><span class="status-dot yellow"></span> Needs attention</div>
+          </div>
+          <div class="chro-div-card" onclick="showPanel('analytics')">
+            <div class="div-icon" style="background: var(--blue-dim);">📊</div>
+            <div class="div-name">Analytics & Finance</div>
+            <div class="div-officers">Dana + 3 agents</div>
+            <div class="mini-stat" style="margin-bottom: 10px; border: none; padding: 8px 0;">
+              <span class="num" style="font-size: 20px; color: var(--orange);">4.5M SAR</span>
+              <span class="desc">Budget tracked</span>
+            </div>
+            <div class="div-health"><span class="status-dot yellow"></span> Budget alert</div>
+          </div>
+          <div class="chro-div-card" onclick="showPanel('factory')">
+            <div class="div-icon" style="background: var(--pink-dim);">🏭</div>
+            <div class="div-name">Agent Factory</div>
+            <div class="div-officers">Raya</div>
+            <div class="mini-stat" style="margin-bottom: 10px; border: none; padding: 8px 0;">
+              <span class="num" style="font-size: 20px; color: var(--accent);">4</span>
+              <span class="desc">JDs this week</span>
+            </div>
+            <div class="div-health"><span class="status-dot green"></span> Operating</div>
+          </div>
+        </div>
+
+        <div class="chro-bottom-grid">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Decisions Awaiting You</span>
+              <span class="pill red">3 pending</span>
+            </div>
+            <div class="chro-decision">
+              <div class="dec-icon" style="background: var(--red-dim);">⚖️</div>
+              <div>
+                <div class="dec-text"><strong>Compliance policy update</strong> — New CA overtime regulation. Adam drafted the update.</div>
+                <div class="dec-meta">From Adam · 2 days ago</div>
+                <div style="margin-top: 8px; display: flex; gap: 6px;">
+                  <button class="btn primary">Review Draft</button>
+                  <button class="btn">Dismiss</button>
+                </div>
+              </div>
+            </div>
+            <div class="chro-decision">
+              <div class="dec-icon" style="background: var(--yellow-dim);">💰</div>
+              <div>
+                <div class="dec-text"><strong>Freeze Marketing coordinator role</strong> — Dept is 12% over budget. Dana recommends freezing until Q2.</div>
+                <div class="dec-meta">From Dana · 1 day ago</div>
+                <div style="margin-top: 8px; display: flex; gap: 6px;">
+                  <button class="btn primary">Approve Freeze</button>
+                  <button class="btn">See Analysis</button>
+                </div>
+              </div>
+            </div>
+            <div class="chro-decision">
+              <div class="dec-icon" style="background: var(--accent-dim);">🏭</div>
+              <div>
+                <div class="dec-text"><strong>Deploy virtual Executive Assistant</strong> — Raya scored the EA role 92% AI-ready.</div>
+                <div class="dec-meta">From Raya · Today</div>
+                <div style="margin-top: 8px; display: flex; gap: 6px;">
+                  <button class="btn primary">Deploy Agent</button>
+                  <button class="btn">Hire Human</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Department KPIs</span>
+              <span class="card-subtitle">This month</span>
+            </div>
+            <div class="chro-kpi-row">
+              <span class="kpi-label">Employee satisfaction</span>
+              <span><span class="kpi-val">4.7/5</span><span class="kpi-trend" style="color: var(--green);">↑ 0.3</span></span>
+            </div>
+            <div class="chro-kpi-row">
+              <span class="kpi-label">Auto-resolution rate</span>
+              <span><span class="kpi-val">94%</span><span class="kpi-trend" style="color: var(--green);">↑ 2%</span></span>
+            </div>
+            <div class="chro-kpi-row">
+              <span class="kpi-label">Avg response time</span>
+              <span><span class="kpi-val">12s</span><span class="kpi-trend" style="color: var(--green);">↓ 3s</span></span>
+            </div>
+            <div class="chro-kpi-row">
+              <span class="kpi-label">Cost savings vs. traditional</span>
+              <span><span class="kpi-val" style="color: var(--green);">334K SAR/mo</span><span class="kpi-trend" style="color: var(--green);">↑ 15K</span></span>
+            </div>
+            <div class="chro-kpi-row">
+              <span class="kpi-label">Compliance score</span>
+              <span><span class="kpi-val">98%</span><span class="kpi-trend" style="color: var(--yellow);">↓ 1%</span></span>
+            </div>
+            <div class="chro-kpi-row">
+              <span class="kpi-label">Active virtual employees</span>
+              <span><span class="kpi-val">18</span></span>
+            </div>
+            <div class="chro-kpi-row">
+              <span class="kpi-label">Onboarding NPS</span>
+              <span><span class="kpi-val">4.8/5</span><span class="kpi-trend" style="color: var(--green);">↑ 0.2</span></span>
+            </div>
+            <div class="chro-kpi-row">
+              <span class="kpi-label">Escalation rate</span>
+              <span><span class="kpi-val">6%</span><span class="kpi-trend" style="color: var(--green);">↓ 1%</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SHARED SERVICES OFFICER -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-shared">
+  <div class="panel-header">
+    <div class="badge div">DIVISION VIEW</div>
+    <h1>Krew — Shared Services</h1>
+    <p>Employee help desk, onboarding, recruitment, payroll, offboarding, records.</p>
+  </div>
+  <div class="mockup-frame">
+    <div class="mockup">
+      <div class="top-bar">
+        <div class="left">
+          <span class="logo"><span>Krew</span></span>
+          <div class="divider"></div>
+          <span class="page-title">Shared Services</span>
+        </div>
+        <div class="right">
+          <div class="notif-btn">🔔</div>
+          <div class="user-pill"><div class="user-avatar">SS</div><span>Officer</span></div>
+        </div>
+      </div>
+      <div style="padding: 20px; min-height: 680px;">
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;">
+          <div class="mini-stat"><span class="num" style="color: var(--green);">847</span><span class="desc">Queries today</span></div>
+          <div class="mini-stat"><span class="num" style="color: var(--accent);">94%</span><span class="desc">Auto-resolved</span></div>
+          <div class="mini-stat"><span class="num" style="color: var(--blue);">12s</span><span class="desc">Avg response</span></div>
+          <div class="mini-stat"><span class="num" style="color: var(--yellow);">5</span><span class="desc">Pending approvals</span></div>
+          <div class="mini-stat"><span class="num" style="color: var(--pink);">2</span><span class="desc">Active onboardings</span></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 320px; gap: 12px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Division Agents</span></div>
+            <div class="agent-row">
+              <div class="agent-icon" style="background: var(--accent-dim); color: var(--accent); font-weight: 700; font-size: 13px;">N</div>
+              <div class="agent-info"><div class="name">Nora</div><div class="role">Employee Services · 312 chats today</div></div>
+              <span class="pill green">94%</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon" style="background: var(--pink-dim); color: var(--pink); font-weight: 700; font-size: 13px;">L</div>
+              <div class="agent-info"><div class="name">Layla</div><div class="role">Onboarding · 2 active</div></div>
+              <span class="pill green">89%</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon" style="background: var(--blue-dim); color: var(--blue); font-weight: 700; font-size: 13px;">K</div>
+              <div class="agent-info"><div class="name">Karim</div><div class="role">Recruitment · 3 open roles</div></div>
+              <span class="pill blue">12 shortlisted</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon">S</div>
+              <div class="agent-info"><div class="name">Samir</div><div class="role">Payroll · Next run Mar 1</div></div>
+              <span class="pill green">99.9%</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon">H</div>
+              <div class="agent-info"><div class="name">Hana</div><div class="role">Offboarding · 0 active</div></div>
+              <span class="pill accent">Idle</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon">T</div>
+              <div class="agent-info"><div class="name">Tariq</div><div class="role">Records & Compliance Ops</div></div>
+              <span class="pill green">99.2%</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Query Breakdown</span></div>
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>PTO / Leave</span><span style="font-weight: 600;">34%</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 34%; background: var(--accent);"></div></div>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>Benefits</span><span style="font-weight: 600;">28%</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 28%; background: var(--blue);"></div></div>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>Policy Questions</span><span style="font-weight: 600;">22%</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 22%; background: var(--green);"></div></div>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>Payroll</span><span style="font-weight: 600;">10%</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 10%; background: var(--orange);"></div></div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>Escalated</span><span style="font-weight: 600; color: var(--red);">6%</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 6%; background: var(--red);"></div></div>
+            </div>
+            <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);">
+              <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">Channel Distribution</div>
+              <div style="display: flex; gap: 8px;">
+                <div class="mini-stat" style="flex: 1; padding: 8px;"><span class="num" style="font-size: 16px; color: #16a34a;">62%</span><span class="desc">WhatsApp</span></div>
+                <div class="mini-stat" style="flex: 1; padding: 8px;"><span class="num" style="font-size: 16px; color: var(--blue);">24%</span><span class="desc">Slack</span></div>
+                <div class="mini-stat" style="flex: 1; padding: 8px;"><span class="num" style="font-size: 16px; color: var(--orange);">14%</span><span class="desc">Email</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Live Activity</span></div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--green-dim);">✅</div>
+              <div><div class="feed-text"><strong>Nora</strong> resolved Omar's leave request</div><div class="feed-time">2 min ago · WhatsApp</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--blue-dim);">📋</div>
+              <div><div class="feed-text"><strong>Layla</strong> sent 30-day check-in to Ahmed</div><div class="feed-time">15 min ago · Slack</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--accent-dim);">🔍</div>
+              <div><div class="feed-text"><strong>Karim</strong> screened 8 applicants for Backend Dev</div><div class="feed-time">1 hour ago</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--red-dim);">⚠️</div>
+              <div><div class="feed-text"><strong>Nora</strong> escalated Fahad's query — flagged for human review</div><div class="feed-time">2 hours ago · WhatsApp</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--green-dim);">💰</div>
+              <div><div class="feed-text"><strong>Samir</strong> completed payroll reconciliation — 0 errors</div><div class="feed-time">3 hours ago</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--pink-dim);">🎉</div>
+              <div><div class="feed-text"><strong>Layla</strong> completed Sarah's onboarding — NPS 5/5</div><div class="feed-time">Yesterday</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- COE OFFICER -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-coe">
+  <div class="panel-header">
+    <div class="badge div">DIVISION VIEW</div>
+    <h1>Krew — Centers of Excellence</h1>
+    <p>Policy design, compliance, learning, performance, culture — the specialist teams.</p>
+  </div>
+  <div class="mockup-frame">
+    <div class="mockup">
+      <div class="top-bar">
+        <div class="left">
+          <span class="logo"><span>Krew</span></span>
+          <div class="divider"></div>
+          <span class="page-title">Centers of Excellence</span>
+        </div>
+        <div class="right">
+          <div class="notif-btn">🔔<div class="dot"></div></div>
+          <div class="user-pill"><div class="user-avatar" style="background: var(--green);">CE</div><span>Officer</span></div>
+        </div>
+      </div>
+      <div style="padding: 20px; min-height: 680px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+          <div class="mini-stat"><span class="num" style="font-size: 22px; color: var(--green);">24</span><span class="desc">Active policies</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 22px; color: var(--yellow);">1</span><span class="desc">Pending update</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 22px; color: var(--accent);">98%</span><span class="desc">Compliance score</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 22px; color: var(--blue);">3</span><span class="desc">Jurisdictions</span></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 320px; gap: 12px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">CoE Agents</span></div>
+            <div class="agent-row">
+              <div class="agent-icon" style="background: var(--green-dim); color: var(--green); font-weight: 700; font-size: 13px;">A</div>
+              <div class="agent-info"><div class="name">Adam</div><div class="role">Compliance & Policy</div></div>
+              <span class="pill yellow">1 alert</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon">TA</div>
+              <div class="agent-info"><div class="name">Talent Acquisition CoE</div><div class="role">Hiring frameworks & strategy</div></div>
+              <span class="pill green">Active</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon">CB</div>
+              <div class="agent-info"><div class="name">Comp & Benefits CoE</div><div class="role">Pay structures & benchmarks</div></div>
+              <span class="pill green">Active</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon">LD</div>
+              <div class="agent-info"><div class="name">Learning & Development</div><div class="role">Competency models & paths</div></div>
+              <span class="pill green">Active</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon">PM</div>
+              <div class="agent-info"><div class="name">Performance Management</div><div class="role">Review cycles & frameworks</div></div>
+              <span class="pill green">Active</span>
+            </div>
+            <div class="agent-row">
+              <div class="agent-icon">CE</div>
+              <div class="agent-info"><div class="name">Culture & Engagement</div><div class="role">Surveys & DEI strategy</div></div>
+              <span class="pill green">Active</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Policy Health</span></div>
+            <table class="table-simple">
+              <thead><tr><th>Policy</th><th>Status</th><th>Updated</th></tr></thead>
+              <tbody>
+                <tr><td>Employee Handbook</td><td><span class="pill green">Current</span></td><td style="color: var(--text3);">Feb 1</td></tr>
+                <tr><td>PTO & Leave</td><td><span class="pill green">Current</span></td><td style="color: var(--text3);">Jan 15</td></tr>
+                <tr><td>Remote Work</td><td><span class="pill green">Current</span></td><td style="color: var(--text3);">Jan 20</td></tr>
+                <tr><td>Overtime (CA)</td><td><span class="pill yellow">Update Needed</span></td><td style="color: var(--text3);">Dec 10</td></tr>
+                <tr><td>Anti-Harassment</td><td><span class="pill green">Current</span></td><td style="color: var(--text3);">Feb 5</td></tr>
+                <tr><td>Benefits Guide 2026</td><td><span class="pill green">Current</span></td><td style="color: var(--text3);">Jan 1</td></tr>
+                <tr><td>Code of Conduct</td><td><span class="pill green">Current</span></td><td style="color: var(--text3);">Nov 15</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Compliance Activity</span></div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--yellow-dim);">⚠️</div>
+              <div>
+                <div class="feed-text"><strong>New regulation:</strong> CA overtime threshold changes effective Mar 1. Adam drafted update.</div>
+                <div class="feed-time">2 days ago</div>
+                <div style="margin-top: 6px;"><button class="btn primary" style="font-size: 11px; padding: 4px 10px;">Review Draft</button></div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--green-dim);">✅</div>
+              <div><div class="feed-text">Compliance training: <strong>96%</strong> complete (target 95%). 5 overdue.</div><div class="feed-time">Yesterday</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--blue-dim);">📊</div>
+              <div><div class="feed-text">Pay equity audit done. <strong>No gaps</strong> detected across gender and ethnicity.</div><div class="feed-time">3 days ago</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--accent-dim);">📚</div>
+              <div><div class="feed-text">L&D updated engineering competency framework — added AI/ML track.</div><div class="feed-time">5 days ago</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--green-dim);">🎯</div>
+              <div><div class="feed-text">TA CoE published new interview rubrics for Product and Design.</div><div class="feed-time">1 week ago</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ANALYTICS & FINANCE OFFICER -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-analytics">
+  <div class="panel-header">
+    <div class="badge div">DIVISION VIEW</div>
+    <h1>Krew — Analytics & Finance</h1>
+    <p>Workforce intelligence, budgets, predictive analytics, and HR ROI.</p>
+  </div>
+  <div class="mockup-frame">
+    <div class="mockup">
+      <div class="top-bar">
+        <div class="left">
+          <span class="logo"><span>Krew</span></span>
+          <div class="divider"></div>
+          <span class="page-title">Analytics & Finance</span>
+        </div>
+        <div class="right">
+          <div class="notif-btn">🔔</div>
+          <div class="user-pill"><div class="user-avatar" style="background: var(--orange);">AF</div><span>Officer</span></div>
+        </div>
+      </div>
+      <div style="padding: 20px; min-height: 680px;">
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;">
+          <div class="mini-stat"><span class="num" style="font-size: 20px;">127</span><span class="desc">Headcount</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 20px; color: var(--orange);">4.5M</span><span class="desc">Annual budget (SAR)</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 20px; color: var(--green);">334K</span><span class="desc">Monthly savings (SAR)</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 20px; color: var(--red);">3</span><span class="desc">Attrition risks</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 20px; color: var(--accent);">8.2%</span><span class="desc">Turnover rate</span></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 320px; gap: 12px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Department Budget</span></div>
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>Engineering</span><span style="font-weight: 500;"><span style="color: var(--green);">1.58M</span> / 1.69M SAR</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 93%; background: var(--green);"></div></div>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>Product</span><span style="font-weight: 500;"><span style="color: var(--green);">675K</span> / 750K SAR</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 90%; background: var(--green);"></div></div>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span style="color: var(--red);">Marketing</span><span style="font-weight: 500;"><span style="color: var(--red);">840K</span> / 750K SAR</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 100%; background: var(--red);"></div></div>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>Sales</span><span style="font-weight: 500;"><span style="color: var(--green);">1.09M</span> / 1.2M SAR</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 91%; background: var(--green);"></div></div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><span>Operations</span><span style="font-weight: 500;"><span style="color: var(--green);">281K</span> / 338K SAR</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 83%; background: var(--green);"></div></div>
+            </div>
+            <div style="margin-top: 14px; padding: 12px; background: var(--red-dim); border-radius: 6px; font-size: 12px;">
+              <strong>Marketing</strong> is 12% over budget. Dana recommends freezing the open Coordinator role.
+              <div style="margin-top: 8px;"><button class="btn primary" style="font-size: 11px;">View Analysis</button></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Virtual vs Human Cost</span></div>
+            <table class="table-simple">
+              <thead><tr><th>Role</th><th>Human (SAR)</th><th>AI (SAR)</th><th>Saved</th></tr></thead>
+              <tbody>
+                <tr><td>Nora (Help Desk)</td><td style="color: var(--text3);">206K</td><td style="color: var(--green);">23K</td><td style="color: var(--green); font-weight: 600;">89%</td></tr>
+                <tr><td>Layla (Onboarding)</td><td style="color: var(--text3);">195K</td><td style="color: var(--green);">19K</td><td style="color: var(--green); font-weight: 600;">90%</td></tr>
+                <tr><td>Karim (Recruiter)</td><td style="color: var(--text3);">281K</td><td style="color: var(--green);">30K</td><td style="color: var(--green); font-weight: 600;">89%</td></tr>
+                <tr><td>Adam (Compliance)</td><td style="color: var(--text3);">356K</td><td style="color: var(--green);">34K</td><td style="color: var(--green); font-weight: 600;">91%</td></tr>
+                <tr><td>Dana (Finance)</td><td style="color: var(--text3);">319K</td><td style="color: var(--green);">26K</td><td style="color: var(--green); font-weight: 600;">92%</td></tr>
+                <tr><td>Raya (Factory)</td><td style="color: var(--text3);">N/A</td><td style="color: var(--accent);">19K</td><td style="color: var(--accent); font-weight: 500;">New</td></tr>
+              </tbody>
+            </table>
+            <div style="margin-top: 12px; padding: 12px; background: var(--green-dim); border-radius: 6px; font-size: 13px; text-align: center;">
+              Annual savings: <strong style="font-size: 18px; color: var(--green);">4M SAR</strong>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Predictive Intelligence</span></div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--red-dim);">🔴</div>
+              <div>
+                <div class="feed-text"><strong>Attrition risk:</strong> 3 engineers showing disengagement signals</div>
+                <div class="feed-time">78% confidence · Recommend manager check-in</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--yellow-dim);">🟡</div>
+              <div>
+                <div class="feed-text"><strong>Hiring forecast:</strong> Product needs 2 designers by Q2</div>
+                <div class="feed-time">Based on roadmap + velocity</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--blue-dim);">📈</div>
+              <div>
+                <div class="feed-text"><strong>Comp alert:</strong> Backend engineer salaries 8% below market</div>
+                <div class="feed-time">Market benchmarks · Updated today</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background: var(--green-dim);">✅</div>
+              <div>
+                <div class="feed-text"><strong>Engagement up:</strong> CSAT improved 4.4 → 4.7 since Krew deployment</div>
+                <div class="feed-time">3-month trend</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- AGENT FACTORY OFFICER -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-factory">
+  <div class="panel-header">
+    <div class="badge div">DIVISION VIEW</div>
+    <h1>Krew — Agent Factory</h1>
+    <p>Analyze any job description. Decide human or agent. Deploy virtual employees.</p>
+  </div>
+  <div class="mockup-frame">
+    <div class="mockup">
+      <div class="top-bar">
+        <div class="left">
+          <span class="logo"><span>Krew</span></span>
+          <div class="divider"></div>
+          <span class="page-title">Agent Factory</span>
+        </div>
+        <div class="right">
+          <div class="notif-btn">🔔</div>
+          <div class="user-pill"><div class="user-avatar" style="background: #7c3aed;">R</div><span>Officer</span></div>
+        </div>
+      </div>
+      <div style="padding: 20px; min-height: 680px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+          <div class="mini-stat"><span class="num" style="font-size: 22px; color: var(--accent);">23</span><span class="desc">JDs analyzed</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 22px; color: var(--green);">14</span><span class="desc">Deployed as agents</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 22px; color: var(--yellow);">5</span><span class="desc">Hybrid</span></div>
+          <div class="mini-stat"><span class="num" style="font-size: 22px; color: var(--red);">4</span><span class="desc">Needs human</span></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 360px; gap: 12px;">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent JD Analyses</span>
+              <button class="btn primary">+ Submit New JD</button>
+            </div>
+            <table class="table-simple">
+              <thead><tr><th>Role</th><th>Dept</th><th>AI Readiness</th><th>Decision</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Executive Assistant</strong></td>
+                  <td>Operations</td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <div class="progress-bar" style="width: 70px; margin: 0;"><div class="fill" style="width: 92%; background: var(--green);"></div></div>
+                      <span style="font-size: 11px; font-weight: 600;">92%</span>
+                    </div>
+                  </td>
+                  <td><span class="pill green">Full Agent</span></td>
+                  <td><span class="pill accent">Pending</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Financial Analyst</strong></td>
+                  <td>Finance</td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <div class="progress-bar" style="width: 70px; margin: 0;"><div class="fill" style="width: 87%; background: var(--green);"></div></div>
+                      <span style="font-size: 11px; font-weight: 600;">87%</span>
+                    </div>
+                  </td>
+                  <td><span class="pill green">Full Agent</span></td>
+                  <td><span class="pill green">Deployed</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Market Researcher</strong></td>
+                  <td>Marketing</td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <div class="progress-bar" style="width: 70px; margin: 0;"><div class="fill" style="width: 83%; background: var(--green);"></div></div>
+                      <span style="font-size: 11px; font-weight: 600;">83%</span>
+                    </div>
+                  </td>
+                  <td><span class="pill green">Full Agent</span></td>
+                  <td><span class="pill green">Deployed</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Content Strategist</strong></td>
+                  <td>Marketing</td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <div class="progress-bar" style="width: 70px; margin: 0;"><div class="fill" style="width: 65%; background: var(--yellow);"></div></div>
+                      <span style="font-size: 11px; font-weight: 600;">65%</span>
+                    </div>
+                  </td>
+                  <td><span class="pill yellow">Hybrid</span></td>
+                  <td><span class="pill green">Deployed</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Sales Account Exec</strong></td>
+                  <td>Sales</td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <div class="progress-bar" style="width: 70px; margin: 0;"><div class="fill" style="width: 25%; background: var(--red);"></div></div>
+                      <span style="font-size: 11px; font-weight: 600;">25%</span>
+                    </div>
+                  </td>
+                  <td><span class="pill red">Human Needed</span></td>
+                  <td><span class="pill blue">Sent to recruiting</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Analysis: Executive Assistant</span></div>
+            <div style="text-align: center; margin-bottom: 16px;">
+              <div style="font-size: 40px; font-weight: 700; color: var(--green);">92%</div>
+              <div style="font-size: 12px; color: var(--text3);">AI Readiness Score</div>
+              <div style="margin-top: 8px;"><span class="pill green">Recommended: Deploy as Virtual Employee</span></div>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 10px;">Dimensions</div>
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;"><span>Task repeatability</span><span style="color: var(--green);">High</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 95%; background: var(--green);"></div></div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;"><span>Rule-based work</span><span style="color: var(--green);">High</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 88%; background: var(--green);"></div></div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;"><span>Low empathy required</span><span style="color: var(--green);">High</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 90%; background: var(--green);"></div></div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;"><span>Data availability</span><span style="color: var(--green);">High</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 92%; background: var(--green);"></div></div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;"><span>Error tolerance</span><span style="color: var(--yellow);">Medium</span></div>
+              <div class="progress-bar"><div class="fill" style="width: 70%; background: var(--yellow);"></div></div>
+            </div>
+
+            <div style="margin-top: 14px; padding: 12px; background: var(--surface2); border-radius: 6px; font-size: 12px;">
+              <strong>Estimated savings:</strong> 195K SAR/year<br>
+              <span style="color: var(--text3);">Human: 218K SAR · Agent: 23K SAR</span>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 8px;">
+              <button class="btn primary" style="flex: 1;">Deploy as Virtual Employee</button>
+              <button class="btn" style="flex: 1;">Hire Human Instead</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  const tabs = ['rec','chro','shared','coe','analytics','factory'];
+  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
+}
+</script>
+</body>
+</html>

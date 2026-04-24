@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krew — Investor Pitch Deck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface2: #f5f5f4;
+    --border: #e5e5e5;
+    --text: #1a1a1a;
+    --text2: #6b7280;
+    --text3: #9ca3af;
+    --accent: #4f46e5;
+    --accent2: #6366f1;
+    --accent-dim: rgba(79,70,229,0.06);
+    --green: #16a34a;
+    --green-dim: rgba(22,163,74,0.06);
+    --red: #dc2626;
+    --orange: #ea580c;
+    --blue: #2563eb;
+    --blue-dim: rgba(37,99,235,0.06);
+    --pink: #db2777;
+    --pink-dim: rgba(219,39,119,0.06);
+    --purple: #7c3aed;
+    --purple-dim: rgba(124,58,237,0.06);
+    --orange-dim: rgba(234,88,12,0.06);
+  }
+
+  html, body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    cursor: default;
+    user-select: none;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    z-index: 200;
+  }
+
+  .slide-counter {
+    position: fixed;
+    bottom: 24px;
+    right: 40px;
+    font-size: 13px;
+    color: var(--text3);
+    font-weight: 500;
+    z-index: 200;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 40px;
+    font-size: 12px;
+    color: var(--text3);
+    z-index: 200;
+    opacity: 0.6;
+  }
+
+  /* ─── SLIDE SYSTEM ─── */
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    background: var(--bg);
+    opacity: 0;
+    transform: translateX(60px);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ─── COMMON ELEMENTS ─── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .slide-title {
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -1.2px;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+
+  .slide-subtitle {
+    font-size: 19px;
+    font-weight: 400;
+    color: var(--text2);
+    line-height: 1.6;
+    max-width: 700px;
+    margin-bottom: 40px;
+  }
+
+  .avatar {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700;
+  }
+
+  .avatar-sm {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+
+  .av-deema { background: var(--accent-dim); color: var(--accent); }
+  .av-waleed { background: var(--blue-dim); color: var(--blue); }
+  .av-mohammad { background: var(--green-dim); color: var(--green); }
+  .av-yara { background: var(--pink-dim); color: var(--pink); }
+  .av-norah { background: var(--orange-dim); color: var(--orange); }
+  .av-sarah { background: var(--purple-dim); color: var(--purple); }
+
+  .two-col {
+    display: flex;
+    gap: 60px;
+    align-items: flex-start;
+  }
+
+  .col { flex: 1; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .metric-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .metric-box {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+  }
+
+  .metric-box .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .metric-box .label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  /* ─── SLIDE 1: TITLE ─── */
+  .title-slide {
+    align-items: center;
+    text-align: center;
+  }
+
+  .title-slide .logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    margin-bottom: 24px;
+  }
+
+  .title-slide h1 {
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .title-slide .tagline {
+    font-size: 21px;
+    font-weight: 400;
+    color: var(--text2);
+    margin-bottom: 48px;
+  }
+
+  .avatar-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+
+  .title-meta {
+    font-size: 13px;
+    color: var(--text3);
+    font-weight: 500;
+  }
+
+  /* ─── SLIDE 2: PROBLEM ─── */
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+
+  .problem-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .problem-card ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .problem-card li {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.6;
+    padding: 4px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .problem-card li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    opacity: 0.6;
+  }
+
+  .big-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+  }
+
+  .big-stat .number {
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--red);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  .big-stat .desc {
+    font-size: 15px;
+    color: var(--text2);
+    margin-top: 12px;
+    font-weight: 500;
+  }
+
+  /* ─── SLIDE 3: SOLUTION ─── */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .agent-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .agent-card .top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .agent-card .name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .agent-card .role {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text3);
+  }
+
+  .agent-card .desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* ─── SLIDE 4: PRODUCT ─── */
+  .mockup-frame {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  }
+
+  .mockup-bar {
+    background: var(--surface2);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mockup-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+
+  .mockup-body {
+    display: flex;
+    min-height: 340px;
+  }
+
+  .mockup-sidebar {
+    width: 200px;
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    background: var(--surface2);
+  }
+
+  .mockup-sidebar .agent-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 2px;
+  }
+
+  .mockup-sidebar .agent-item.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .mockup-sidebar .agent-item .dot {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+
+  .mockup-chat {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .chat-msg {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .chat-msg.user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-msg.bot {
+    align-self: flex-start;
+    background: var(--surface2);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+
+  .chat-msg .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+
+  .demo-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text3);
+  }
+
+  .demo-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* ─── SLIDE 5: HOW IT WORKS ─── */
+  .steps-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-top: 16px;
+  }
+
+  .step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    padding: 0 12px;
+  }
+
+  .step-num {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .step::after {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: calc(50% + 24px);
+    width: calc(100% - 48px);
+    height: 2px;
+    background: var(--border);
+    z-index: 1;
+  }
+
+  .step:last-child::after { display: none; }
+
+  .step h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .step p {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* ─── SLIDE 6: MARKET ─── */
+  .market-circles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+  }
+
+  .market-ring {
+    text-align: center;
+    position: relative;
+  }
+
+  .ring {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid;
+  }
+
+  .ring.tam {
+    width: 220px; height: 220px;
+    border-color: rgba(79,70,229,0.2);
+    background: rgba(79,70,229,0.03);
+  }
+
+  .ring.sam {
+    width: 180px; height: 180px;
+    border-color: rgba(79,70,229,0.35);
+    background: rgba(79,70,229,0.05);
+  }
+
+  .ring.som {
+    width: 160px; height: 160px;
+    border-color: var(--accent);
+    background: rgba(79,70,229,0.08);
+  }
+
+  .ring .ring-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .ring .ring-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .ring .ring-desc {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 4px;
+    max-width: 140px;
+    line-height: 1.4;
+  }
+
+  .market-note {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 14px;
+    color: var(--text2);
+  }
+
+  .market-note strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ─── SLIDE 7: BUSINESS MODEL ─── */
+  .pricing-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .price-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .price-card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+    position: relative;
+  }
+
+  .price-card.featured::before {
+    content: 'Most Popular';
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .price-card .tier {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .price-card .price {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .price-card .price-unit {
+    font-size: 13px;
+    color: var(--text3);
+    font-weight: 500;
+  }
+
+  .price-card .price-target {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── SLIDE 8: TRACTION ─── */
+  .traction-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .traction-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .traction-card.placeholder {
+    border-style: dashed;
+    border-color: var(--text3);
+  }
+
+  .traction-card .traction-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .traction-card.placeholder .traction-value {
+    color: var(--text3);
+  }
+
+  .traction-card .traction-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text2);
+  }
+
+  .traction-card .traction-desc {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* ─── SLIDE 9: COMPETITION ─── */
+  .matrix-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .matrix-container svg {
+    max-width: 100%;
+  }
+
+  .competition-insight {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 15px;
+    color: var(--text2);
+    font-weight: 500;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.3; r: 28; }
+    50% { opacity: 0.1; r: 36; }
+  }
+
+  /* ─── SLIDE 10: TEAM ─── */
+  .team-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .founders-row {
+    display: flex;
+    gap: 24px;
+  }
+
+  .founder-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+  }
+
+  .founder-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 24px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+  }
+
+  .founder-card .fname {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .founder-card .frole {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .founder-card .fbio {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .founder-card .flink {
+    margin-top: 12px;
+    font-size: 12px;
+  }
+
+  .founder-card .flink a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .why-list {
+    flex: 1;
+  }
+
+  .why-list ul {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 24px;
+  }
+
+  .why-list li {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 0;
+    padding-left: 24px;
+    position: relative;
+    list-style: none;
+  }
+
+  .why-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.5;
+  }
+
+  .why-list li strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ─── SLIDE 11: FINANCIALS ─── */
+  .fin-layout {
+    display: flex;
+    gap: 48px;
+  }
+
+  .fin-left { flex: 1.2; }
+  .fin-right { flex: 1; }
+
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    height: 240px;
+    padding-top: 20px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .bar-value {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .bar {
+    width: 100%;
+    background: var(--accent);
+    border-radius: 6px 6px 0 0;
+    height: 0;
+    transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 4px;
+  }
+
+  .slide.active .bar { height: var(--h); }
+
+  .bar-year {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    margin-top: 8px;
+  }
+
+  .ask-box {
+    background: var(--accent-dim);
+    border: 1px solid rgba(79,70,229,0.15);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .ask-box .ask-amount {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .ask-box .ask-terms {
+    font-size: 14px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  .funds-bar {
+    display: flex;
+    height: 28px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 16px 0 12px;
+  }
+
+  .funds-bar div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .funds-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .funds-legend span {
+    font-size: 11px;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .funds-legend span::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .milestones {
+    list-style: none;
+    padding: 0;
+  }
+
+  .milestones li {
+    font-size: 13px;
+    color: var(--text2);
+    padding: 6px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .milestones li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 12px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+  }
+
+  /* ─── SLIDE 12: CLOSING ─── */
+  .closing-slide {
+    align-items: center;
+    text-align: center;
+  }
+
+  .closing-slide .big-quote {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.2;
+    max-width: 700px;
+    margin-bottom: 8px;
+  }
+
+  .closing-slide .sub-quote {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--accent);
+    margin-bottom: 40px;
+  }
+
+  .closing-slide .brand {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text2);
+    margin-bottom: 32px;
+  }
+
+  .closing-slide .contact {
+    font-size: 14px;
+    color: var(--text3);
+    margin-top: 32px;
+    line-height: 1.8;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 14px 40px;
+    background: var(--accent);
+    color: white;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .slide { padding: 40px 40px; }
+    .slide-title { font-size: 36px; }
+    .slide-subtitle { font-size: 17px; }
+    .two-col { flex-direction: column; gap: 24px; }
+    .fin-layout { flex-direction: column; gap: 24px; }
+    .founders-row { flex-direction: column; }
+    .agent-grid { grid-template-columns: repeat(2, 1fr); }
+    .ring.tam { width: 180px; height: 180px; }
+    .ring.sam { width: 150px; height: 150px; }
+    .ring.som { width: 130px; height: 130px; }
+    .ring .ring-value { font-size: 22px; }
+    .title-slide h1 { font-size: 42px; }
+    .closing-slide .big-quote, .closing-slide .sub-quote { font-size: 32px; }
+  }
+
+  @media (max-width: 768px) {
+    .slide { padding: 24px 20px; }
+    .slide-title { font-size: 26px; letter-spacing: -0.8px; }
+    .slide-subtitle { font-size: 15px; margin-bottom: 24px; }
+    .agent-grid { grid-template-columns: 1fr; }
+    .pricing-row { flex-direction: column; }
+    .traction-grid { grid-template-columns: 1fr; }
+    .steps-row { flex-direction: column; gap: 24px; }
+    .step::after { display: none; }
+    .market-circles { flex-direction: column; }
+    .bar-chart { height: 160px; }
+    .mockup-sidebar { display: none; }
+    .founders-row { flex-direction: column; }
+    .why-list ul { grid-template-columns: 1fr; }
+    .metric-row { flex-direction: column; gap: 12px; }
+    .metric-box .num { font-size: 22px; }
+    .big-stat .number { font-size: 36px; }
+    .big-stat { min-height: 160px; padding: 24px; }
+    .title-slide h1 { font-size: 32px; }
+    .title-slide .tagline { font-size: 16px; margin-bottom: 32px; }
+    .closing-slide .big-quote, .closing-slide .sub-quote { font-size: 24px; }
+    .ask-box .ask-amount { font-size: 24px; }
+    .nav-hint { display: none; }
+    .slide-counter { right: 20px; bottom: 16px; }
+    .matrix-container svg { max-height: 300px; }
+    .funds-bar { height: 20px; }
+    .funds-bar div { font-size: 8px; }
+    .avatar-row { gap: 8px; }
+    .avatar { width: 36px; height: 36px; font-size: 14px; }
+  }
+
+  @media (max-width: 480px) {
+    .slide { padding: 20px 16px; }
+    .slide-title { font-size: 22px; }
+    .title-slide h1 { font-size: 26px; }
+    .price-card .price { font-size: 22px; }
+    .ring.tam { width: 140px; height: 140px; }
+    .ring.sam { width: 120px; height: 120px; }
+    .ring.som { width: 100px; height: 100px; }
+    .ring .ring-value { font-size: 18px; }
+    .ring .ring-desc { font-size: 10px; }
+    .bar-chart { height: 120px; }
+    .bar-value { font-size: 10px; }
+    .closing-slide .big-quote, .closing-slide .sub-quote { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="slide-counter" id="counter">1 / 12</div>
+<div class="nav-hint">Arrow keys or click to navigate</div>
+
+<div class="deck">
+
+  <!-- ═══ SLIDE 1: TITLE ═══ -->
+  <div class="slide title-slide active" data-slide="1">
+    <div class="logo">Krew</div>
+    <h1>Your AI HR Department</h1>
+    <div class="tagline">18 virtual employees. 5 divisions. One subscription.</div>
+    <div class="avatar-row">
+      <div class="avatar av-deema">D</div>
+      <div class="avatar av-waleed">W</div>
+      <div class="avatar av-mohammad">M</div>
+      <div class="avatar av-yara">Y</div>
+      <div class="avatar av-norah">N</div>
+      <div class="avatar av-sarah">S</div>
+    </div>
+    <div class="title-meta">Pre-Seed Pitch &middot; 2026</div>
+  </div>
+
+  <!-- ═══ SLIDE 2: PROBLEM ═══ -->
+  <div class="slide" data-slide="2">
+    <div class="section-label">The Problem</div>
+    <div class="slide-title">Companies can't afford great HR</div>
+    <div class="slide-subtitle">Most companies either have no HR at all, or an overwhelmed team buried in admin work.</div>
+    <div class="two-col">
+      <div class="col">
+        <div class="problem-card">
+          <h3>Small &amp; Mid-Size (10-500 employees)</h3>
+          <ul>
+            <li>No HR department &mdash; founders do it on the side</li>
+            <li>5-10 fragmented SaaS tools with no integration</li>
+            <li>Compliance risk, poor hiring, employee dissatisfaction</li>
+            <li>Can't justify a 562K-1.1M SAR CHRO hire</li>
+          </ul>
+        </div>
+        <div class="problem-card">
+          <h3>Growing Companies (500+ employees)</h3>
+          <ul>
+            <li>60-70% of HR time goes to transactional tasks</li>
+            <li>Inconsistent quality across the team</li>
+            <li>Reactive, not proactive &mdash; always firefighting</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col" style="display:flex;align-items:center;">
+        <div class="big-stat" style="width:100%;">
+          <div class="number">4.5M SAR</div>
+          <div class="desc">Average annual cost of a full HR department</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:12px;">That's before tools, legal, and compliance costs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: SOLUTION ═══ -->
+  <div class="slide" data-slide="3">
+    <div class="section-label">The Solution</div>
+    <div class="slide-title">A complete AI HR department</div>
+    <div class="slide-subtitle">18 specialized virtual employees across 5 divisions. Always on. Always compliant. 90% less than traditional HR.</div>
+    <div class="agent-grid">
+      <div class="agent-card">
+        <div class="top">
+          <div class="avatar av-deema">D</div>
+          <div><div class="name">Deema</div><div class="role">Employee Services</div></div>
+        </div>
+        <div class="desc">Answers employee questions instantly &mdash; PTO, benefits, policies. Via WhatsApp, Slack, or email. 24/7.</div>
+      </div>
+      <div class="agent-card">
+        <div class="top">
+          <div class="avatar av-waleed">W</div>
+          <div><div class="name">Waleed</div><div class="role">Onboarding</div></div>
+        </div>
+        <div class="desc">Guides every new hire from offer letter to day 90. Personalized checklists, buddy matching, check-ins.</div>
+      </div>
+      <div class="agent-card">
+        <div class="top">
+          <div class="avatar av-mohammad">M</div>
+          <div><div class="name">Mohammad</div><div class="role">Recruitment</div></div>
+        </div>
+        <div class="desc">Screens resumes, ranks candidates, schedules interviews. Handles 80% of the hiring pipeline.</div>
+      </div>
+      <div class="agent-card">
+        <div class="top">
+          <div class="avatar av-yara">Y</div>
+          <div><div class="name">Yara</div><div class="role">Compliance</div></div>
+        </div>
+        <div class="desc">Monitors regulations, drafts policy updates, runs compliance audits, tracks training completion.</div>
+      </div>
+      <div class="agent-card">
+        <div class="top">
+          <div class="avatar av-norah">N</div>
+          <div><div class="name">Norah</div><div class="role">Finance &amp; Analytics</div></div>
+        </div>
+        <div class="desc">Tracks headcount budgets, forecasts workforce costs, flags overspending, benchmarks compensation.</div>
+      </div>
+      <div class="agent-card">
+        <div class="top">
+          <div class="avatar av-sarah">S</div>
+          <div><div class="name">Sarah</div><div class="role">Agent Factory</div></div>
+        </div>
+        <div class="desc">Analyzes any job description and tells you: human or virtual employee? Our secret weapon.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: PRODUCT ═══ -->
+  <div class="slide" data-slide="4">
+    <div class="section-label">Product</div>
+    <div class="slide-title">See Krew in action</div>
+    <div class="slide-subtitle" style="margin-bottom:24px;">Employees interact with named virtual colleagues through channels they already use.</div>
+    <div class="mockup-frame">
+      <div class="mockup-bar">
+        <div class="mockup-dot" style="background:#fc5753;"></div>
+        <div class="mockup-dot" style="background:#fdbc40;"></div>
+        <div class="mockup-dot" style="background:#33c648;"></div>
+        <span style="flex:1;text-align:center;font-size:12px;color:var(--text3);font-weight:500;">Krew &mdash; Employee Portal</span>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;padding:0 8px;">Your Krew</div>
+          <div class="agent-item active">
+            <div class="dot av-deema">D</div>
+            Deema
+          </div>
+          <div class="agent-item">
+            <div class="dot av-waleed">W</div>
+            Waleed
+          </div>
+          <div class="agent-item">
+            <div class="dot av-mohammad">M</div>
+            Mohammad
+          </div>
+          <div class="agent-item">
+            <div class="dot av-yara">Y</div>
+            Yara
+          </div>
+          <div class="agent-item">
+            <div class="dot av-norah">N</div>
+            Norah
+          </div>
+          <div class="agent-item">
+            <div class="dot av-sarah">S</div>
+            Sarah
+          </div>
+        </div>
+        <div class="mockup-chat">
+          <div class="chat-msg user">How many vacation days do I have left?</div>
+          <div class="chat-msg bot">
+            <div class="tag" style="background:var(--accent-dim);color:var(--accent);">Deema &middot; Employee Services</div><br>
+            You have <strong>14 days</strong> of annual leave remaining out of 21 days for 2026. You've used 5 days in January and 2 days in February.<br><br>
+            Would you like to submit a leave request?
+          </div>
+          <div class="chat-msg user">Yes, I'd like to take March 15-19 off</div>
+          <div class="chat-msg bot">
+            <div class="tag" style="background:var(--green-dim);color:var(--green);">Leave Request Submitted</div><br>
+            Done! I've submitted your leave request for <strong>Mar 15-19</strong> (5 days). Your manager Ahmad has been notified and will review it shortly. You'll have 9 days remaining after approval.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-link">Interactive prototype available &middot; <a href="demo.html" target="_blank">Open Live Demo</a></div>
+  </div>
+
+  <!-- ═══ SLIDE 5: HOW IT WORKS ═══ -->
+  <div class="slide" data-slide="5">
+    <div class="section-label">How It Works</div>
+    <div class="slide-title">Live in hours. Not months.</div>
+    <div class="slide-subtitle">Three steps to deploy your AI HR department.</div>
+    <div class="steps-row">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Sign Up</h4>
+        <p>Choose your plan and connect your channels &mdash; WhatsApp, Slack, Teams, or email.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Upload Policies</h4>
+        <p>Upload your HR policies and employee handbook. Or let our AI generate them for you.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Krew Deploys</h4>
+        <p>18 virtual employees go live instantly. They know your policies, your org chart, and your people.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Employees Interact</h4>
+        <p>Your team asks questions, requests leave, onboards &mdash; through channels they already use.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <h4>You Oversee</h4>
+        <p>The CHRO dashboard gives you real-time visibility into your entire HR operation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: MARKET OPPORTUNITY ═══ -->
+  <div class="slide" data-slide="6">
+    <div class="section-label">Market Opportunity</div>
+    <div class="slide-title">A massive and growing market</div>
+    <div class="slide-subtitle">We sit at the intersection of HR software, HR outsourcing, and the AI agent economy.</div>
+    <div class="market-circles">
+      <div class="market-ring">
+        <div class="ring tam">
+          <div class="ring-label">TAM</div>
+          <div class="ring-value">2T+ SAR</div>
+          <div class="ring-desc">Global HR software + outsourcing + PEO</div>
+        </div>
+      </div>
+      <div class="market-ring">
+        <div class="ring sam">
+          <div class="ring-label">SAM</div>
+          <div class="ring-value">270B SAR</div>
+          <div class="ring-desc">English + GCC, 10-5K employees</div>
+        </div>
+      </div>
+      <div class="market-ring">
+        <div class="ring som">
+          <div class="ring-label">SOM</div>
+          <div class="ring-value">84M SAR</div>
+          <div class="ring-desc">500 companies by Year 3</div>
+        </div>
+      </div>
+    </div>
+    <div class="market-note">AI in HR market growing at <strong>30-35% CAGR</strong> &mdash; the fastest-growing segment in HR tech.</div>
+    <div class="metric-row">
+      <div class="metric-box">
+        <div class="num">1.8M SAR</div>
+        <div class="label">Year 1 Revenue</div>
+      </div>
+      <div class="metric-box">
+        <div class="num">12M SAR</div>
+        <div class="label">Year 2 Revenue</div>
+      </div>
+      <div class="metric-box">
+        <div class="num">84M SAR</div>
+        <div class="label">Year 3 Revenue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 7: BUSINESS MODEL ═══ -->
+  <div class="slide" data-slide="7">
+    <div class="section-label">Business Model</div>
+    <div class="slide-title">Per-employee-per-month. Simple, scalable.</div>
+    <div class="slide-subtitle">All 18 virtual employees and all 5 divisions included in every plan.</div>
+    <div class="pricing-row">
+      <div class="price-card">
+        <div class="tier">Starter</div>
+        <div class="price">9,375</div>
+        <div class="price-unit">SAR / month</div>
+        <div class="price-target">Up to 50 employees<br>2 channels &middot; Policy RAG &middot; Email support</div>
+      </div>
+      <div class="price-card featured">
+        <div class="tier">Growth</div>
+        <div class="price">22,500</div>
+        <div class="price-unit">SAR / month</div>
+        <div class="price-target">Up to 250 employees<br>All channels &middot; Agent Factory &middot; CHRO dashboard</div>
+      </div>
+      <div class="price-card">
+        <div class="tier">Enterprise</div>
+        <div class="price">Custom</div>
+        <div class="price-unit">&nbsp;</div>
+        <div class="price-target">250+ employees<br>Custom training &middot; SLA &middot; Dedicated success manager</div>
+      </div>
+    </div>
+    <div class="metric-row" style="margin-top:0;">
+      <div class="metric-box">
+        <div class="num">85%+</div>
+        <div class="label">Gross Margins</div>
+      </div>
+      <div class="metric-box">
+        <div class="num">28x</div>
+        <div class="label">LTV : CAC</div>
+      </div>
+      <div class="metric-box">
+        <div class="num">115%</div>
+        <div class="label">Net Revenue Retention</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8: TRACTION ═══ -->
+  <div class="slide" data-slide="8">
+    <div class="section-label">Traction</div>
+    <div class="slide-title">Early signals of demand</div>
+    <div class="slide-subtitle">Pre-revenue. Building in public. Saudi market-first launch.</div>
+    <div class="traction-grid">
+      <div class="traction-card">
+        <div class="traction-value" style="color:var(--green);">Live</div>
+        <div class="traction-label">Working Prototype</div>
+        <div class="traction-desc">Functional product demo with all 5 divisions, chat interface, CHRO dashboard, and Agent Factory.</div>
+      </div>
+      <div class="traction-card">
+        <div class="traction-value">94%</div>
+        <div class="traction-label">Auto-Resolution Rate</div>
+        <div class="traction-desc">In prototype testing &mdash; employee queries handled without human escalation.</div>
+      </div>
+      <div class="traction-card placeholder">
+        <div class="traction-value">[XX]</div>
+        <div class="traction-label">Waitlist Signups</div>
+        <div class="traction-desc">Landing page live at krew.sa &mdash; collecting interest from Saudi companies.</div>
+      </div>
+      <div class="traction-card placeholder">
+        <div class="traction-value">[XX]</div>
+        <div class="traction-label">LOIs / Pilot Commitments</div>
+        <div class="traction-desc">Letters of intent from target companies for beta access.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 9: COMPETITION ═══ -->
+  <div class="slide" data-slide="9">
+    <div class="section-label">Competitive Landscape</div>
+    <div class="slide-title">No one is building a full-stack AI HR department</div>
+    <div class="slide-subtitle" style="margin-bottom:16px;">Everyone is either adding AI to legacy platforms, or solving one HR problem.</div>
+    <div class="matrix-container">
+      <svg width="680" height="400" viewBox="0 0 680 400" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;">
+        <!-- Grid -->
+        <line x1="90" y1="20" x2="90" y2="350" stroke="#e5e5e5" stroke-width="2"/>
+        <line x1="90" y1="350" x2="660" y2="350" stroke="#e5e5e5" stroke-width="2"/>
+        <!-- Quadrant lines -->
+        <line x1="375" y1="20" x2="375" y2="350" stroke="#e5e5e5" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="90" y1="185" x2="660" y2="185" stroke="#e5e5e5" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Axis labels -->
+        <text x="375" y="385" text-anchor="middle" font-size="12" font-weight="600" fill="#6b7280">HR Coverage &#x2192;</text>
+        <text x="18" y="185" text-anchor="middle" font-size="12" font-weight="600" fill="#6b7280" transform="rotate(-90,18,185)">AI Nativeness &#x2192;</text>
+        <!-- Axis endpoints -->
+        <text x="110" y="375" font-size="10" fill="#9ca3af">Single Function</text>
+        <text x="580" y="375" font-size="10" fill="#9ca3af">Full Department</text>
+        <text x="95" y="340" font-size="10" fill="#9ca3af">Human-Dependent</text>
+        <text x="95" y="35" font-size="10" fill="#9ca3af">AI-Native</text>
+        <!-- Quadrant labels -->
+        <text x="220" y="60" text-anchor="middle" font-size="10" font-weight="600" fill="#9ca3af" text-transform="uppercase">AI POINT SOLUTIONS</text>
+        <text x="530" y="60" text-anchor="middle" font-size="10" font-weight="600" fill="#9ca3af" text-transform="uppercase">AI HR DEPARTMENT</text>
+        <text x="220" y="310" text-anchor="middle" font-size="10" font-weight="600" fill="#9ca3af" text-transform="uppercase">LEGACY HRO</text>
+        <text x="530" y="310" text-anchor="middle" font-size="10" font-weight="600" fill="#9ca3af" text-transform="uppercase">TRADITIONAL HCM</text>
+        <!-- Competitors: Bottom-left (Legacy HRO) -->
+        <circle cx="180" cy="280" r="6" fill="#9ca3af"/>
+        <text x="180" y="300" text-anchor="middle" font-size="10" fill="#6b7280">TriNet</text>
+        <circle cx="240" cy="290" r="6" fill="#9ca3af"/>
+        <text x="240" y="310" text-anchor="middle" font-size="10" fill="#6b7280">ADP</text>
+        <circle cx="290" cy="260" r="6" fill="#9ca3af"/>
+        <text x="290" y="280" text-anchor="middle" font-size="10" fill="#6b7280">Deel</text>
+        <!-- Competitors: Bottom-right (Traditional HCM) -->
+        <circle cx="520" cy="260" r="6" fill="#9ca3af"/>
+        <text x="520" y="280" text-anchor="middle" font-size="10" fill="#6b7280">Workday</text>
+        <circle cx="580" cy="280" r="6" fill="#9ca3af"/>
+        <text x="580" y="300" text-anchor="middle" font-size="10" fill="#6b7280">SAP</text>
+        <circle cx="470" cy="240" r="6" fill="#9ca3af"/>
+        <text x="470" y="260" text-anchor="middle" font-size="10" fill="#6b7280">BambooHR</text>
+        <!-- Competitors: Top-left (AI Point Solutions) -->
+        <circle cx="170" cy="100" r="6" fill="#9ca3af"/>
+        <text x="170" y="120" text-anchor="middle" font-size="10" fill="#6b7280">Leena AI</text>
+        <circle cx="250" cy="80" r="6" fill="#9ca3af"/>
+        <text x="250" y="70" text-anchor="middle" font-size="10" fill="#6b7280">Paradox</text>
+        <circle cx="300" cy="110" r="6" fill="#9ca3af"/>
+        <text x="300" y="130" text-anchor="middle" font-size="10" fill="#6b7280">Eightfold</text>
+        <circle cx="210" cy="130" r="6" fill="#9ca3af"/>
+        <text x="210" y="150" text-anchor="middle" font-size="10" fill="#6b7280">Beamery</text>
+        <!-- KREW: Top-right (alone!) -->
+        <circle cx="570" cy="80" r="28" fill="rgba(79,70,229,0.08)" stroke="#4f46e5" stroke-width="2">
+          <animate attributeName="r" values="28;34;28" dur="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;0.5;1" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="570" cy="80" r="10" fill="#4f46e5"/>
+        <text x="570" y="84" text-anchor="middle" font-size="11" font-weight="800" fill="white">K</text>
+        <text x="570" y="55" text-anchor="middle" font-size="13" font-weight="800" fill="#4f46e5">Krew</text>
+      </svg>
+    </div>
+    <div class="competition-insight">Krew is the only company building a <strong style="color:var(--accent);">complete AI-native HR department</strong> &mdash; all 5 divisions, 18 virtual employees, one subscription.</div>
+  </div>
+
+  <!-- ═══ SLIDE 10: TEAM ═══ -->
+  <div class="slide" data-slide="10">
+    <div class="section-label">The Team</div>
+    <div class="slide-title">Why we win</div>
+    <div class="slide-subtitle" style="margin-bottom:28px;">Brother &amp; sister. HR domain expertise meets AI technical capability.</div>
+    <div class="team-layout">
+      <div class="founders-row">
+        <div class="founder-card">
+          <div class="founder-avatar">A</div>
+          <div class="fname">Ahmad Al Ghamdi</div>
+          <div class="frole">Co-Founder &amp; CEO</div>
+          <div class="fbio">CHRO at stc (Saudi Telecom). One of the founding leaders of HR in Saudi Arabia. Deep expertise in Saudi labor market, workforce regulations (Nitaqat, GOSI, MOL), and organizational transformation. INSEAD alumnus.</div>
+          <div class="flink"><a href="https://sa.linkedin.com/in/amualghamdi" target="_blank">LinkedIn</a></div>
+        </div>
+        <div class="founder-card">
+          <div class="founder-avatar" style="background:var(--pink-dim);color:var(--pink);">N</div>
+          <div class="fname">Najwa Al Ghamdi</div>
+          <div class="frole">Co-Founder &amp; CTO</div>
+          <div class="fbio">General Manager &mdash; AI &amp; Analytics. One of the very few Saudis in Corporate AI. Technical expertise in AI/LLM systems, agent frameworks, RAG architectures, and full-stack development.</div>
+          <div class="flink"><a href="https://sa.linkedin.com/in/najwa-alghamdi-a77aa93" target="_blank">LinkedIn</a></div>
+        </div>
+      </div>
+      <div class="why-list">
+        <ul>
+          <li><strong>Founder-market fit</strong> &mdash; Ahmad is a founding leader of HR in Saudi as CHRO of stc; Najwa is one of the very few Saudis leading Corporate AI</li>
+          <li><strong>First-mover advantage</strong> &mdash; no competitor is building a complete AI HR department. We own the category.</li>
+          <li><strong>Saudi market-first</strong> &mdash; launching where we know the regulations, the culture, and the customers. Then expanding to GCC and globally.</li>
+          <li><strong>AI-native from day one</strong> &mdash; no legacy code, no technical debt. Built for the agent economy.</li>
+        </ul>
+        <div style="margin-top:16px;padding:16px;background:var(--surface2);border-radius:10px;">
+          <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Advisors</div>
+          <div style="font-size:13px;color:var(--text3);font-style:italic;">Key advisors to be announced</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 11: FINANCIALS & ASK ═══ -->
+  <div class="slide" data-slide="11">
+    <div class="section-label">Financials &amp; The Ask</div>
+    <div class="slide-title">Raising 2.8M SAR Pre-Seed</div>
+    <div class="slide-subtitle" style="margin-bottom:24px;">Clear path from pre-seed to scale.</div>
+    <div class="fin-layout">
+      <div class="fin-left">
+        <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;">Revenue Projections &mdash; ARR (SAR)</div>
+        <div class="bar-chart">
+          <div class="bar-col">
+            <div class="bar-value">2.4M</div>
+            <div class="bar" style="--h:8%;background:rgba(79,70,229,0.4);"></div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">12.8M</div>
+            <div class="bar" style="--h:18%;background:rgba(79,70,229,0.55);"></div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">37.5M</div>
+            <div class="bar" style="--h:35%;background:rgba(79,70,229,0.7);"></div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">112.5M</div>
+            <div class="bar" style="--h:60%;background:rgba(79,70,229,0.85);"></div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-value">300M</div>
+            <div class="bar" style="--h:100%;"></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:0 8px;">
+          <span class="bar-year">Year 1</span>
+          <span class="bar-year">Year 2</span>
+          <span class="bar-year">Year 3</span>
+          <span class="bar-year">Year 4</span>
+          <span class="bar-year">Year 5</span>
+        </div>
+      </div>
+      <div class="fin-right">
+        <div class="ask-box">
+          <div class="ask-amount">2.8M SAR</div>
+          <div class="ask-terms">Pre-Seed &middot; SAFE at 19-30M SAR valuation cap</div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Use of Funds</div>
+        <div class="funds-bar">
+          <div style="width:40%;background:#4f46e5;">40%</div>
+          <div style="width:13%;background:#6366f1;">13%</div>
+          <div style="width:7%;background:#818cf8;font-size:0;"></div>
+          <div style="width:13%;background:#2563eb;">13%</div>
+          <div style="width:20%;background:#16a34a;">20%</div>
+          <div style="width:7%;background:#9ca3af;font-size:0;"></div>
+        </div>
+        <div class="funds-legend">
+          <span style="--c:#4f46e5;"><span style="background:#4f46e5;width:8px;height:8px;border-radius:2px;display:inline-block;"></span> Engineering 40%</span>
+          <span><span style="background:#6366f1;width:8px;height:8px;border-radius:2px;display:inline-block;"></span> LLM/Infra 13%</span>
+          <span><span style="background:#818cf8;width:8px;height:8px;border-radius:2px;display:inline-block;"></span> Legal 7%</span>
+          <span><span style="background:#2563eb;width:8px;height:8px;border-radius:2px;display:inline-block;"></span> Marketing 13%</span>
+          <span><span style="background:#16a34a;width:8px;height:8px;border-radius:2px;display:inline-block;"></span> Salaries 20%</span>
+          <span><span style="background:#9ca3af;width:8px;height:8px;border-radius:2px;display:inline-block;"></span> Buffer 7%</span>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">18-Month Milestones</div>
+        <ul class="milestones">
+          <li>Launch MVP &mdash; Employee Services Agent live</li>
+          <li>20+ paying customers in Saudi Arabia</li>
+          <li>1.9M SAR ARR milestone</li>
+          <li>Raise Seed round (7.5-15M SAR)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 12: CLOSING ═══ -->
+  <div class="slide closing-slide" data-slide="12">
+    <div class="big-quote">Every company will have an AI HR department.</div>
+    <div class="sub-quote">We're building it.</div>
+    <div class="brand">Krew &mdash; Your AI HR Department</div>
+    <div class="avatar-row">
+      <div class="avatar-sm av-deema">D</div>
+      <div class="avatar-sm av-waleed">W</div>
+      <div class="avatar-sm av-mohammad">M</div>
+      <div class="avatar-sm av-yara">Y</div>
+      <div class="avatar-sm av-norah">N</div>
+      <div class="avatar-sm av-sarah">S</div>
+    </div>
+    <div class="cta-btn">Let's talk</div>
+    <div class="contact">
+      Ahmad Al Ghamdi &amp; Najwa Al Ghamdi<br>
+      krew.sa
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const progress = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+
+  function updateUI() {
+    progress.style.width = ((current + 1) / total * 100) + '%';
+    counter.textContent = (current + 1) + ' / ' + total;
+  }
+
+  function goTo(n) {
+    if (n < 0 || n >= total || n === current) return;
+    const going_forward = n > current;
+    // Remove all state classes
+    slides.forEach(s => {
+      s.classList.remove('active', 'prev');
+      s.style.transform = '';
+    });
+    // Set previous slides
+    for (let i = 0; i < n; i++) {
+      slides[i].classList.add('prev');
+    }
+    // Set active
+    current = n;
+    slides[current].classList.add('active');
+    updateUI();
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      next();
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+      e.preventDefault();
+      prev();
+    }
+    // Number keys for direct slide access
+    const num = parseInt(e.key);
+    if (num >= 1 && num <= 9) goTo(num - 1);
+    if (e.key === '0') goTo(9);
+  });
+
+  // Click navigation (left 25% = prev, right 75% = next)
+  document.addEventListener('click', function(e) {
+    // Ignore clicks on links
+    if (e.target.closest('a')) return;
+    if (e.clientX < window.innerWidth * 0.25) {
+      prev();
+    } else {
+      next();
+    }
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  });
+  document.addEventListener('touchend', function(e) {
+    const dx = touchStartX - e.changedTouches[0].clientX;
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx > 0) next(); else prev();
+    }
+  });
+
+  // Initialize
+  updateUI();
+</script>
+
+</body>
+</html>

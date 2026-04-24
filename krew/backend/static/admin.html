@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krew — Leave Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f5f4;
+            --surface: #ffffff;
+            --surface2: #fafaf9;
+            --surface3: #f0f0ee;
+            --border: #e5e5e5;
+            --border2: #d4d4d4;
+            --text: #1a1a1a;
+            --text2: #6b7280;
+            --text3: #9ca3af;
+            --text4: #c5c5c5;
+            --accent: #4f46e5;
+            --accent2: #6366f1;
+            --accent-light: rgba(79,70,229,0.08);
+            --accent-lighter: rgba(79,70,229,0.04);
+            --green: #16a34a;
+            --green-light: rgba(22,163,74,0.08);
+            --red: #dc2626;
+            --red-light: rgba(220,38,38,0.08);
+            --orange: #ea580c;
+            --orange-light: rgba(234,88,12,0.08);
+            --yellow: #ca8a04;
+            --yellow-light: rgba(202,138,4,0.08);
+            --blue: #2563eb;
+            --blue-light: rgba(37,99,235,0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+            --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .dark {
+            --bg: #0f0f14;
+            --surface: #1a1a24;
+            --surface2: #22222e;
+            --surface3: #2a2a38;
+            --border: #2e2e3e;
+            --border2: #3a3a4e;
+            --text: #e8e8ec;
+            --text2: #9a9ab0;
+            --text3: #6a6a80;
+            --text4: #4a4a5e;
+            --accent-light: rgba(99,102,241,0.15);
+            --accent-lighter: rgba(99,102,241,0.08);
+            --green-light: rgba(22,163,74,0.15);
+            --red-light: rgba(220,38,38,0.15);
+            --orange-light: rgba(234,88,12,0.15);
+            --yellow-light: rgba(202,138,4,0.15);
+            --blue-light: rgba(37,99,235,0.15);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── HEADER ─── */
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text2);
+            padding-left: 16px;
+            border-left: 1px solid var(--border);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 7px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 500;
+            color: var(--text2);
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .header-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ─── MAIN ─── */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 32px;
+        }
+
+        /* ─── SUMMARY CARDS ─── */
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: box-shadow var(--transition);
+        }
+        .summary-card:hover { box-shadow: var(--shadow-md); }
+
+        .sc-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text3);
+            margin-bottom: 8px;
+        }
+
+        .sc-value {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .sc-sub {
+            font-size: 12px;
+            color: var(--text3);
+        }
+
+        .sc-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        /* ─── FILTER BAR ─── */
+        .filter-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select, .filter-input {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+        .filter-select:focus, .filter-input:focus { outline: none; border-color: var(--accent); }
+
+        .filter-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .filter-btn:hover { background: var(--accent2); }
+
+        .filter-reset {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text3);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .filter-reset:hover { border-color: var(--red); color: var(--red); }
+
+        .filter-spacer { flex: 1; }
+
+        /* ─── TABLE ─── */
+        .table-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: var(--surface2);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text3);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+
+        tbody tr {
+            transition: background 0.1s;
+        }
+        tbody tr:hover { background: var(--accent-lighter); }
+
+        .td-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .td-sub {
+            font-size: 11px;
+            color: var(--text3);
+        }
+
+        /* Status badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-pending { background: var(--orange-light); color: var(--orange); }
+        .badge-approved { background: var(--green-light); color: var(--green); }
+        .badge-rejected { background: var(--red-light); color: var(--red); }
+        .badge-cancelled { background: var(--surface3); color: var(--text3); }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Leave type badges */
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .type-annual { background: var(--accent-light); color: var(--accent); }
+        .type-sick { background: var(--orange-light); color: var(--orange); }
+        .type-emergency { background: var(--red-light); color: var(--red); }
+        .type-hajj { background: var(--green-light); color: var(--green); }
+        .type-maternity, .type-paternity { background: var(--blue-light); color: var(--blue); }
+        .type-bereavement { background: var(--surface3); color: var(--text2); }
+        .type-unpaid { background: var(--yellow-light); color: var(--yellow); }
+
+        /* Action buttons */
+        .action-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-approve, .btn-reject {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+        }
+
+        .btn-approve {
+            background: var(--green-light);
+            color: var(--green);
+        }
+        .btn-approve:hover { background: var(--green); color: white; }
+
+        .btn-reject {
+            background: var(--red-light);
+            color: var(--red);
+        }
+        .btn-reject:hover { background: var(--red); color: white; }
+
+        /* Empty state */
+        .empty-table {
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--text3);
+            font-size: 14px;
+        }
+
+        .empty-table .empty-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        /* Loading */
+        .loading {
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--text3);
+            font-size: 13px;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            width: 420px;
+            max-width: 90vw;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalIn 0.2s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: 18px 20px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .modal-header p {
+            font-size: 13px;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        .modal-body { padding: 16px 20px; }
+
+        .modal-body textarea {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.15s;
+        }
+        .modal-body textarea:focus { outline: none; border-color: var(--accent); }
+        .modal-body textarea::placeholder { color: var(--text3); }
+
+        .modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .modal-btn-cancel {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+        }
+        .modal-btn-cancel:hover { border-color: var(--text3); }
+
+        .modal-btn-reject {
+            background: var(--red);
+            border: none;
+            color: white;
+        }
+        .modal-btn-reject:hover { background: #b91c1c; }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--text);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            z-index: 200;
+            pointer-events: none;
+        }
+        .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 900px) {
+            .summary-row { grid-template-columns: repeat(2, 1fr); }
+            .main { padding: 16px; }
+            .header { padding: 0 16px; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-spacer { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .summary-row { grid-template-columns: 1fr; }
+            .table-wrap { overflow-x: auto; }
+            table { min-width: 700px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">Krew</div>
+            <span class="header-title">Leave Management</span>
+        </div>
+        <div class="header-right">
+            <a href="/chat" class="header-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Chat
+            </a>
+            <button class="header-btn" onclick="toggleDarkMode()" id="btnDark">
+                <span id="darkIcon">&#127769;</span> Theme
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- SUMMARY CARDS -->
+        <div class="summary-row" id="summaryRow">
+            <div class="summary-card">
+                <div class="sc-icon" style="background: var(--orange-light);">&#9203;</div>
+                <div class="sc-label">Pending</div>
+                <div class="sc-value" style="color: var(--orange);" id="statPending">-</div>
+                <div class="sc-sub">Awaiting review</div>
+            </div>
+            <div class="summary-card">
+                <div class="sc-icon" style="background: var(--green-light);">&#10004;</div>
+                <div class="sc-label">Approved</div>
+                <div class="sc-value" style="color: var(--green);" id="statApproved">-</div>
+                <div class="sc-sub">This month</div>
+            </div>
+            <div class="summary-card">
+                <div class="sc-icon" style="background: var(--red-light);">&#10006;</div>
+                <div class="sc-label">Rejected</div>
+                <div class="sc-value" style="color: var(--red);" id="statRejected">-</div>
+                <div class="sc-sub">This month</div>
+            </div>
+            <div class="summary-card">
+                <div class="sc-icon" style="background: var(--accent-light);">&#128202;</div>
+                <div class="sc-label">Total</div>
+                <div class="sc-value" style="color: var(--accent);" id="statTotal">-</div>
+                <div class="sc-sub">This month</div>
+            </div>
+        </div>
+
+        <!-- FILTER BAR -->
+        <div class="filter-bar">
+            <label>Filters</label>
+            <select class="filter-select" id="filterStatus">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select class="filter-select" id="filterDepartment">
+                <option value="">All Departments</option>
+            </select>
+            <input type="date" class="filter-input" id="filterDateFrom" title="From date">
+            <input type="date" class="filter-input" id="filterDateTo" title="To date">
+            <div class="filter-spacer"></div>
+            <button class="filter-btn" onclick="applyFilters()">Apply</button>
+            <button class="filter-reset" onclick="resetFilters()">Reset</button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Type</th>
+                        <th>Dates</th>
+                        <th>Days</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="8">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                Loading leave requests...
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- REJECT MODAL -->
+    <div class="modal-overlay" id="rejectModal" onclick="if(event.target===this)closeRejectModal()">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Reject Leave Request</h3>
+                <p id="rejectModalInfo"></p>
+            </div>
+            <div class="modal-body">
+                <textarea id="rejectReason" placeholder="Reason for rejection (optional)..." rows="3"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeRejectModal()">Cancel</button>
+                <button class="modal-btn modal-btn-reject" onclick="confirmReject()">Reject Request</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API = '/api/v1/admin';
+        let rejectingId = null;
+
+        // ─── LOAD DATA ───
+        async function loadSummary() {
+            try {
+                const res = await fetch(`${API}/leave-summary`);
+                const data = await res.json();
+                document.getElementById('statPending').textContent = data.pending;
+                document.getElementById('statApproved').textContent = data.approved_this_month;
+                document.getElementById('statRejected').textContent = data.rejected_this_month;
+                document.getElementById('statTotal').textContent = data.total_this_month;
+            } catch (err) {
+                console.error('Failed to load summary:', err);
+            }
+        }
+
+        async function loadDepartments() {
+            try {
+                const res = await fetch(`${API}/departments`);
+                const depts = await res.json();
+                const select = document.getElementById('filterDepartment');
+                depts.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = d.name;
+                    select.appendChild(opt);
+                });
+            } catch (err) {
+                console.error('Failed to load departments:', err);
+            }
+        }
+
+        async function loadRequests(params = {}) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '<tr><td colspan="8"><div class="loading"><div class="spinner"></div>Loading...</div></td></tr>';
+
+            try {
+                const qs = new URLSearchParams();
+                if (params.status) qs.set('status', params.status);
+                if (params.department_id) qs.set('department_id', params.department_id);
+                if (params.date_from) qs.set('date_from', params.date_from);
+                if (params.date_to) qs.set('date_to', params.date_to);
+
+                const url = `${API}/leave-requests${qs.toString() ? '?' + qs : ''}`;
+                const res = await fetch(url);
+                const requests = await res.json();
+
+                if (requests.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-table"><div class="empty-icon">&#128203;</div>No leave requests found</div></td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = requests.map(r => renderRow(r)).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8"><div class="empty-table" style="color:var(--red)">Error loading requests: ${escapeHtml(err.message)}</div></td></tr>`;
+            }
+        }
+
+        function renderRow(r) {
+            const typeIcons = {
+                annual: '&#127796;', sick: '&#127973;', emergency: '&#128680;',
+                hajj: '&#128331;', maternity: '&#128118;', paternity: '&#128118;',
+                bereavement: '&#128150;', unpaid: '&#128176;'
+            };
+            const typeNames = {
+                annual: 'Annual', sick: 'Sick', emergency: 'Emergency',
+                hajj: 'Hajj', maternity: 'Maternity', paternity: 'Paternity',
+                bereavement: 'Bereavement', unpaid: 'Unpaid'
+            };
+
+            const actions = r.status === 'pending' ? `
+                <div class="action-btns">
+                    <button class="btn-approve" onclick="approveRequest('${r.id}', this)">Approve</button>
+                    <button class="btn-reject" onclick="openRejectModal('${r.id}', '${escapeAttr(r.employee_name)}')">Reject</button>
+                </div>
+            ` : '<span style="color:var(--text4); font-size:12px;">—</span>';
+
+            const startDate = formatDisplayDate(r.start_date);
+            const endDate = formatDisplayDate(r.end_date);
+
+            return `<tr id="row-${r.id}">
+                <td>
+                    <div class="td-name">${escapeHtml(r.employee_name)}</div>
+                    <div class="td-sub">${escapeHtml(r.employee_number || '')}</div>
+                </td>
+                <td>${escapeHtml(r.department || '—')}</td>
+                <td><span class="type-badge type-${r.leave_type}">${typeIcons[r.leave_type] || ''} ${typeNames[r.leave_type] || r.leave_type}</span></td>
+                <td>
+                    <div>${startDate}</div>
+                    <div class="td-sub">to ${endDate}</div>
+                </td>
+                <td><strong>${r.business_days}</strong></td>
+                <td><span class="badge badge-${r.status}"><span class="badge-dot"></span>${capitalize(r.status)}</span></td>
+                <td style="max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeAttr(r.reason || '')}">${escapeHtml(r.reason || '—')}</td>
+                <td>${actions}</td>
+            </tr>`;
+        }
+
+        // ─── ACTIONS ───
+        async function approveRequest(id, btn) {
+            const row = document.getElementById(`row-${id}`);
+            const origHtml = btn.parentElement.innerHTML;
+
+            // Optimistic UI
+            btn.parentElement.innerHTML = '<span style="color:var(--green); font-size:12px; font-weight:600;">Approving...</span>';
+
+            try {
+                const res = await fetch(`${API}/leave-requests/${id}/approve`, { method: 'PATCH' });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'Failed to approve');
+                }
+
+                // Update row status badge
+                const statusCell = row.querySelector('.badge');
+                statusCell.className = 'badge badge-approved';
+                statusCell.innerHTML = '<span class="badge-dot"></span>Approved';
+
+                // Replace actions
+                row.querySelector('td:last-child').innerHTML = '<span style="color:var(--text4); font-size:12px;">—</span>';
+
+                showToast('Leave request approved');
+                loadSummary();
+            } catch (err) {
+                btn.parentElement.innerHTML = origHtml;
+                showToast('Error: ' + err.message);
+            }
+        }
+
+        function openRejectModal(id, name) {
+            rejectingId = id;
+            document.getElementById('rejectModalInfo').textContent = `Rejecting leave request for ${name}`;
+            document.getElementById('rejectReason').value = '';
+            document.getElementById('rejectModal').classList.add('open');
+            document.getElementById('rejectReason').focus();
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectModal').classList.remove('open');
+            rejectingId = null;
+        }
+
+        async function confirmReject() {
+            if (!rejectingId) return;
+            const id = rejectingId;
+            const reason = document.getElementById('rejectReason').value.trim();
+            const row = document.getElementById(`row-${id}`);
+
+            closeRejectModal();
+
+            // Optimistic UI
+            const actionsCell = row.querySelector('td:last-child');
+            const origHtml = actionsCell.innerHTML;
+            actionsCell.innerHTML = '<span style="color:var(--red); font-size:12px; font-weight:600;">Rejecting...</span>';
+
+            try {
+                const res = await fetch(`${API}/leave-requests/${id}/reject`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: reason || null }),
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'Failed to reject');
+                }
+
+                const data = await res.json();
+
+                // Update row
+                const statusCell = row.querySelector('.badge');
+                statusCell.className = 'badge badge-rejected';
+                statusCell.innerHTML = '<span class="badge-dot"></span>Rejected';
+
+                actionsCell.innerHTML = '<span style="color:var(--text4); font-size:12px;">—</span>';
+
+                const msg = data.days_restored > 0
+                    ? `Request rejected. ${data.days_restored} days restored to balance.`
+                    : 'Request rejected.';
+                showToast(msg);
+                loadSummary();
+            } catch (err) {
+                actionsCell.innerHTML = origHtml;
+                showToast('Error: ' + err.message);
+            }
+        }
+
+        // ─── FILTERS ───
+        function applyFilters() {
+            loadRequests({
+                status: document.getElementById('filterStatus').value,
+                department_id: document.getElementById('filterDepartment').value,
+                date_from: document.getElementById('filterDateFrom').value,
+                date_to: document.getElementById('filterDateTo').value,
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterDepartment').value = '';
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            loadRequests();
+        }
+
+        // ─── DARK MODE ───
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('darkIcon').innerHTML = isDark ? '&#9728;' : '&#127769;';
+            document.getElementById('btnDark').style.borderColor = isDark ? 'var(--accent)' : '';
+            document.getElementById('btnDark').style.color = isDark ? 'var(--accent)' : '';
+            localStorage.setItem('krew-dark', isDark);
+        }
+
+        if (localStorage.getItem('krew-dark') === 'true') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('darkIcon').innerHTML = '&#9728;';
+        }
+
+        // ─── UTILS ───
+        function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+        function formatDisplayDate(iso) {
+            const d = new Date(iso + 'T00:00:00');
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return (text || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), 3000);
+        }
+
+        // ─── KEYBOARD ───
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeRejectModal();
+            }
+        });
+
+        // ─── INIT ───
+        loadSummary();
+        loadDepartments();
+        loadRequests();
+    </script>
+</body>
+</html>

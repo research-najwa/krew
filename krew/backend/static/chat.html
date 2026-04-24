@@ -1,0 +1,3276 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krew — HR Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f5f4;
+            --surface: #ffffff;
+            --surface2: #fafaf9;
+            --surface3: #f0f0ee;
+            --border: #e5e5e5;
+            --border2: #d4d4d4;
+            --text: #1a1a1a;
+            --text2: #6b7280;
+            --text3: #9ca3af;
+            --text4: #c5c5c5;
+            --accent: #4f46e5;
+            --accent2: #6366f1;
+            --accent-light: rgba(79,70,229,0.08);
+            --accent-lighter: rgba(79,70,229,0.04);
+            --green: #16a34a;
+            --green-light: rgba(22,163,74,0.08);
+            --red: #dc2626;
+            --red-light: rgba(220,38,38,0.08);
+            --orange: #ea580c;
+            --orange-light: rgba(234,88,12,0.08);
+            --yellow: #ca8a04;
+            --yellow-light: rgba(202,138,4,0.08);
+            --blue: #2563eb;
+            --blue-light: rgba(37,99,235,0.08);
+            --pink: #db2777;
+            --pink-light: rgba(219,39,119,0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+            --sidebar-w: 260px;
+            --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* Dark mode */
+        .dark {
+            --bg: #0f0f14;
+            --surface: #1a1a24;
+            --surface2: #22222e;
+            --surface3: #2a2a38;
+            --border: #2e2e3e;
+            --border2: #3a3a4e;
+            --text: #e8e8ec;
+            --text2: #9a9ab0;
+            --text3: #6a6a80;
+            --text4: #4a4a5e;
+            --accent-light: rgba(99,102,241,0.15);
+            --accent-lighter: rgba(99,102,241,0.08);
+            --green-light: rgba(22,163,74,0.15);
+            --red-light: rgba(220,38,38,0.15);
+            --orange-light: rgba(234,88,12,0.15);
+            --yellow-light: rgba(202,138,4,0.15);
+            --blue-light: rgba(37,99,235,0.15);
+            --pink-light: rgba(219,39,119,0.15);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        /* ─── LEFT SIDEBAR ─── */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: width var(--transition), transform var(--transition);
+            z-index: 30;
+        }
+
+        .sidebar-header {
+            padding: 16px 18px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            transition: all 0.15s;
+        }
+        .sidebar-toggle:hover { background: var(--accent-light); color: var(--accent); }
+
+        .sidebar-search {
+            margin: 0 14px 12px;
+            position: relative;
+        }
+
+        .sidebar-search input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px 8px 32px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            transition: border-color 0.15s;
+        }
+        .sidebar-search input:focus { outline: none; border-color: var(--accent); }
+        .sidebar-search input::placeholder { color: var(--text3); }
+        .sidebar-search .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text3);
+        }
+        .sidebar-search .search-kbd {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--surface3);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 10px;
+            color: var(--text3);
+            font-family: inherit;
+        }
+
+        .sidebar-section-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text3);
+            padding: 12px 18px 6px;
+        }
+
+        /* Agent tree (expandable sidebar) */
+        .sidebar-sections {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 8px 12px;
+        }
+        .sidebar-sections::-webkit-scrollbar { width: 4px; }
+        .sidebar-sections::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text3);
+            padding: 12px 10px 4px;
+        }
+
+        .agent-tree {
+            padding: 0 0 4px;
+        }
+        /* Team tree styles */
+        .team-tree { padding: 0 0 4px; }
+
+        .team-section { margin-bottom: 2px; }
+
+        .team-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.12s;
+            user-select: none;
+        }
+        .team-header:hover { background: var(--accent-lighter); }
+        .team-header.expanded { background: var(--accent-light); }
+
+        .team-header .team-icon {
+            width: 30px; height: 30px; border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+            background: var(--surface3); color: var(--text2);
+        }
+        .team-header .team-info { flex: 1; min-width: 0; }
+        .team-header .team-name { font-size: 13px; font-weight: 500; color: var(--text); }
+        .team-header .team-count {
+            font-size: 10px; color: var(--text3);
+        }
+        .team-header .team-chevron {
+            color: var(--text4); transition: transform 0.2s; flex-shrink: 0;
+        }
+        .team-header.expanded .team-chevron { transform: rotate(90deg); }
+
+        .team-members { display: none; padding-left: 14px; }
+        .team-section.open .team-members { display: block; }
+
+        .member-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 5px 10px; border-radius: var(--radius-sm);
+            cursor: pointer; transition: all 0.12s; font-size: 12px;
+        }
+        .member-item:hover { background: var(--accent-lighter); }
+        .member-item.active { background: var(--accent-light); }
+
+        .member-item .member-avatar {
+            width: 24px; height: 24px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 600; flex-shrink: 0;
+            position: relative;
+        }
+        .member-item .member-avatar.human {
+            background: var(--surface3); color: var(--text2);
+        }
+        .member-item .member-avatar.ai {
+            background: linear-gradient(135deg, #db2777, #f472b6); color: white;
+        }
+        .member-item .member-avatar .status-dot {
+            position: absolute; bottom: -1px; right: -1px;
+            width: 7px; height: 7px; border-radius: 50%;
+            border: 1.5px solid var(--surface);
+        }
+        .member-item .member-avatar .status-dot.online { background: var(--green); }
+        .member-item .member-avatar .status-dot.offline { background: var(--text4); }
+
+        .member-item .member-info { flex: 1; min-width: 0; }
+        .member-item .member-name {
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: var(--text);
+        }
+        .member-item .member-role {
+            font-size: 10px; color: var(--text3);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .member-item .member-badge {
+            font-size: 9px; padding: 1px 5px; border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .member-item .member-badge.ai-badge {
+            background: var(--pink-light); color: var(--pink);
+        }
+
+        .agent-section { margin-bottom: 2px; }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.12s;
+            position: relative;
+            user-select: none;
+        }
+        .agent-header:hover { background: var(--accent-lighter); }
+        .agent-header.active { background: var(--accent-light); }
+        .agent-header.disabled { opacity: 0.45; cursor: default; }
+        .agent-header.disabled:hover { background: none; }
+
+        .agent-header .ai-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .agent-header .ai-avatar .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            border: 2px solid var(--surface);
+        }
+        .agent-header .ai-info { flex: 1; min-width: 0; }
+        .agent-header .ai-name { font-size: 13px; font-weight: 500; color: var(--text); }
+        .agent-header .ai-role { font-size: 10px; color: var(--text3); }
+
+        .agent-header .agent-chevron {
+            color: var(--text4);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .agent-header.expanded .agent-chevron { transform: rotate(90deg); }
+
+        .agent-header .agent-conv-count {
+            font-size: 10px;
+            background: var(--surface3);
+            color: var(--text3);
+            border-radius: 10px;
+            padding: 1px 6px;
+            min-width: 18px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .agent-convos {
+            display: none;
+            padding-left: 22px;
+        }
+        .agent-section.open .agent-convos { display: block; }
+
+        .agent-convos .conv-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.12s;
+            font-size: 12px;
+        }
+        .agent-convos .conv-item:hover { background: var(--accent-lighter); }
+        .agent-convos .conv-item.active { background: var(--accent-light); }
+
+        .agent-convos .conv-dot {
+            width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+        }
+        .agent-convos .conv-dot.active { background: var(--green); }
+        .agent-convos .conv-dot.resolved { background: var(--text4); }
+        .agent-convos .conv-dot.escalated { background: var(--orange); }
+
+        .agent-convos .conv-label {
+            flex: 1; min-width: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: var(--text);
+        }
+        .agent-convos .conv-time {
+            font-size: 10px; color: var(--text4); flex-shrink: 0;
+        }
+
+        .agent-convos .new-chat-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 10px; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 11px; color: var(--accent);
+            transition: all 0.12s; border: none; background: none;
+            width: 100%; text-align: left;
+        }
+        .agent-convos .new-chat-btn:hover { background: var(--accent-lighter); }
+
+        .sidebar-footer {
+            padding: 12px 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 6px;
+        }
+
+        .sidebar-footer button {
+            flex: 1;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text2);
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        .sidebar-footer button:hover { border-color: var(--accent); color: var(--accent); }
+        .sidebar-footer button.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+        /* ─── CENTER COLUMN ─── */
+        .center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            transition: all var(--transition);
+        }
+
+        /* ─── CHAT HEADER ─── */
+        .chat-header {
+            background: var(--surface);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            min-height: 56px;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ch-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            position: relative;
+        }
+
+        .ch-avatar .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--green);
+            border: 2px solid var(--surface);
+        }
+
+        .ch-info .ch-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .ch-info .ch-status {
+            font-size: 12px;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ch-info .ch-status .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .chat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ch-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 7px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 500;
+            color: var(--text2);
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .ch-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .ch-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+        .ch-btn svg { width: 14px; height: 14px; }
+
+        .employee-select {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 7px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            max-width: 260px;
+        }
+        .employee-select:focus { outline: none; border-color: var(--accent); }
+
+        /* ─── CHAT BODY (split) ─── */
+        .chat-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Messages column */
+        .chat-messages-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            transition: flex var(--transition);
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .messages::-webkit-scrollbar { width: 5px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+        /* Message groups */
+        .msg-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            margin-bottom: 16px;
+            animation: msgSlideIn 0.3s ease-out;
+        }
+        .msg-group.employee { align-items: flex-end; }
+        .msg-group.agent { align-items: flex-start; }
+
+        @keyframes msgSlideIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+            padding: 0 2px;
+        }
+        .msg-header .msg-avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 9px;
+            font-weight: 600;
+        }
+        .msg-header .msg-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        .msg-header .msg-time {
+            font-size: 11px;
+            color: var(--text4);
+        }
+
+        .message {
+            max-width: 72%;
+            padding: 10px 14px;
+            line-height: 1.55;
+            font-size: 14px;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        /* Markdown in messages */
+        .message p { margin-bottom: 6px; }
+        .message p:last-child { margin-bottom: 0; }
+        .message strong { font-weight: 600; }
+        .message em { font-style: italic; }
+        .message ul, .message ol { padding-left: 18px; margin: 4px 0; }
+        .message li { margin-bottom: 2px; }
+        .message code {
+            background: rgba(0,0,0,0.06);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'SF Mono', 'Menlo', monospace;
+        }
+        .dark .message code { background: rgba(255,255,255,0.08); }
+
+        .message table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 13px;
+            overflow-x: auto;
+            display: block;
+        }
+        .message table thead { background: var(--surface3); }
+        .message table th,
+        .message table td {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            text-align: start;
+            white-space: nowrap;
+        }
+        .message table th {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text2);
+        }
+        .message table tbody tr { cursor: pointer; transition: background 0.15s; }
+        .message table tbody tr:hover td { background: var(--accent-light); }
+        .message table tbody tr:active td { background: var(--accent); color: #fff; }
+        .dark .message table thead { background: var(--surface3); }
+        .message.has-table { max-width: 92%; }
+
+        .message.employee {
+            background: var(--accent);
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+        }
+        .message.employee code { background: rgba(255,255,255,0.2); color: white; }
+
+        .message.agent {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px 18px 18px 18px;
+            color: var(--text);
+        }
+
+        .message.system {
+            align-self: center;
+            color: var(--text3);
+            font-size: 13px;
+            background: none;
+            border: none;
+            text-align: center;
+            padding: 6px 0;
+            max-width: 100%;
+        }
+
+        /* Escalation system message */
+        .msg-escalation {
+            background: var(--orange-light);
+            border-left: 3px solid var(--orange);
+            color: var(--text);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 8px 0;
+        }
+        .dark .msg-escalation {
+            background: rgba(234,88,12,0.12);
+        }
+
+        /* RTL */
+        .message.rtl { direction: rtl; text-align: right; }
+        .msg-group.employee .message.rtl { border-radius: 18px 18px 18px 4px; }
+        .msg-group.agent .message.rtl { border-radius: 18px 4px 18px 18px; }
+
+        /* Message footer (time + status) */
+        .msg-footer {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 4px 0;
+        }
+        .msg-footer .mf-time {
+            font-size: 11px;
+            color: var(--text4);
+        }
+        .msg-footer .mf-status {
+            display: flex;
+            align-items: center;
+        }
+        .msg-footer .mf-status svg { width: 14px; height: 14px; }
+        .msg-footer .mf-status.sent svg { color: var(--text4); }
+        .msg-footer .mf-status.delivered svg { color: var(--accent); }
+
+        /* Feedback buttons on agent messages */
+        .msg-feedback {
+            display: flex;
+            gap: 2px;
+            padding: 2px 4px 0;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .msg-group.agent:hover .msg-feedback { opacity: 1; }
+        .msg-feedback button {
+            background: none;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 3px 6px;
+            cursor: pointer;
+            color: var(--text3);
+            font-size: 13px;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .msg-feedback button:hover { background: var(--surface2); border-color: var(--border); color: var(--text2); }
+        .msg-feedback button.selected { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+        .msg-feedback button .fb-label { font-size: 11px; }
+
+        /* Typing */
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 0 2px;
+            margin-bottom: 16px;
+        }
+        .typing-indicator.visible { display: flex; }
+        .typing-bubble {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .typing-bubble .typing-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            margin-right: 4px;
+        }
+        .typing-bubble span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text3);
+            animation: typeBounce 1.4s infinite ease-in-out;
+        }
+        .typing-bubble span:nth-child(3) { animation-delay: 0.15s; }
+        .typing-bubble span:nth-child(4) { animation-delay: 0.3s; }
+        @keyframes typeBounce {
+            0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Quick actions */
+        .quick-actions {
+            padding: 0 24px 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .quick-actions.hidden { display: none; }
+        .quick-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .quick-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-lighter);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        .quick-btn .qb-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        /* Suggested actions (inline after agent messages) */
+        .msg-suggestions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 6px 0 2px;
+        }
+        .suggest-btn {
+            background: var(--surface);
+            border: 1px solid var(--accent);
+            border-radius: 18px;
+            padding: 5px 14px;
+            font-size: 12px;
+            font-family: inherit;
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .suggest-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Input area */
+        .input-area {
+            padding: 12px 20px 16px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+
+        .input-box {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 6px 8px 6px 14px;
+            transition: border-color 0.15s;
+        }
+        .input-box:focus-within { border-color: var(--accent); }
+
+        .input-box textarea {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 6px 0;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            line-height: 1.4;
+            resize: none;
+            max-height: 100px;
+            min-height: 24px;
+        }
+        .input-box textarea:focus { outline: none; }
+        .input-box textarea::placeholder { color: var(--text3); }
+
+        .input-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;
+            padding-bottom: 2px;
+        }
+
+        .ia-btn {
+            background: none;
+            border: none;
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text3);
+            transition: all 0.15s;
+        }
+        .ia-btn:hover { background: var(--accent-light); color: var(--accent); }
+        .ia-btn svg { width: 16px; height: 16px; }
+
+        .btn-send {
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .btn-send:hover { background: var(--accent2); }
+        .btn-send:disabled { opacity: 0.25; cursor: not-allowed; }
+        .btn-send svg { fill: white; width: 15px; height: 15px; }
+
+        .input-hint {
+            font-size: 11px;
+            color: var(--text4);
+            padding: 4px 4px 0;
+        }
+        .input-hint kbd {
+            background: var(--surface3);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 4px;
+            font-size: 10px;
+            font-family: inherit;
+        }
+
+        /* ─── CONTEXT PANEL ─── */
+        .context-panel {
+            width: 0;
+            overflow: hidden;
+            background: var(--surface2);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+        .context-panel.open { width: 400px; }
+
+        .ctx-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            min-height: 56px;
+        }
+
+        .ctx-tabs {
+            display: flex;
+            gap: 2px;
+        }
+
+        .ctx-tab {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text3);
+            transition: all 0.15s;
+        }
+        .ctx-tab:hover { background: var(--surface2); color: var(--text2); }
+        .ctx-tab.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+
+        .ctx-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            transition: all 0.15s;
+        }
+        .ctx-close:hover { background: var(--accent-light); color: var(--accent); }
+
+        .ctx-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .ctx-body::-webkit-scrollbar { width: 4px; }
+        .ctx-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+        /* Form sections */
+        .form-section { display: none; }
+        .form-section.active { display: block; animation: ctxFadeIn 0.25s ease-out; }
+
+        @keyframes ctxFadeIn {
+            from { opacity: 0; transform: translateX(8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text2);
+            margin-bottom: 5px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 9px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            transition: border-color 0.15s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { outline: none; border-color: var(--accent); }
+
+        .form-row { display: flex; gap: 10px; }
+        .form-row .form-group { flex: 1; }
+
+        .days-badge {
+            background: var(--accent-light);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .days-badge .days-label { font-size: 13px; color: var(--accent); font-weight: 500; }
+        .days-badge .days-count { font-size: 20px; font-weight: 700; color: var(--accent); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-top: 4px;
+        }
+        .btn-submit:hover { background: var(--accent2); }
+        .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-outline {
+            width: 100%;
+            padding: 10px;
+            background: var(--surface);
+            color: var(--text2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-top: 8px;
+        }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ─── BALANCE CARDS ─── */
+        .balance-grid { display: flex; flex-direction: column; gap: 8px; }
+
+        .balance-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+        }
+        .bc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .bc-type { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+        .bc-icon {
+            width: 26px; height: 26px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; font-size: 13px;
+        }
+        .bc-icon.annual { background: var(--accent-light); }
+        .bc-icon.sick { background: var(--orange-light); }
+        .bc-icon.emergency { background: var(--red-light); }
+        .bc-icon.hajj { background: var(--green-light); }
+        .bc-remaining { font-size: 20px; font-weight: 700; color: var(--text); }
+        .bc-remaining span { font-size: 11px; font-weight: 400; color: var(--text3); }
+        .balance-bar { width: 100%; height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
+        .balance-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+        .balance-bar-fill.annual { background: var(--accent); }
+        .balance-bar-fill.sick { background: var(--orange); }
+        .balance-bar-fill.emergency { background: var(--red); }
+        .balance-bar-fill.hajj { background: var(--green); }
+        .bc-detail { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); }
+
+        /* ─── INFO CARD ─── */
+        .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+        .info-card-header {
+            padding: 18px 16px;
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .info-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-size: 18px; font-weight: 700;
+        }
+        .info-name { color: white; font-size: 15px; font-weight: 600; }
+        .info-title { color: rgba(255,255,255,0.7); font-size: 12px; }
+        .info-rows { padding: 12px 16px; }
+        .info-row {
+            display: flex; justify-content: space-between;
+            padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .label { color: var(--text3); }
+        .info-row .value { color: var(--text); font-weight: 500; }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--text);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            z-index: 100;
+            pointer-events: none;
+        }
+        .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* ─── EMPTY STATE ─── */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+        .empty-agent-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(79,70,229,0.25);
+            animation: emptyPulse 3s ease-in-out infinite;
+        }
+        @keyframes emptyPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(79,70,229,0.25); }
+            50% { box-shadow: 0 4px 30px rgba(79,70,229,0.4); }
+        }
+        .empty-state h3 { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .empty-state p { font-size: 13px; color: var(--text3); max-width: 300px; line-height: 1.5; }
+
+        /* ─── COMMAND PALETTE ─── */
+        .cmd-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 200;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 20vh;
+        }
+        .cmd-overlay.open { display: flex; }
+        .cmd-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            width: 480px;
+            max-width: 90vw;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        .cmd-input {
+            width: 100%;
+            background: none;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text);
+        }
+        .cmd-input:focus { outline: none; }
+        .cmd-input::placeholder { color: var(--text3); }
+        .cmd-list { max-height: 240px; overflow-y: auto; }
+        .cmd-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.1s;
+            font-size: 13px;
+            color: var(--text2);
+        }
+        .cmd-item:hover { background: var(--accent-lighter); }
+        .cmd-item .cmd-icon { font-size: 16px; width: 24px; text-align: center; }
+        .cmd-item .cmd-label { flex: 1; }
+        .cmd-item .cmd-shortcut { font-size: 11px; color: var(--text4); }
+
+        /* ─── LOGIN MODAL ─── */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .login-overlay.hidden { display: none; }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            width: 380px;
+            max-width: 90vw;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            padding: 28px 24px 22px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header .login-logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .login-header .login-subtitle {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .login-body {
+            padding: 24px;
+        }
+
+        .login-body .form-group {
+            margin-bottom: 16px;
+        }
+
+        .login-body .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text2);
+            margin-bottom: 6px;
+        }
+
+        .login-body .form-group input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text);
+            transition: border-color 0.15s;
+        }
+
+        .login-body .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .login-error {
+            background: var(--red-light);
+            color: var(--red);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .login-error.visible { display: block; }
+
+        .login-btn {
+            width: 100%;
+            padding: 11px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .login-btn:hover { background: var(--accent2); }
+        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .login-footer {
+            padding: 0 24px 20px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text4);
+        }
+
+        /* Auth badge in header */
+        .auth-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text2);
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 5px 10px;
+        }
+        .auth-badge .auth-name { font-weight: 500; }
+        .auth-badge .auth-logout {
+            background: none;
+            border: none;
+            color: var(--text3);
+            cursor: pointer;
+            font-size: 11px;
+            padding: 0 2px;
+            transition: color 0.15s;
+        }
+        .auth-badge .auth-logout:hover { color: var(--red); }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 1100px) {
+            .sidebar { width: 0; overflow: hidden; }
+            .sidebar.mobile-open { width: var(--sidebar-w); position: fixed; left: 0; top: 0; bottom: 0; z-index: 50; box-shadow: var(--shadow-lg); }
+        }
+        @media (max-width: 800px) {
+            .context-panel.open { width: 100%; position: fixed; right: 0; top: 0; bottom: 0; z-index: 40; }
+            .employee-select { max-width: 160px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN MODAL -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">Krew</div>
+                <div class="login-subtitle">AI HR Department</div>
+            </div>
+            <div class="login-body">
+                <div class="login-error" id="loginError"></div>
+                <div class="form-group">
+                    <label>Employee Number / رقم الموظف</label>
+                    <input type="text" id="loginEmpNumber" placeholder="e.g. EMP001" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+                </div>
+                <div class="form-group">
+                    <label>Last 4 digits of National ID / آخر 4 أرقام من الهوية</label>
+                    <input type="password" id="loginNationalId" placeholder="****" maxlength="4" pattern="\d{4}" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+                </div>
+                <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In / تسجيل دخول</button>
+            </div>
+            <div class="login-footer">
+                Secure employee authentication
+            </div>
+        </div>
+    </div>
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">Krew</div>
+            <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+        </div>
+
+        <div class="sidebar-search">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search..." id="sidebarSearch" onfocus="openCommandPalette()">
+            <span class="search-kbd">⌘K</span>
+        </div>
+
+        <div class="sidebar-sections">
+            <div class="section-label">Super Agents</div>
+            <div class="agent-tree" id="agentTree"></div>
+
+            <div class="section-label" id="teamsLabel" style="display:none;">My Teams</div>
+            <div class="team-tree" id="teamTree"></div>
+        </div>
+
+        <div class="sidebar-footer">
+            <button onclick="toggleDarkMode()" id="btnDark" title="Toggle dark mode">
+                <span id="darkIcon">🌙</span> Theme
+            </button>
+            <button onclick="toggleSound()" id="btnSound" title="Toggle sounds">
+                <span id="soundIcon">🔔</span> Sound
+            </button>
+        </div>
+    </aside>
+
+    <!-- CENTER AREA -->
+    <div class="center">
+
+        <!-- CHAT HEADER -->
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" id="mobileSidebarBtn" style="display:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <div class="ch-avatar" id="chAvatar">
+                    D
+                    <div class="online-dot"></div>
+                </div>
+                <div class="ch-info">
+                    <div class="ch-name" id="chName">Deema</div>
+                    <div class="ch-status"><div class="dot"></div> <span id="chStatus">Online</span></div>
+                </div>
+            </div>
+            <div class="chat-header-right">
+                <select class="employee-select" id="employeeSelect">
+                    <option value="">Select employee...</option>
+                </select>
+                <div class="auth-badge" id="authBadge" style="display:none;">
+                    <span class="auth-name" id="authName"></span>
+                    <button class="auth-logout" onclick="doLogout()" title="Logout">Logout</button>
+                </div>
+                <button class="ch-btn danger" onclick="resetConversation()" title="New Chat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    New
+                </button>
+            </div>
+        </div>
+
+        <!-- CHAT BODY -->
+        <div class="chat-body">
+
+            <!-- Messages column -->
+            <div class="chat-messages-col" id="chatCol">
+                <div class="messages" id="messages">
+                    <div class="empty-state">
+                        <div class="empty-agent-avatar">D</div>
+                        <h3>Hi, I'm Deema!</h3>
+                        <p>Select an employee above and I'll help you with leave requests, balances, and employee info.</p>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typing">
+                    <div class="typing-bubble">
+                        <span class="typing-name" id="typingName">Deema</span>
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+
+                <div class="quick-actions hidden" id="quickActions">
+                    <!-- Populated dynamically by loadQuickActions() -->
+                </div>
+
+                <div class="input-area">
+                    <div class="input-box">
+                        <textarea id="messageInput" placeholder="Type a message..." disabled rows="1"
+                            oninput="autoResize(this)" onkeydown="handleInputKey(event)"></textarea>
+                        <div class="input-actions">
+                            <button class="ia-btn" title="Attach file" onclick="showToast('File attachments coming soon')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                            </button>
+                            <button class="btn-send" id="sendBtn" onclick="sendMessage()" disabled>
+                                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-hint">
+                        <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTEXT PANEL -->
+            <div class="context-panel" id="contextPanel">
+                <div class="ctx-header">
+                    <div class="ctx-tabs" id="ctxTabs">
+                        <button class="ctx-tab active" data-tab="formLeaveRequest" onclick="switchCtxTab(this)">Request</button>
+                        <button class="ctx-tab" data-tab="formLeaveBalance" onclick="switchCtxTab(this)">Balance</button>
+                        <button class="ctx-tab" data-tab="formEmployeeInfo" onclick="switchCtxTab(this)">Profile</button>
+                    </div>
+                    <button class="ctx-close" onclick="closeContextPanel()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="ctx-body" id="ctxBody">
+
+                    <!-- LEAVE REQUEST FORM -->
+                    <div class="form-section active" id="formLeaveRequest">
+                        <div class="form-group">
+                            <label>Leave Type</label>
+                            <select id="leaveType">
+                                <option value="annual">🌴 Annual Leave</option>
+                                <option value="sick">🏥 Sick Leave</option>
+                                <option value="emergency">🚨 Emergency Leave</option>
+                                <option value="maternity">🤱 Maternity Leave</option>
+                                <option value="paternity">👶 Paternity Leave</option>
+                                <option value="hajj">🕋 Hajj Leave</option>
+                                <option value="bereavement">🕊️ Bereavement Leave</option>
+                                <option value="unpaid">📋 Unpaid Leave</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Start Date</label>
+                                <input type="date" id="leaveStart">
+                            </div>
+                            <div class="form-group">
+                                <label>End Date</label>
+                                <input type="date" id="leaveEnd">
+                            </div>
+                        </div>
+                        <div class="form-group" id="leaveDaysGroup" style="display:none">
+                            <div class="days-badge">
+                                <span class="days-label">Business days (excl. Fri/Sat)</span>
+                                <span class="days-count" id="leaveDaysCount">0</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Reason (Optional)</label>
+                            <textarea id="leaveReason" rows="2" placeholder="e.g. Family vacation..."></textarea>
+                        </div>
+                        <button class="btn-submit" id="btnSubmitLeave" onclick="submitLeaveForm()">Submit Request</button>
+                        <button class="btn-outline" onclick="submitLeaveViaChat()">Submit via Chat Instead</button>
+                    </div>
+
+                    <!-- LEAVE BALANCE VIEW -->
+                    <div class="form-section" id="formLeaveBalance">
+                        <div class="balance-grid" id="balanceGrid">
+                            <div style="text-align:center; padding: 24px; color: var(--text3); font-size: 13px;">Click "Balance" to load your leave data</div>
+                        </div>
+                        <button class="btn-submit" style="margin-top: 14px;" onclick="switchCtxTab(document.querySelector('[data-tab=formLeaveRequest]'))">Request Leave</button>
+                    </div>
+
+                    <!-- EMPLOYEE INFO VIEW -->
+                    <div class="form-section" id="formEmployeeInfo">
+                        <div class="info-card" id="infoCard">
+                            <div style="text-align:center; padding: 30px; color: var(--text3); font-size: 13px;">Click "Profile" to load your data</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- COMMAND PALETTE -->
+    <div class="cmd-overlay" id="cmdOverlay" onclick="if(event.target===this)closeCommandPalette()">
+        <div class="cmd-box">
+            <input class="cmd-input" id="cmdInput" placeholder="Search or type a command..." oninput="filterCommands(this.value)" onkeydown="handleCmdKey(event)">
+            <div class="cmd-list" id="cmdList"></div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API = '/api/v1/chat';
+        let selectedEmployee = null;
+        let selectedLanguage = 'en';
+        let selectedAgent = 'deema';
+        let activeConversationId = null;  // Track active conversation for resume
+        let currentContextForm = null;
+        let soundEnabled = true;
+        let conversationHistory = [];
+
+        // ─── AUTH STATE ───
+        let authToken = null;
+        let authEmployeeName = null;
+        let authTenantId = null;
+
+        function getAuthHeaders() {
+            const headers = { 'Content-Type': 'application/json' };
+            if (authToken) {
+                headers['Authorization'] = 'Bearer ' + authToken;
+            }
+            return headers;
+        }
+
+        async function doLogin() {
+            const empNumber = document.getElementById('loginEmpNumber').value.trim();
+            const nationalId = document.getElementById('loginNationalId').value.trim();
+            const errorEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+
+            errorEl.classList.remove('visible');
+
+            if (!empNumber || !nationalId || nationalId.length !== 4 || !/^\d{4}$/.test(nationalId)) {
+                errorEl.textContent = 'Please enter your employee number and last 4 digits of your national ID.';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+
+            try {
+                const res = await fetch('/api/v1/chat/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ employee_number: empNumber, national_id_last4: nationalId }),
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    const msg = typeof data.detail === 'string' ? data.detail : 'Invalid input. Please check your entry.';
+                    errorEl.textContent = msg;
+                    errorEl.classList.add('visible');
+                    btn.disabled = false;
+                    btn.textContent = 'Sign In / \u062a\u0633\u062c\u064a\u0644 \u062f\u062e\u0648\u0644';
+                    return;
+                }
+
+                // Store auth state
+                authToken = data.token;
+                authEmployeeName = data.name;
+                authTenantId = data.tenant_id || '';
+                sessionStorage.setItem('krew_chat_token', data.token);
+                sessionStorage.setItem('krew_chat_name', data.name);
+                sessionStorage.setItem('krew_chat_employee_id', data.employee_id);
+                sessionStorage.setItem('krew_chat_tenant_id', data.tenant_id || '');
+                sessionStorage.setItem('krew_chat_language', data.language);
+
+                // Select the employee in the dropdown
+                const select = document.getElementById('employeeSelect');
+                if (select) {
+                    select.value = data.employee_id;
+                    // Trigger change if the option exists
+                    const matchOpt = Array.from(select.options).find(o => o.value === data.employee_id);
+                    if (matchOpt) {
+                        select.dispatchEvent(new Event('change'));
+                    } else {
+                        // Employee not in dropdown yet — set state manually
+                        selectedEmployee = data.employee_id;
+                        selectedLanguage = data.language || 'ar';
+                        const input = document.getElementById('messageInput');
+                        input.disabled = false;
+                        document.getElementById('sendBtn').disabled = false;
+                        document.getElementById('quickActions').classList.remove('hidden');
+                        loadQuickActions();
+                        const msgs = document.getElementById('messages');
+                        msgs.innerHTML = '';
+                        const isAr = selectedLanguage === 'ar';
+                        input.placeholder = isAr ? '\u0627\u0643\u062a\u0628 \u0631\u0633\u0627\u0644\u062a\u0643 \u0647\u0646\u0627...' : 'Message Deema...';
+                        input.dir = isAr ? 'rtl' : 'ltr';
+                        const firstName = data.name.split(' ')[0];
+                        addMessage('system', null, isAr
+                            ? '\u0645\u0631\u062d\u0628\u064b\u0627 ' + firstName + '! \u0623\u0646\u0627 \u062f\u064a\u0645\u0629\u060c \u0643\u064a\u0641 \u0623\u0642\u062f\u0631 \u0623\u0633\u0627\u0639\u062f\u0643 \u0627\u0644\u064a\u0648\u0645\u061f'
+                            : 'Hi ' + firstName + '! I\'m Deema from Employee Services. How can I help?');
+                    }
+                }
+
+                onLoginSuccess(data);
+            } catch (err) {
+                errorEl.textContent = 'Connection error. Please try again.';
+                errorEl.classList.add('visible');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Sign In / \u062a\u0633\u062c\u064a\u0644 \u062f\u062e\u0648\u0644';
+        }
+
+        function onLoginSuccess(data) {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('authBadge').style.display = 'flex';
+            document.getElementById('authName').textContent = data.name || authEmployeeName || '';
+            loadEmployees();
+            loadPastConversations();
+            loadQuickActions();
+        }
+
+        function doLogout() {
+            authToken = null;
+            authEmployeeName = null;
+            sessionStorage.removeItem('krew_chat_token');
+            sessionStorage.removeItem('krew_chat_name');
+            sessionStorage.removeItem('krew_chat_employee_id');
+            sessionStorage.removeItem('krew_chat_language');
+
+            document.getElementById('authBadge').style.display = 'none';
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('loginError').classList.remove('visible');
+            document.getElementById('loginEmpNumber').value = '';
+            document.getElementById('loginNationalId').value = '';
+
+            // Reset chat state
+            selectedEmployee = null;
+            const select = document.getElementById('employeeSelect');
+            if (select) select.value = '';
+            document.getElementById('messageInput').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('messages').innerHTML = '';
+            document.getElementById('quickActions').classList.add('hidden');
+            closeContextPanel();
+
+            // Post to logout endpoint (fire-and-forget)
+            fetch('/api/v1/chat/auth/logout', { method: 'POST' }).catch(() => {});
+        }
+
+        function handleAuthError(res) {
+            if (res.status === 401) {
+                showToast('Session expired. Please log in again.');
+                doLogout();
+                return true;
+            }
+            return false;
+        }
+
+        async function verifyStoredToken() {
+            const token = sessionStorage.getItem('krew_chat_token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/v1/chat/auth/verify', {
+                    headers: { 'Authorization': 'Bearer ' + token },
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    authToken = token;
+                    authEmployeeName = sessionStorage.getItem('krew_chat_name') || data.name;
+                    authTenantId = sessionStorage.getItem('krew_chat_tenant_id') || '';
+                    onLoginSuccess({
+                        name: authEmployeeName,
+                        employee_id: sessionStorage.getItem('krew_chat_employee_id'),
+                        language: sessionStorage.getItem('krew_chat_language'),
+                    });
+
+                    // Restore employee selection
+                    const empId = sessionStorage.getItem('krew_chat_employee_id');
+                    if (empId) {
+                        // Wait for employees to load, then select
+                        setTimeout(() => {
+                            const select = document.getElementById('employeeSelect');
+                            if (select) {
+                                select.value = empId;
+                                select.dispatchEvent(new Event('change'));
+                            }
+                        }, 500);
+                    }
+                } else {
+                    // Token invalid/expired — clear it
+                    sessionStorage.removeItem('krew_chat_token');
+                    sessionStorage.removeItem('krew_chat_name');
+                    sessionStorage.removeItem('krew_chat_employee_id');
+                    sessionStorage.removeItem('krew_chat_language');
+                }
+            } catch (err) {
+                // Network error — keep token, show login
+            }
+        }
+
+        // ─── EMPLOYEES ───
+        async function loadEmployees() {
+            if (!authToken) return;
+            try {
+                const res = await fetch(`${API}/employees`, {
+                    headers: { 'Authorization': 'Bearer ' + authToken },
+                });
+                if (res.status === 401) { handleAuthError(res); return; }
+                const employees = await res.json();
+                const select = document.getElementById('employeeSelect');
+                select.innerHTML = '<option value="">Select employee...</option>';
+                if (!Array.isArray(employees) || employees.length === 0) {
+                    select.innerHTML = '<option value="">No employees found</option>';
+                    document.title = 'Krew — No employees loaded';
+                    return;
+                }
+                employees.forEach(emp => {
+                    const opt = document.createElement('option');
+                    opt.value = emp.id;
+                    opt.textContent = emp.name;
+                    opt.dataset.language = emp.language;
+                    opt.dataset.name = emp.name;
+                    opt.dataset.nameAr = emp.name_ar || '';
+                    opt.dataset.jobTitle = emp.job_title || '';
+                    select.appendChild(opt);
+                });
+                document.title = `Krew — ${employees.length} employees loaded`;
+            } catch (err) {
+                console.error('Failed to load employees:', err);
+                document.title = 'Krew — ERROR: ' + err.message;
+            }
+        }
+
+        document.getElementById('employeeSelect').addEventListener('change', function() {
+            selectedEmployee = this.value;
+            const opt = this.options[this.selectedIndex];
+            const input = document.getElementById('messageInput');
+            const btn = document.getElementById('sendBtn');
+
+            closeContextPanel();
+            conversationHistory = [];
+            activeConversationId = null;
+
+            if (selectedEmployee) {
+                selectedLanguage = opt.dataset.language || 'en';
+                input.disabled = false;
+                btn.disabled = false;
+                input.focus();
+
+                const isAr = selectedLanguage === 'ar';
+                input.placeholder = isAr ? 'اكتب رسالتك هنا...' : 'Message Deema...';
+                input.dir = isAr ? 'rtl' : 'ltr';
+
+                document.getElementById('quickActions').classList.remove('hidden');
+                loadQuickActions();
+                const msgs = document.getElementById('messages');
+                msgs.innerHTML = '';
+
+                const empName = opt.dataset.name.split(' ')[0];
+                addMessage('system', null, isAr
+                    ? `مرحبًا ${empName}! أنا ديمة، كيف أقدر أساعدك اليوم؟`
+                    : `Hi ${empName}! I'm Deema from Employee Services. How can I help?`);
+
+                // Load initial suggestions (CUX-01)
+                loadInitialSuggestions();
+
+                // Refresh sidebar conversations
+                loadPastConversations();
+            } else {
+                input.disabled = true;
+                btn.disabled = true;
+                document.getElementById('quickActions').classList.add('hidden');
+            }
+        });
+
+        // ─── SEND ───
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message || !selectedEmployee) return;
+
+            // Remove any lingering suggestion buttons
+            document.querySelectorAll('.msg-suggestions').forEach(el => el.remove());
+
+            const isAr = selectedLanguage === 'ar';
+
+            addMessage('employee', null, message, isAr);
+            input.value = '';
+            input.style.height = '24px';
+            input.disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            document.getElementById('quickActions').classList.add('hidden');
+
+            showTyping();
+            document.getElementById('chStatus').textContent = 'Typing...';
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 180000);
+                const res = await fetch(API, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ employee_id: selectedEmployee, message, agent: selectedAgent, conversation_id: activeConversationId || '' }),
+                    signal: controller.signal,
+                });
+                clearTimeout(timeoutId);
+
+                if (handleAuthError(res)) { hideTyping(); return; }
+
+                const data = await res.json();
+                hideTyping();
+                document.getElementById('chStatus').textContent = 'Online';
+
+                if (res.ok) {
+                    addMessage('agent', data.agent, data.response, isAr, data.suggestions);
+                    selectedAgent = data.agent;
+                    activeConversationId = data.conversation_id;
+                    updateAgent(data.agent);
+                    detectIntent(message, data.response);
+                    if (soundEnabled) playNotifSound();
+                    // Refresh sidebar to show new conversation / updated title
+                    loadPastConversations();
+                } else {
+                    addMessage('system', null, `Error: ${data.detail || 'Something went wrong'}`);
+                }
+            } catch (err) {
+                hideTyping();
+                document.getElementById('chStatus').textContent = 'Online';
+                const errMsg = err.name === 'AbortError'
+                    ? 'Request timed out. The agent may be running a complex analysis — please try again.'
+                    : `Connection error: ${err.message}`;
+                addMessage('system', null, errMsg);
+            }
+
+            input.disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+
+        function sendQuickMessage(text) {
+            document.getElementById('messageInput').value = text;
+            sendMessage();
+        }
+
+        // CUX-03: Dynamic Quick Actions Bar
+        async function loadQuickActions() {
+            if (!authToken) return;
+            const container = document.getElementById('quickActions');
+            try {
+                const resp = await fetch('/api/v1/suggestions/quick-actions', {
+                    headers: { 'Authorization': 'Bearer ' + authToken },
+                });
+                if (!resp.ok) {
+                    _renderFallbackQuickActions(container);
+                    return;
+                }
+                const data = await resp.json();
+
+                container.innerHTML = '';
+                const isAr = selectedLanguage === 'ar';
+                data.actions.forEach(action => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quick-btn';
+                    btn.onclick = () => {
+                        if (action.agent) selectedAgent = action.agent;
+                        sendQuickMessage(action.message);
+                    };
+
+                    const icon = document.createElement('span');
+                    icon.className = 'qb-icon';
+                    icon.textContent = action.icon;
+
+                    const label = isAr ? action.label_ar : action.label_en;
+                    btn.appendChild(icon);
+                    btn.appendChild(document.createTextNode(' ' + label));
+                    container.appendChild(btn);
+                });
+            } catch (e) {
+                _renderFallbackQuickActions(container);
+            }
+        }
+
+        function _renderFallbackQuickActions(container) {
+            const fallback = [
+                { icon: '\uD83D\uDCC5', label: selectedLanguage === 'ar' ? '\u0631\u0635\u064A\u062F \u0627\u0644\u0625\u062C\u0627\u0632\u0627\u062A' : 'Leave Balance', msg: 'What is my leave balance?' },
+                { icon: '\uD83C\uDFD6\uFE0F', label: selectedLanguage === 'ar' ? '\u0637\u0644\u0628 \u0625\u062C\u0627\u0632\u0629' : 'Request Leave', msg: 'I want to request a vacation' },
+                { icon: '\uD83D\uDC64', label: selectedLanguage === 'ar' ? '\u0645\u0639\u0644\u0648\u0645\u0627\u062A\u064A' : 'My Info', msg: 'Show me my employee information' },
+                { icon: '\uD83D\uDCCB', label: selectedLanguage === 'ar' ? '\u0633\u064A\u0627\u0633\u0629 \u0627\u0644\u0634\u0631\u0643\u0629' : 'Policy', msg: 'What is the company leave policy?' },
+            ];
+            container.innerHTML = '';
+            fallback.forEach(f => {
+                const btn = document.createElement('button');
+                btn.className = 'quick-btn';
+                btn.onclick = () => sendQuickMessage(f.msg);
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'qb-icon';
+                iconSpan.textContent = f.icon;
+                btn.appendChild(iconSpan);
+                btn.appendChild(document.createTextNode(' ' + f.label));
+                container.appendChild(btn);
+            });
+        }
+
+        // CUX-01: Load initial suggestions on chat start
+        async function loadInitialSuggestions() {
+            if (!authToken || !selectedEmployee) return;
+            try {
+                const lang = selectedLanguage || 'ar';
+                const resp = await fetch('/api/v1/suggestions?language=' + lang, {
+                    headers: { 'Authorization': 'Bearer ' + authToken },
+                });
+                if (!resp.ok) return;
+                const data = await resp.json();
+
+                if (data.suggestions && data.suggestions.length > 0) {
+                    const msgs = document.getElementById('messages');
+                    // Remove any previous suggestion chips
+                    msgs.querySelectorAll('.msg-suggestions').forEach(el => el.remove());
+
+                    const sugDiv = document.createElement('div');
+                    sugDiv.className = 'msg-suggestions';
+                    sugDiv.style.padding = '8px 0';
+                    data.suggestions.forEach(s => {
+                        const btn = document.createElement('button');
+                        btn.className = 'suggest-btn';
+                        const isAr = selectedLanguage === 'ar';
+                        btn.textContent = isAr ? s.text_ar : s.text_en;
+                        btn.onclick = () => {
+                            sugDiv.remove();
+                            if (s.agent_target) selectedAgent = s.agent_target;
+                            sendQuickMessage(isAr ? s.text_ar : s.text_en);
+                        };
+                        sugDiv.appendChild(btn);
+                    });
+                    msgs.appendChild(sugDiv);
+                }
+            } catch (e) {
+                // Non-critical — silently fail
+            }
+        }
+
+        // ─── MESSAGES ───
+        function addMessage(role, agent, text, isAr, structuredSuggestions) {
+            const msgs = document.getElementById('messages');
+            const empty = msgs.querySelector('.empty-state');
+            if (empty) empty.remove();
+
+            const group = document.createElement('div');
+            group.className = `msg-group ${role}`;
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            if (role === 'agent' && agent) {
+                const header = document.createElement('div');
+                header.className = 'msg-header';
+
+                let agentInfo = agentMap[agent] || {};
+                let avatarColor = agentColors[agent] || 'linear-gradient(135deg, #db2777, #f472b6)';
+
+                // Department agents (dept:uuid) — use stored display info or generic
+                if (agent.startsWith('dept:') && !agentInfo.name) {
+                    const chatHeader = document.querySelector('.chat-agent-name');
+                    const deptName = chatHeader ? chatHeader.textContent : 'Agent';
+                    agentInfo = { letter: deptName.charAt(0), name: deptName };
+                    avatarColor = 'linear-gradient(135deg, #db2777, #f472b6)';
+                }
+
+                header.innerHTML = `
+                    <div class="msg-avatar" style="background:${avatarColor}">${escapeHtml((agentInfo.letter || agent[0] || '?').toUpperCase())}</div>
+                    <span class="msg-name">${escapeHtml(agentInfo.name || capitalize(agent))}</span>
+                    <span class="msg-time">${escapeHtml(timeStr)}</span>
+                `;
+                group.appendChild(header);
+            }
+
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            if (isAr && role !== 'system') div.classList.add('rtl');
+
+            // Detect escalation messages and apply styling
+            if (role === 'system' || (role === 'agent' && /escalat|تصعيد|تم تصعيد|ticket\s*id/i.test(text))) {
+                if (/escalat|تصعيد|تم تصعيد|ticket\s*id/i.test(text)) {
+                    div.classList.add('msg-escalation');
+                }
+            }
+
+            // Extract suggestions early so we can strip them from rendered text
+            // Prefer structured suggestions from API (CUX-02) over text parsing
+            let suggestions = [];
+            if (role === 'agent') {
+                suggestions = (structuredSuggestions && structuredSuggestions.length > 0)
+                    ? structuredSuggestions
+                    : extractSuggestions(text);
+                let displayText = text;
+                if (suggestions.length > 0) {
+                    // Strip the trailing suggestion lines from the message body
+                    const msgLines = text.split('\n');
+                    let end = msgLines.length - 1;
+                    while (end >= 0 && !msgLines[end].trim()) end--;
+                    const itemPattern = /^(?:\d+[\.\)]\s*|[-•]\s*|[➊-➓]\s*).+/;
+                    // Walk back over the suggestion block
+                    while (end >= 0 && itemPattern.test(msgLines[end].trim())) end--;
+                    // Also strip any empty lines before the block
+                    while (end >= 0 && !msgLines[end].trim()) end--;
+                    if (end >= 0) displayText = msgLines.slice(0, end + 1).join('\n');
+                }
+                div.innerHTML = renderMarkdown(displayText);
+                if (div.querySelector('table')) div.classList.add('has-table');
+            } else {
+                div.textContent = text;
+            }
+
+            group.appendChild(div);
+
+            // Footer: time + status for employee, feedback for agent
+            if (role === 'employee') {
+                const footer = document.createElement('div');
+                footer.className = 'msg-footer';
+                footer.style.justifyContent = 'flex-end';
+                footer.innerHTML = `
+                    <span class="mf-time">${timeStr}</span>
+                    <span class="mf-status delivered">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                `;
+                group.appendChild(footer);
+            }
+
+            if (role === 'agent') {
+                // Suggestions were already extracted above
+                if (suggestions.length > 0) {
+                    // Remove any previous suggestion buttons in the chat
+                    msgs.querySelectorAll('.msg-suggestions').forEach(el => el.remove());
+
+                    const sugDiv = document.createElement('div');
+                    sugDiv.className = 'msg-suggestions';
+                    suggestions.forEach(s => {
+                        const btn = document.createElement('button');
+                        btn.className = 'suggest-btn';
+                        btn.textContent = s;
+                        btn.onclick = () => {
+                            // Remove suggestion buttons once one is clicked
+                            sugDiv.remove();
+                            sendQuickMessage(s);
+                        };
+                        sugDiv.appendChild(btn);
+                    });
+                    group.appendChild(sugDiv);
+                }
+
+                const fb = document.createElement('div');
+                fb.className = 'msg-feedback';
+                fb.innerHTML = `
+                    <button onclick="feedback(this,'up')" title="Helpful"><span>👍</span></button>
+                    <button onclick="feedback(this,'down')" title="Not helpful"><span>👎</span></button>
+                    <button onclick="copyMessage(this)" title="Copy"><span>📋</span></button>
+                `;
+                group.appendChild(fb);
+            }
+
+            msgs.appendChild(group);
+            scrollToBottom();
+        }
+
+        function feedback(btn, type) {
+            const parent = btn.parentElement;
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            showToast(type === 'up' ? 'Thanks for the feedback!' : 'Sorry about that. We\'ll improve.');
+        }
+
+        function copyMessage(btn) {
+            const msgEl = btn.closest('.msg-group').querySelector('.message');
+            navigator.clipboard.writeText(msgEl.textContent);
+            showToast('Copied to clipboard');
+        }
+
+        // Markdown renderer with table support
+        function renderMarkdown(text) {
+            // First, extract and render tables before escaping
+            const tableBlocks = [];
+            const lines = text.split('\n');
+            let i = 0;
+            const processed = [];
+
+            while (i < lines.length) {
+                // Detect table: line with | that is followed by a separator line |---|
+                if (/^\|(.+)\|$/.test(lines[i].trim()) && i + 1 < lines.length && /^\|[\s\-:|]+\|$/.test(lines[i + 1].trim())) {
+                    // Parse header
+                    const headerCells = lines[i].trim().split('|').filter(c => c.trim() !== '').map(c => c.trim());
+                    i += 2; // skip header + separator
+
+                    // Parse rows
+                    const rows = [];
+                    while (i < lines.length && /^\|(.+)\|$/.test(lines[i].trim())) {
+                        const cells = lines[i].trim().split('|').filter(c => c.trim() !== '').map(c => c.trim());
+                        rows.push(cells);
+                        i++;
+                    }
+
+                    // Build HTML table — rows are clickable to drill down
+                    const placeholder = `%%TABLE_${tableBlocks.length}%%`;
+                    // Find the best "label" column — skip # / numbering columns
+                    let labelCol = 0;
+                    for (let ci = 0; ci < headerCells.length; ci++) {
+                        const h = headerCells[ci].replace(/[#\d]/g, '').trim();
+                        if (h.length > 0) { labelCol = ci; break; }
+                    }
+                    const labelHeader = headerCells[labelCol] || '';
+
+                    let tableHtml = '<table><thead><tr>';
+                    headerCells.forEach(h => { tableHtml += `<th>${escapeHtml(h)}</th>`; });
+                    tableHtml += '</tr></thead><tbody>';
+                    rows.forEach(row => {
+                        const label = (row[labelCol] || '').replace(/\*\*/g, '');
+                        const safeLabel = escapeHtml(label).replace(/"/g, '&quot;');
+                        tableHtml += `<tr data-row-label="${safeLabel}" data-label-header="${escapeHtml(labelHeader).replace(/"/g, '&quot;')}">`;
+                        row.forEach(cell => {
+                            let cellHtml = escapeHtml(cell);
+                            cellHtml = cellHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                            tableHtml += `<td>${cellHtml}</td>`;
+                        });
+                        tableHtml += '</tr>';
+                    });
+                    tableHtml += '</tbody></table>';
+                    tableBlocks.push(tableHtml);
+                    processed.push(placeholder);
+                } else {
+                    processed.push(lines[i]);
+                    i++;
+                }
+            }
+
+            let html = escapeHtml(processed.join('\n'));
+            // Bold
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            // Italic
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            // Inline code
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            // Bullet lists
+            html = html.replace(/^[•\-\*]\s+(.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+            // Numbered lists
+            html = html.replace(/^\d+[\.\)]\s+(.+)$/gm, '<li>$1</li>');
+            // Line breaks
+            html = html.replace(/\n/g, '<br>');
+            // Clean up
+            html = html.replace(/<br><li>/g, '<li>');
+            html = html.replace(/<\/li><br>/g, '</li>');
+
+            // Restore table blocks
+            tableBlocks.forEach((tbl, idx) => {
+                html = html.replace(`%%TABLE_${idx}%%`, tbl);
+            });
+
+            return html;
+        }
+
+        function extractSuggestions(text) {
+            // Agents are prompted to end responses with 1-3 short numbered suggestions.
+            // We extract ONLY the trailing numbered block that ends at the very last line,
+            // and only if all items are short (< 60 chars) — this distinguishes suggestions
+            // from content lists (job listings, leave types, etc.) which are longer.
+            const suggestions = [];
+            const lines = text.split('\n');
+
+            // Walk backwards from end to find the trailing numbered/bulleted block
+            let blockEnd = lines.length - 1;
+            // Skip trailing empty lines
+            while (blockEnd >= 0 && !lines[blockEnd].trim()) blockEnd--;
+            if (blockEnd < 0) return suggestions;
+
+            // The last non-empty line must be a numbered/bulleted item
+            const itemPattern = /^(?:\d+[\.\)]\s*|[-•]\s*|[➊-➓]\s*)(.+)/;
+            if (!itemPattern.test(lines[blockEnd].trim())) {
+                // No trailing list — try inline "Would you like" fallback
+                return _extractInlineSuggestions(text);
+            }
+
+            // Walk backwards to find where this block starts
+            let blockStart = blockEnd;
+            while (blockStart > 0 && itemPattern.test(lines[blockStart - 1].trim())) {
+                blockStart--;
+            }
+
+            // Validate: must be 1-4 items, all short (< 60 chars) — that's suggestions, not content
+            const items = [];
+            let allShort = true;
+            for (let i = blockStart; i <= blockEnd; i++) {
+                const match = lines[i].trim().match(itemPattern);
+                if (match) {
+                    let s = match[1].trim().replace(/\*\*(.+?)\*\*/g, '$1');
+                    if (s.length > 60) { allShort = false; break; }
+                    if (s.length > 3) items.push(s);
+                }
+            }
+
+            if (allShort && items.length >= 1 && items.length <= 4) {
+                return items;
+            }
+
+            return _extractInlineSuggestions(text);
+        }
+
+        function _extractInlineSuggestions(text) {
+            const suggestions = [];
+            const wouldLike = text.match(/(?:would you like (?:me to |to )?|shall i |do you want me to |هل تبي |هل تريد |هل تحب |تبي |يمكنك )(.+?)(?:\?|؟)/gi);
+            if (wouldLike) {
+                wouldLike.forEach(m => {
+                    let action = m.replace(/^(would you like (?:me to |to )?|shall i |do you want me to |هل تبي |هل تريد |هل تحب |تبي |يمكنك )/i, '').replace(/[?؟]$/, '').trim();
+                    action = action.replace(/\*\*(.+?)\*\*/g, '$1');
+                    if (action.length > 4 && action.length < 60) {
+                        if (/^[a-z]/.test(action)) action = action.charAt(0).toUpperCase() + action.slice(1);
+                        suggestions.push(action);
+                    }
+                });
+            }
+            return [...new Set(suggestions)].slice(0, 4);
+        }
+
+        function showTyping() {
+            document.getElementById('typing').classList.add('visible');
+            scrollToBottom();
+        }
+        function hideTyping() {
+            document.getElementById('typing').classList.remove('visible');
+        }
+
+        function scrollToBottom() {
+            const msgs = document.getElementById('messages');
+            requestAnimationFrame(() => { msgs.scrollTop = msgs.scrollHeight; });
+        }
+
+        // ─── AGENT MAP ───
+        const agentMap = {
+            deema:    { letter: 'D', name: 'Deema',    role: 'Employee Services' },
+            waleed:   { letter: 'W', name: 'Waleed',   role: 'Onboarding' },
+            mohammad: { letter: 'M', name: 'Mohammad', role: 'Recruitment' },
+            yara:     { letter: 'Y', name: 'Yara',     role: 'Agent Factory' },
+            ahmad:    { letter: 'A', name: 'Ahmad',    role: 'CHRO' },
+        };
+
+        const agentColors = {
+            deema:    'linear-gradient(135deg, #4f46e5, #818cf8)',
+            waleed:   'linear-gradient(135deg, #16a34a, #4ade80)',
+            mohammad: 'linear-gradient(135deg, #2563eb, #60a5fa)',
+            yara:     'linear-gradient(135deg, #ca8a04, #fbbf24)',
+            ahmad:    'linear-gradient(135deg, #1e3a5f, #3b82f6)',
+        };
+
+        function updateAgent(name) {
+            const info = agentMap[name] || { letter: name?.[0]?.toUpperCase() || '?', name, role: '' };
+            document.getElementById('chAvatar').innerHTML = info.letter + '<div class="online-dot"></div>';
+            document.getElementById('chName').textContent = info.name;
+            document.getElementById('typingName').textContent = info.name;
+
+            // Highlight active sidebar agent header
+            document.querySelectorAll('.agent-header').forEach(el => el.classList.remove('active'));
+            const section = document.querySelector(`.agent-section[data-agent="${name}"]`);
+            if (section) section.querySelector('.agent-header')?.classList.add('active');
+        }
+
+        // ─── AGENT TREE & SIDEBAR ───
+        const agentGreetings = {
+            deema:  { en: "Hi {name}! I'm Deema from Employee Services. How can I help?",
+                      ar: "أهلاً {name}! أنا ديمة من خدمات الموظفين. كيف أقدر أساعدك؟" },
+            waleed: { en: "Hi {name}! I'm Waleed — Onboarding & Manager Services. How can I help?",
+                      ar: "أهلاً {name}! أنا وليد — خدمات التهيئة والمدراء. كيف أقدر أساعدك؟" },
+            mohammad: { en: "Hi {name}! I'm Mohammad — Recruitment Operations. Need to find talent, screen candidates, or manage your hiring pipeline?",
+                        ar: "أهلاً {name}! أنا محمد — عمليات التوظيف. تبي تلقى كفاءات، تفحص مرشحين، أو تدير خط التوظيف؟" },
+            yara: { en: "Hi {name}! I'm Yara — AI Workforce Architect. I can analyze your departments, recommend the optimal human:AI workforce mix, and build custom AI agents for your teams.",
+                     ar: "أهلاً {name}! أنا يارا — مهندسة القوى العاملة الذكية. أقدر أحلل أقسامك، أوصي بأفضل نسبة بشر:ذكاء اصطناعي، وأبني وكلاء ذكاء اصطناعي مخصصين لفرقك." },
+            ahmad: { en: "Hi {name}! I'm Ahmad — your CHRO intelligence partner. I can provide HR analytics, compliance status, workforce metrics, and executive insights.",
+                     ar: "أهلاً {name}! أنا أحمد — شريكك في ذكاء الموارد البشرية. أقدر أوفر لك تحليلات الموارد البشرية، حالة الامتثال، مقاييس القوى العاملة، ورؤى تنفيذية." },
+        };
+
+        const agentOrder = ['deema', 'waleed', 'mohammad', 'yara', 'ahmad'];
+        const enabledAgents = new Set(['deema', 'waleed', 'mohammad', 'yara', 'ahmad']);
+
+        function buildAgentTree(conversations) {
+            const tree = document.getElementById('agentTree');
+            tree.innerHTML = '';
+
+            // Group conversations by agent
+            const grouped = {};
+            agentOrder.forEach(a => grouped[a] = []);
+            (conversations || []).forEach(c => {
+                const agent = c.agent_name || 'deema';
+                if (!grouped[agent]) grouped[agent] = [];
+                grouped[agent].push(c);
+            });
+
+            agentOrder.forEach(agentName => {
+                const info = agentMap[agentName] || {};
+                const color = agentColors[agentName] || 'linear-gradient(135deg, #999, #bbb)';
+                const convs = grouped[agentName] || [];
+                const enabled = enabledAgents.has(agentName);
+
+                const section = document.createElement('div');
+                section.className = 'agent-section';
+                section.dataset.agent = agentName;
+
+                const header = document.createElement('div');
+                header.className = 'agent-header' + (enabled ? '' : ' disabled') + (selectedAgent === agentName ? ' active' : '');
+                header.innerHTML = `
+                    <div class="ai-avatar" style="background:${color};">${info.letter || agentName[0].toUpperCase()}${enabled ? '<div class="online-dot"></div>' : ''}</div>
+                    <div class="ai-info">
+                        <div class="ai-name">${escapeHtml(info.name || capitalize(agentName))}</div>
+                        <div class="ai-role">${escapeHtml(info.role || '')}</div>
+                    </div>
+                    ${convs.length ? `<span class="agent-conv-count">${convs.length}</span>` : ''}
+                    ${enabled ? '<svg class="agent-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>' : ''}
+                `;
+
+                if (enabled) {
+                    header.onclick = () => toggleAgentSection(agentName);
+                }
+
+                section.appendChild(header);
+
+                // Conversation list
+                if (enabled) {
+                    const convoDiv = document.createElement('div');
+                    convoDiv.className = 'agent-convos';
+                    convoDiv.id = `convos-${agentName}`;
+
+                    // "+ New Chat" button
+                    const newBtn = document.createElement('button');
+                    newBtn.className = 'new-chat-btn';
+                    newBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Chat';
+                    newBtn.onclick = (e) => { e.stopPropagation(); startNewChat(agentName); };
+                    convoDiv.appendChild(newBtn);
+
+                    convs.forEach(c => {
+                        const d = new Date(c.started_at);
+                        const timeStr = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                        const label = c.topic || 'New conversation';
+                        const item = document.createElement('div');
+                        item.className = 'conv-item' + (activeConversationId === c.id ? ' active' : '');
+                        item.dataset.convId = c.id;
+                        item.onclick = (e) => { e.stopPropagation(); resumeConversation(c.id, agentName); };
+                        item.innerHTML = `
+                            <span class="conv-dot ${c.status}"></span>
+                            <span class="conv-label">${escapeHtml(label)}</span>
+                            <span class="conv-time">${timeStr}</span>
+                        `;
+                        convoDiv.appendChild(item);
+                    });
+
+                    section.appendChild(convoDiv);
+                }
+
+                tree.appendChild(section);
+            });
+
+            // Auto-expand the active agent's section
+            if (selectedAgent) {
+                const sec = tree.querySelector(`.agent-section[data-agent="${selectedAgent}"]`);
+                if (sec) {
+                    sec.classList.add('open');
+                    const hdr = sec.querySelector('.agent-header');
+                    if (hdr) hdr.classList.add('expanded');
+                }
+            }
+        }
+
+        function toggleAgentSection(agentName) {
+            const section = document.querySelector(`.agent-section[data-agent="${agentName}"]`);
+            if (!section) return;
+
+            const isOpen = section.classList.contains('open');
+            // Close all sections
+            document.querySelectorAll('.agent-section').forEach(s => {
+                s.classList.remove('open');
+                s.querySelector('.agent-header')?.classList.remove('expanded');
+            });
+
+            if (!isOpen) {
+                section.classList.add('open');
+                section.querySelector('.agent-header')?.classList.add('expanded');
+            }
+        }
+
+        function startNewChat(agentName) {
+            if (!selectedEmployee) {
+                showToast('Please select an employee first');
+                return;
+            }
+
+            // Reset current conversation on backend
+            fetch(`${API}/reset/${selectedEmployee}`, { method: 'POST', headers: getAuthHeaders() }).catch(() => {});
+
+            selectedAgent = agentName;
+            activeConversationId = null;
+            updateAgent(agentName);
+
+            document.getElementById('messages').innerHTML = '';
+            closeContextPanel();
+            balanceLoaded = false;
+            infoLoaded = false;
+            conversationHistory = [];
+
+            const isAr = selectedLanguage === 'ar';
+            const empName = sessionStorage.getItem('krew_emp_name') || '';
+            const firstName = empName.split(' ')[0] || '';
+            const greeting = agentGreetings[agentName];
+            if (greeting) {
+                const msg = (isAr ? greeting.ar : greeting.en).replace('{name}', firstName);
+                addMessage('agent', agentName, msg, isAr);
+            } else {
+                addMessage('system', null, isAr ? 'محادثة جديدة. كيف أقدر أساعدك؟' : 'New conversation. How can I help?');
+            }
+
+            const input = document.getElementById('messageInput');
+            const info = agentMap[agentName] || {};
+            input.placeholder = isAr ? 'اكتب رسالتك هنا...' : `Message ${info.name || agentName}...`;
+            input.disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('quickActions').classList.remove('hidden');
+            loadQuickActions();
+
+            // Highlight in sidebar
+            highlightActiveConv(null, agentName);
+
+            document.getElementById('sidebar').classList.remove('mobile-open');
+
+            // Refresh sidebar after a short delay to pick up new state
+            setTimeout(() => loadPastConversations(), 500);
+        }
+
+        async function resumeConversation(conversationId, agentName) {
+            if (!selectedEmployee) {
+                showToast('Please select an employee first');
+                return;
+            }
+
+            selectedAgent = agentName;
+            activeConversationId = conversationId;
+            updateAgent(agentName);
+
+            document.getElementById('messages').innerHTML = '';
+            closeContextPanel();
+            balanceLoaded = false;
+            infoLoaded = false;
+            conversationHistory = [];
+
+            const isAr = selectedLanguage === 'ar';
+            const input = document.getElementById('messageInput');
+            input.disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            input.placeholder = isAr ? 'اكتب رسالتك هنا...' : `Message ${agentMap[agentName]?.name || agentName}...`;
+            document.getElementById('quickActions').classList.add('hidden');
+
+            // Load conversation messages into main chat
+            try {
+                const res = await fetch(`${API}/conversations/${conversationId}/messages`, {
+                    headers: { 'Authorization': 'Bearer ' + authToken },
+                });
+                if (handleAuthError(res)) return;
+                const data = await res.json();
+
+                data.messages.forEach(m => {
+                    const role = m.role === 'employee' ? 'employee' : m.role === 'agent' ? 'agent' : 'system';
+                    const agent = role === 'agent' ? agentName : null;
+                    const msgIsAr = /[\u0600-\u06FF]/.test(m.content);
+                    addMessage(role, agent, m.content, msgIsAr);
+                });
+
+                if (data.messages.length === 0) {
+                    addMessage('system', null, isAr ? 'لا توجد رسائل في هذه المحادثة.' : 'No messages in this conversation.');
+                }
+            } catch (err) {
+                console.error('Failed to load conversation:', err);
+                addMessage('system', null, 'Failed to load conversation history.');
+            }
+
+            highlightActiveConv(conversationId, agentName);
+            document.getElementById('sidebar').classList.remove('mobile-open');
+        }
+
+        function highlightActiveConv(convId, agentName) {
+            // Highlight agent header
+            document.querySelectorAll('.agent-header').forEach(h => h.classList.remove('active'));
+            const section = document.querySelector(`.agent-section[data-agent="${agentName}"]`);
+            if (section) {
+                section.querySelector('.agent-header')?.classList.add('active');
+                section.classList.add('open');
+                section.querySelector('.agent-header')?.classList.add('expanded');
+            }
+
+            // Highlight conversation item
+            document.querySelectorAll('.agent-convos .conv-item').forEach(i => i.classList.remove('active'));
+            if (convId) {
+                const item = document.querySelector(`.conv-item[data-conv-id="${convId}"]`);
+                if (item) item.classList.add('active');
+            }
+        }
+
+        // ─── INTENT → CONTEXT PANEL ───
+        function detectIntent(userMsg, agentResponse) {
+            const combined = (userMsg + ' ' + agentResponse).toLowerCase();
+
+            const leaveRequestWords = [
+                'request leave', 'request a leave', 'request vacation', 'submit leave',
+                'take leave', 'take a vacation', 'take time off', 'apply for leave',
+                'book leave', 'إجازة', 'أبغى إجازة', 'اطلب إجازة', 'طلب إجازة',
+                'want to request', 'want a vacation', 'أبغى أقدم',
+            ];
+            if (leaveRequestWords.some(w => combined.includes(w))) {
+                openContextPanel('formLeaveRequest');
+                return;
+            }
+
+            const balanceWords = [
+                'leave balance', 'leave days', 'vacation balance', 'remaining leave',
+                'how many days', 'how many leave', 'رصيد', 'إجازاتي', 'كم يوم',
+                'باقي عندي', 'remaining', 'annual leave', 'sick leave',
+            ];
+            if (balanceWords.some(w => combined.includes(w))) {
+                openContextPanel('formLeaveBalance');
+                fetchAndShowBalance();
+                return;
+            }
+
+            const infoWords = [
+                'my information', 'my info', 'my profile', 'employee info',
+                'my details', 'show me my', 'معلوماتي', 'بياناتي',
+            ];
+            if (infoWords.some(w => combined.includes(w))) {
+                openContextPanel('formEmployeeInfo');
+                fetchAndShowEmployeeInfo();
+                return;
+            }
+        }
+
+        // ─── CONTEXT PANEL ───
+        function openContextPanel(formId) {
+            document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+            document.getElementById(formId).classList.add('active');
+
+            // Activate matching tab
+            document.querySelectorAll('.ctx-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === formId);
+            });
+
+            document.getElementById('contextPanel').classList.add('open');
+
+            if (formId === 'formLeaveRequest') {
+                const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+                const endDate = new Date(tomorrow); endDate.setDate(endDate.getDate() + 4);
+                document.getElementById('leaveStart').value = formatDate(tomorrow);
+                document.getElementById('leaveEnd').value = formatDate(endDate);
+                document.getElementById('leaveReason').value = '';
+                document.getElementById('leaveType').value = 'annual';
+                calcBusinessDays();
+            }
+
+            currentContextForm = formId;
+            scrollToBottom();
+        }
+
+        function closeContextPanel() {
+            document.getElementById('contextPanel').classList.remove('open');
+            currentContextForm = null;
+        }
+
+        function switchCtxTab(btn) {
+            const tabId = btn.dataset.tab;
+            document.querySelectorAll('.ctx-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            if (tabId === 'formLeaveBalance') fetchAndShowBalance();
+            if (tabId === 'formEmployeeInfo') fetchAndShowEmployeeInfo();
+            if (tabId === 'formLeaveRequest') {
+                if (!document.getElementById('leaveStart').value) {
+                    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+                    const endDate = new Date(tomorrow); endDate.setDate(endDate.getDate() + 4);
+                    document.getElementById('leaveStart').value = formatDate(tomorrow);
+                    document.getElementById('leaveEnd').value = formatDate(endDate);
+                    calcBusinessDays();
+                }
+            }
+        }
+
+        // ─── LEAVE FORM ───
+        document.getElementById('leaveStart')?.addEventListener('change', calcBusinessDays);
+        document.getElementById('leaveEnd')?.addEventListener('change', calcBusinessDays);
+
+        // Saudi public holidays (update annually — Eid dates depend on moon sighting)
+        const SAUDI_HOLIDAYS_2025 = [
+            '2025-02-22',
+            '2025-03-30', '2025-03-31', '2025-04-01',
+            '2025-06-06', '2025-06-07', '2025-06-08', '2025-06-09', '2025-06-10',
+            '2025-09-23',
+        ];
+        const SAUDI_HOLIDAYS_2026 = [
+            '2026-02-22',
+            '2026-03-20', '2026-03-21', '2026-03-22', '2026-03-23',
+            '2026-05-26', '2026-05-27', '2026-05-28', '2026-05-29', '2026-05-30',
+            '2026-09-23',
+        ];
+        const SAUDI_HOLIDAYS_2027 = [
+            '2027-02-22',
+            '2027-03-09', '2027-03-10', '2027-03-11', '2027-03-12',
+            '2027-05-16', '2027-05-17', '2027-05-18', '2027-05-19', '2027-05-20',
+            '2027-09-23',
+        ];
+        const SAUDI_HOLIDAYS = new Set([...SAUDI_HOLIDAYS_2025, ...SAUDI_HOLIDAYS_2026, ...SAUDI_HOLIDAYS_2027]);
+
+        function calcBusinessDays() {
+            const start = document.getElementById('leaveStart').value;
+            const end = document.getElementById('leaveEnd').value;
+            const group = document.getElementById('leaveDaysGroup');
+            if (!start || !end) { group.style.display = 'none'; return; }
+            const s = new Date(start), e = new Date(end);
+            if (e < s) { group.style.display = 'none'; return; }
+            let days = 0;
+            const cur = new Date(s);
+            while (cur <= e) {
+                const dateStr = cur.toISOString().slice(0, 10);
+                if (cur.getDay() !== 5 && cur.getDay() !== 6 && !SAUDI_HOLIDAYS.has(dateStr)) {
+                    days++;
+                }
+                cur.setDate(cur.getDate() + 1);
+            }
+            document.getElementById('leaveDaysCount').textContent = days;
+            group.style.display = 'block';
+        }
+
+        async function submitLeaveForm() {
+            const type = document.getElementById('leaveType').value;
+            const start = document.getElementById('leaveStart').value;
+            const end = document.getElementById('leaveEnd').value;
+            const reason = document.getElementById('leaveReason').value.trim();
+            if (!start || !end) { showToast('Please select dates'); return; }
+            if (new Date(end) < new Date(start)) { showToast('End date must be after start'); return; }
+
+            const btn = document.getElementById('btnSubmitLeave');
+            btn.disabled = true; btn.textContent = 'Submitting...';
+
+            const typeNamesEn = { annual: 'annual leave', sick: 'sick leave', emergency: 'emergency leave', maternity: 'maternity leave', paternity: 'paternity leave', hajj: 'Hajj leave', bereavement: 'bereavement leave', unpaid: 'unpaid leave' };
+            const typeNamesAr = { annual: 'إجازة سنوية', sick: 'إجازة مرضية', emergency: 'إجازة طارئة', maternity: 'إجازة أمومة', paternity: 'إجازة أبوة', hajj: 'إجازة حج', bereavement: 'إجازة وفاة', unpaid: 'إجازة بدون راتب' };
+            const msg = selectedLanguage === 'ar'
+                ? `أبغى أقدم طلب ${typeNamesAr[type] || type} من ${start} إلى ${end}${reason ? ' بسبب ' + reason : ''}`
+                : `I'd like to request ${typeNamesEn[type] || type} from ${start} to ${end}${reason ? ', reason: ' + reason : ''}`;
+
+            document.getElementById('messageInput').value = msg;
+            btn.disabled = false; btn.textContent = 'Submit Request';
+            await sendMessage();
+        }
+
+        function submitLeaveViaChat() {
+            closeContextPanel();
+            document.getElementById('messageInput').focus();
+        }
+
+        // ─── BALANCE ───
+        let balanceLoaded = false;
+        async function fetchAndShowBalance() {
+            if (!selectedEmployee) return;
+            const grid = document.getElementById('balanceGrid');
+            grid.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text3); font-size: 13px;">Fetching balances...</div>';
+
+            try {
+                const res = await fetch(API, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({
+                        employee_id: selectedEmployee,
+                        message: selectedLanguage === 'ar'
+                            ? 'اعطني رصيد إجازاتي بالأرقام فقط: النوع، الإجمالي، المستخدم، المتبقي'
+                            : 'Give me my leave balance as numbers only: type, total, used, remaining for each type.',
+                    }),
+                });
+                if (handleAuthError(res)) return;
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail);
+
+                addMessage('agent', data.agent, data.response, selectedLanguage === 'ar');
+                updateAgent(data.agent);
+
+                const balances = parseBalanceFromText(data.response);
+                if (balances.length > 0) {
+                    renderBalanceCards(balances);
+                    balanceLoaded = true;
+                } else {
+                    grid.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text3); font-size: 13px;">Balance shown in chat</div>';
+                }
+            } catch (err) {
+                grid.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--red); font-size: 13px;">Error: ${escapeHtml(err.message)}</div>`;
+            }
+        }
+
+        function parseBalanceFromText(text) {
+            const balances = [];
+            const defaultTotals = { annual: 21, sick: 30, emergency: 5, maternity: 70, paternity: 3, hajj: 15, bereavement: 5, unpaid: 30 };
+            const types = [
+                { key: 'annual', en: 'annual', ar: 'سنوي' },
+                { key: 'sick', en: 'sick', ar: 'مرض' },
+                { key: 'emergency', en: 'emergency', ar: 'طوارئ' },
+                { key: 'maternity', en: 'maternity', ar: 'أمومة' },
+                { key: 'paternity', en: 'paternity', ar: 'أبوة' },
+                { key: 'hajj', en: 'hajj', ar: 'حج' },
+                { key: 'bereavement', en: 'bereavement', ar: 'وفاة' },
+                { key: 'unpaid', en: 'unpaid', ar: 'بدون راتب' },
+            ];
+            for (const t of types) {
+                const regex = new RegExp(`(${t.en}|${t.ar})[^\\d]*(\\d+)[^\\d]*(\\d+)[^\\d]*(\\d+)`, 'i');
+                const match = text.match(regex);
+                if (match) {
+                    const nums = [parseInt(match[2]), parseInt(match[3]), parseInt(match[4])].sort((a,b) => b - a);
+                    balances.push({ type: t.key, total: nums[0], used: nums[2], remaining: nums[1] > nums[2] ? nums[1] : nums[0] - nums[2] });
+                } else {
+                    const simpler = new RegExp(`(${t.en}|${t.ar})[^\\d]*(\\d+)`, 'i');
+                    const sm = text.match(simpler);
+                    if (sm) {
+                        const remaining = parseInt(sm[2]);
+                        const total = defaultTotals[t.key] || 21;
+                        balances.push({ type: t.key, total, used: total - remaining, remaining });
+                    }
+                }
+            }
+            return balances;
+        }
+
+        function renderBalanceCards(balances) {
+            const grid = document.getElementById('balanceGrid');
+            const icons = { annual: '🌴', sick: '🏥', emergency: '🚨', maternity: '🤱', paternity: '👶', hajj: '🕋', bereavement: '🕊️', unpaid: '📋' };
+            const names = { annual: 'Annual', sick: 'Sick', emergency: 'Emergency', maternity: 'Maternity', paternity: 'Paternity', hajj: 'Hajj', bereavement: 'Bereavement', unpaid: 'Unpaid' };
+            grid.innerHTML = balances.map(b => {
+                const pct = b.total > 0 ? ((b.remaining / b.total) * 100) : 0;
+                return `<div class="balance-card">
+                    <div class="bc-header">
+                        <div class="bc-type"><div class="bc-icon ${b.type}">${icons[b.type]}</div>${names[b.type]}</div>
+                        <div class="bc-remaining">${b.remaining} <span>days</span></div>
+                    </div>
+                    <div class="balance-bar"><div class="balance-bar-fill ${b.type}" style="width:${pct}%"></div></div>
+                    <div class="bc-detail"><span>${b.used} used</span><span>${b.total} total</span></div>
+                </div>`;
+            }).join('');
+        }
+
+        // ─── EMPLOYEE INFO ───
+        let infoLoaded = false;
+        async function fetchAndShowEmployeeInfo() {
+            if (!selectedEmployee) return;
+            const card = document.getElementById('infoCard');
+            card.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text3); font-size: 13px;">Loading profile...</div>';
+
+            try {
+                const res = await fetch(API, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({
+                        employee_id: selectedEmployee,
+                        message: selectedLanguage === 'ar' ? 'اعرض بياناتي الوظيفية' : 'Show me my employee information',
+                    }),
+                });
+                if (handleAuthError(res)) return;
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail);
+
+                addMessage('agent', data.agent, data.response, selectedLanguage === 'ar');
+                updateAgent(data.agent);
+                renderInfoCard(parseInfoFromText(data.response));
+                infoLoaded = true;
+            } catch (err) {
+                card.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--red); font-size: 13px;">Error: ${escapeHtml(err.message)}</div>`;
+            }
+        }
+
+        function parseInfoFromText(text) {
+            const info = {};
+            const patterns = [
+                { key: 'name', patterns: [/name[:\s]+([^\n,]+)/i, /الاسم[:\s]+([^\n,]+)/] },
+                { key: 'email', patterns: [/email[:\s]+([\w.@+-]+)/i, /بريد[:\s]+([\w.@+-]+)/] },
+                { key: 'job_title', patterns: [/(?:job title|position|title|role)[:\s]+([^\n,]+)/i, /(?:المسمى|الوظيفة)[:\s]+([^\n,]+)/] },
+                { key: 'department', patterns: [/department[:\s]+([^\n,]+)/i, /(?:القسم|الإدارة)[:\s]+([^\n,]+)/] },
+                { key: 'hire_date', patterns: [/(?:hire date|joined|start date|date)[:\s]+([^\n,]+)/i, /(?:تاريخ)[:\s]+([^\n,]+)/] },
+                { key: 'status', patterns: [/status[:\s]+([^\n,]+)/i, /الحالة[:\s]+([^\n,]+)/] },
+            ];
+            for (const { key, patterns: pats } of patterns) {
+                for (const pat of pats) {
+                    const m = text.match(pat);
+                    if (m) { info[key] = m[1].trim(); break; }
+                }
+            }
+            if (!info.name) {
+                const opt = document.getElementById('employeeSelect');
+                const selected = opt.options[opt.selectedIndex];
+                if (selected?.dataset?.name) {
+                    info.name = selected.dataset.name;
+                    info.job_title = info.job_title || selected.dataset.jobTitle;
+                }
+            }
+            return info;
+        }
+
+        function renderInfoCard(info) {
+            const card = document.getElementById('infoCard');
+            const safeName = escapeHtml(info.name || 'Employee');
+            const safeJobTitle = escapeHtml(info.job_title || '');
+            const safeEmail = escapeHtml(info.email || '');
+            const safeDept = escapeHtml(info.department || '');
+            const initials = (info.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+            const rows = [
+                { label: 'Email', value: safeEmail },
+                { label: 'Job Title', value: safeJobTitle },
+                { label: 'Department', value: safeDept },
+                { label: 'Hire Date', value: escapeHtml(info.hire_date || '') },
+                { label: 'Status', value: escapeHtml(info.status || '') },
+            ].filter(r => r.value);
+            card.innerHTML = `
+                <div class="info-card-header">
+                    <div class="info-avatar">${escapeHtml(initials)}</div>
+                    <div><div class="info-name">${safeName}</div><div class="info-title">${safeJobTitle}</div></div>
+                </div>
+                <div class="info-rows">${rows.map(r => `<div class="info-row"><span class="label">${r.label}</span><span class="value">${r.value}</span></div>`).join('')}</div>
+            `;
+        }
+
+        // ─── RESET ───
+        async function resetConversation() {
+            if (!selectedEmployee) return;
+            const res = await fetch(`${API}/reset/${selectedEmployee}`, { method: 'POST', headers: getAuthHeaders() });
+            if (handleAuthError(res)) return;
+            document.getElementById('messages').innerHTML = '';
+            closeContextPanel();
+            balanceLoaded = false;
+            infoLoaded = false;
+            conversationHistory = [];
+            activeConversationId = null;
+
+            const isAr = selectedLanguage === 'ar';
+            addMessage('system', null, isAr ? 'محادثة جديدة. كيف أقدر أساعدك؟' : 'New conversation. How can I help?');
+            document.getElementById('quickActions').classList.remove('hidden');
+            loadQuickActions();
+            loadInitialSuggestions();
+            loadPastConversations();
+        }
+
+        // ─── SIDEBAR ───
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+        }
+
+        // addRecentConversation is no longer needed — agent tree handles this
+
+        // ─── DARK MODE ───
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            document.getElementById('darkIcon').textContent = isDark ? '☀️' : '🌙';
+            document.getElementById('btnDark').classList.toggle('active', isDark);
+            localStorage.setItem('krew-dark', isDark);
+        }
+
+        // Restore dark mode
+        if (localStorage.getItem('krew-dark') === 'true') {
+            document.body.classList.add('dark');
+            document.getElementById('darkIcon').textContent = '☀️';
+            document.getElementById('btnDark').classList.add('active');
+        }
+
+        // ─── SOUND ───
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').textContent = soundEnabled ? '🔔' : '🔕';
+            document.getElementById('btnSound').classList.toggle('active', soundEnabled);
+        }
+
+        function playNotifSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = 880;
+                osc.type = 'sine';
+                gain.gain.value = 0.08;
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+                osc.stop(ctx.currentTime + 0.15);
+            } catch (e) {}
+        }
+
+        // ─── COMMAND PALETTE ───
+        const commands = [
+            { icon: '📅', label: 'Check leave balance', action: () => sendQuickMessage('What is my leave balance?') },
+            { icon: '🏖️', label: 'Request vacation', action: () => { openContextPanel('formLeaveRequest'); closeCommandPalette(); } },
+            { icon: '👤', label: 'View my profile', action: () => sendQuickMessage('Show me my employee information') },
+            { icon: '📋', label: 'Company leave policy', action: () => sendQuickMessage('What is the company leave policy?') },
+            { icon: '🔄', label: 'Reset conversation', action: () => { resetConversation(); closeCommandPalette(); } },
+            { icon: '🌙', label: 'Toggle dark mode', action: () => { toggleDarkMode(); closeCommandPalette(); } },
+        ];
+
+        function openCommandPalette() {
+            document.getElementById('cmdOverlay').classList.add('open');
+            const input = document.getElementById('cmdInput');
+            input.value = '';
+            input.focus();
+            renderCommands('');
+        }
+
+        function closeCommandPalette() {
+            document.getElementById('cmdOverlay').classList.remove('open');
+        }
+
+        function renderCommands(filter) {
+            const list = document.getElementById('cmdList');
+            const filtered = commands.filter(c => c.label.toLowerCase().includes(filter.toLowerCase()));
+            list.innerHTML = filtered.map((c, i) => `
+                <div class="cmd-item" onclick="commands[${commands.indexOf(c)}].action(); closeCommandPalette();">
+                    <span class="cmd-icon">${c.icon}</span>
+                    <span class="cmd-label">${c.label}</span>
+                </div>
+            `).join('');
+        }
+
+        function filterCommands(val) { renderCommands(val); }
+
+        function handleCmdKey(e) {
+            if (e.key === 'Escape') closeCommandPalette();
+            if (e.key === 'Enter') {
+                const first = document.querySelector('.cmd-item');
+                if (first) first.click();
+            }
+        }
+
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                openCommandPalette();
+            }
+            if (e.key === 'Escape') {
+                if (document.getElementById('cmdOverlay').classList.contains('open')) {
+                    closeCommandPalette();
+                } else if (currentContextForm) {
+                    closeContextPanel();
+                }
+            }
+        });
+
+        // ─── INPUT ───
+        function handleInputKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResize(el) {
+            el.style.height = '24px';
+            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+        }
+
+        // ─── UTILS ───
+        function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+        function formatDate(d) { return d.toISOString().split('T')[0]; }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), 2500);
+        }
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        // ─── RESPONSIVE ───
+        function handleResize() {
+            const w = window.innerWidth;
+            document.getElementById('mobileSidebarBtn').style.display = w <= 1100 ? 'flex' : 'none';
+        }
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        // ─── CHAT LOG (sidebar agent tree) ───
+        async function loadPastConversations() {
+            if (!authToken) {
+                buildAgentTree([]);
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/conversations`, { headers: { 'Authorization': 'Bearer ' + authToken } });
+                if (handleAuthError(res)) return;
+                const conversations = await res.json();
+                buildAgentTree(conversations);
+            } catch (err) {
+                console.error('Failed to load conversations:', err);
+                buildAgentTree([]);
+            }
+
+            // Also load teams
+            loadTeams();
+        }
+
+        // ─── TEAMS UI ───
+        async function loadTeams() {
+            if (!authToken || !authTenantId) {
+                document.getElementById('teamsLabel').style.display = 'none';
+                document.getElementById('teamTree').innerHTML = '';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/v1/teams?tenant_id=${authTenantId}`, {
+                    headers: getAuthHeaders(),
+                });
+                if (!res.ok) throw new Error('Failed to load teams');
+                const data = await res.json();
+                buildTeamTree(data.teams || []);
+            } catch (err) {
+                console.error('Failed to load teams:', err);
+                document.getElementById('teamsLabel').style.display = 'none';
+            }
+        }
+
+        function buildTeamTree(teams) {
+            const tree = document.getElementById('teamTree');
+            const label = document.getElementById('teamsLabel');
+            tree.innerHTML = '';
+
+            if (!teams.length) {
+                label.style.display = 'none';
+                return;
+            }
+            label.style.display = '';
+
+            teams.forEach(team => {
+                const section = document.createElement('div');
+                section.className = 'team-section';
+                section.dataset.deptId = team.department_id;
+
+                const humanIcon = '&#128100;';
+                const robotIcon = '&#129302;';
+
+                section.innerHTML = `
+                    <div class="team-header" onclick="toggleTeamSection('${team.department_id}')">
+                        <div class="team-icon">${team.name.charAt(0)}</div>
+                        <div class="team-info">
+                            <div class="team-name">${team.name}</div>
+                            <div class="team-count">${team.human_count}${humanIcon} ${team.ai_agent_count}${robotIcon}</div>
+                        </div>
+                        <svg class="team-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    <div class="team-members" id="teamMembers_${team.department_id}"></div>
+                `;
+                tree.appendChild(section);
+            });
+        }
+
+        async function toggleTeamSection(deptId) {
+            const section = document.querySelector(`.team-section[data-dept-id="${deptId}"]`);
+            if (!section) return;
+
+            const wasOpen = section.classList.contains('open');
+
+            // Close all team sections
+            document.querySelectorAll('.team-section').forEach(s => {
+                s.classList.remove('open');
+                s.querySelector('.team-header')?.classList.remove('expanded');
+            });
+
+            if (!wasOpen) {
+                section.classList.add('open');
+                section.querySelector('.team-header')?.classList.add('expanded');
+                // Load members if not already loaded
+                const membersEl = document.getElementById(`teamMembers_${deptId}`);
+                if (!membersEl.children.length) {
+                    await loadTeamMembers(deptId, membersEl);
+                }
+            }
+        }
+
+        async function loadTeamMembers(deptId, container) {
+            try {
+                const res = await fetch(`/api/v1/teams/${deptId}/members?tenant_id=${authTenantId}`, {
+                    headers: getAuthHeaders(),
+                });
+                if (!res.ok) throw new Error('Failed to load members');
+                const data = await res.json();
+                renderTeamMembers(data.members || [], container);
+            } catch (err) {
+                console.error('Failed to load team members:', err);
+                container.innerHTML = '<div style="padding:8px;font-size:11px;color:var(--text3)">Failed to load members</div>';
+            }
+        }
+
+        function renderTeamMembers(members, container) {
+            container.innerHTML = '';
+
+            members.forEach(m => {
+                const isAI = m.type === 'ai_agent';
+                const item = document.createElement('div');
+                item.className = 'member-item';
+                if (isAI) {
+                    item.onclick = () => startDeptAgentChat(m.agent_name, m.name, m.job_title);
+                }
+
+                const initial = m.name.charAt(0).toUpperCase();
+                const avatarClass = isAI ? 'ai' : 'human';
+                const statusClass = 'online';
+
+                item.innerHTML = `
+                    <div class="member-avatar ${avatarClass}">
+                        ${initial}
+                        <div class="status-dot ${statusClass}"></div>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">${m.name}</div>
+                        <div class="member-role">${m.job_title || ''}</div>
+                    </div>
+                    ${isAI ? '<span class="member-badge ai-badge">AI</span>' : ''}
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function startDeptAgentChat(agentName, displayName, roleTitle) {
+            if (!selectedEmployee) {
+                showToast('Select an employee first');
+                return;
+            }
+
+            // Reset conversation state
+            selectedAgent = agentName;
+            activeConversationId = null;
+
+            // Update header
+            const header = document.querySelector('.chat-agent-name');
+            const roleEl = document.querySelector('.chat-agent-role');
+            if (header) header.textContent = displayName;
+            if (roleEl) roleEl.textContent = roleTitle || 'Department Agent';
+
+            // Clear messages
+            const msgs = document.getElementById('messages');
+            msgs.innerHTML = '';
+
+            // Add greeting
+            const isAr = selectedLanguage === 'ar';
+            const greeting = isAr
+                ? `مرحبا! أنا ${displayName}. كيف أقدر أساعدك؟`
+                : `Hi! I'm ${displayName}. How can I help you?`;
+            addMessage('agent', null, greeting, isAr);
+
+            // Enable input
+            const input = document.getElementById('messageInput');
+            input.disabled = false;
+            input.placeholder = isAr ? 'اكتب رسالتك هنا...' : `Message ${displayName}...`;
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+
+        // ─── TABLE ROW CLICK → drill down ───
+        document.getElementById('messages').addEventListener('click', function(e) {
+            const tr = e.target.closest('tr[data-row-label]');
+            if (!tr) return;
+            const label = tr.getAttribute('data-row-label');
+            const header = tr.getAttribute('data-label-header') || '';
+            if (!label) return;
+            // Build a natural drill-down query
+            const query = header
+                ? `Tell me more about ${label}`
+                : `Show details for ${label}`;
+            sendQuickMessage(query);
+        });
+
+        // ─── INIT ───
+        buildAgentTree([]);  // Render empty agent tree on load
+        verifyStoredToken();
+    </script>
+</body>
+</html>

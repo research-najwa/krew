@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krew</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #09090b;
+            --surface: #131316;
+            --surface2: #1a1a1f;
+            --surface3: #222228;
+            --border: rgba(255,255,255,0.06);
+            --border2: rgba(255,255,255,0.12);
+            --text: #fafafa;
+            --text2: rgba(255,255,255,0.55);
+            --text3: rgba(255,255,255,0.3);
+            --text4: rgba(255,255,255,0.1);
+            --accent: #818cf8;
+            --accent2: #6366f1;
+            --green: #4ade80;
+            --green-dim: rgba(74,222,128,0.15);
+            --orange: #fb923c;
+            --orange-dim: rgba(251,146,60,0.15);
+            --red: #f87171;
+            --red-dim: rgba(248,113,113,0.15);
+            --cyan: #22d3ee;
+            --cyan-dim: rgba(34,211,238,0.15);
+            --purple: #c084fc;
+            --purple-dim: rgba(192,132,252,0.15);
+            --pink: #f472b6;
+            --pink-dim: rgba(244,114,182,0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Noise ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Layout ── */
+        .shell {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── Desktop Sidebar ── */
+        .sidebar {
+            width: 260px;
+            border-right: 1px solid var(--border);
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            flex-shrink: 0;
+            background: var(--bg);
+        }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 8px;
+            margin-bottom: 28px;
+        }
+        .logo-mark {
+            width: 32px; height: 32px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 14px; color: white;
+        }
+        .logo-text { font-size: 17px; font-weight: 700; letter-spacing: -0.5px; }
+
+        .sidebar-section {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text3);
+            padding: 0 8px;
+            margin: 20px 0 8px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+        .sidebar-link:hover { background: var(--surface); color: var(--text); }
+        .sidebar-link.active { background: var(--surface2); color: var(--text); }
+        .sidebar-link .sl-icon { font-size: 16px; width: 20px; text-align: center; }
+        .sidebar-link .sl-badge {
+            margin-left: auto;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        /* Agent list in sidebar */
+        .agent-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .agent-item:hover { background: var(--surface); }
+        .agent-av {
+            width: 30px; height: 30px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700; color: white;
+            position: relative; flex-shrink: 0;
+        }
+        .agent-av::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            border: 2px solid var(--bg);
+            animation: breathe 3s ease infinite;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        .agent-meta { flex: 1; min-width: 0; }
+        .agent-name { font-size: 13px; font-weight: 500; }
+        .agent-role { font-size: 10px; color: var(--text3); }
+
+        .sidebar-spacer { flex: 1; }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+        .sidebar-user:hover { background: var(--surface); }
+        .user-av {
+            width: 30px; height: 30px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700; color: white;
+        }
+        .user-name { font-size: 13px; font-weight: 500; }
+        .user-role { font-size: 10px; color: var(--text3); }
+
+        /* ── Main Stream ── */
+        .stream {
+            flex: 1;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ── Sticky Metrics Strip ── */
+        .metrics-strip {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(9,9,11,0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 0;
+            margin: 0 -24px;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+        .metrics-row {
+            display: flex;
+            gap: 0;
+        }
+        .metric-cell {
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            padding: 4px 0;
+            border-right: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .metric-cell:last-child { border-right: none; }
+        .metric-cell:hover .metric-val { opacity: 1; }
+        .metric-val {
+            font-size: 32px;
+            font-weight: 200;
+            letter-spacing: -1px;
+            line-height: 1;
+            opacity: 0.85;
+            transition: opacity 0.2s;
+            background: linear-gradient(180deg, var(--text) 30%, rgba(255,255,255,0.4) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .metric-label {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 4px;
+        }
+
+        /* ── Greeting ── */
+        .greeting-block {
+            padding: 32px 0 24px;
+        }
+        .greeting-block h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .greeting-block p {
+            font-size: 14px;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+        .greeting-block p strong { color: var(--orange); font-weight: 600; }
+
+        /* ── Feed Post ── */
+        .post {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.25s;
+            background: var(--surface);
+        }
+        .post:hover {
+            border-color: var(--border2);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 20px 0;
+        }
+        .post-av {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: white;
+            flex-shrink: 0;
+        }
+        .post-agent-name { font-size: 13px; font-weight: 600; }
+        .post-agent-role { font-size: 11px; color: var(--text3); }
+        .post-time {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text3);
+        }
+        .post-priority {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .post-body {
+            padding: 14px 20px;
+        }
+        .post-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: -0.2px;
+        }
+        .post-text {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.7;
+        }
+        .post-text strong { color: var(--text); font-weight: 600; }
+
+        /* Post visuals */
+        .post-visual {
+            padding: 0 20px;
+            margin-bottom: 4px;
+        }
+
+        /* Inline chart */
+        .inline-chart {
+            background: var(--surface2);
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .inline-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 48px;
+        }
+        .inline-bar {
+            flex: 1;
+            border-radius: 3px 3px 0 0;
+            transition: height 1s ease;
+        }
+        .inline-spark-svg {
+            width: 100%;
+            height: 48px;
+        }
+
+        /* Big inline stat */
+        .inline-stat {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            padding: 8px 0;
+        }
+        .inline-stat-num {
+            font-size: 48px;
+            font-weight: 200;
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+        .inline-stat-unit {
+            font-size: 14px;
+            color: var(--text3);
+            font-weight: 500;
+        }
+
+        /* Inline progress */
+        .inline-progress { margin-top: 10px; }
+        .ip-row { margin-bottom: 10px; }
+        .ip-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+        .ip-name { font-weight: 500; }
+        .ip-pct { font-weight: 600; }
+        .ip-track { height: 5px; background: rgba(255,255,255,0.04); border-radius: 3px; overflow: hidden; }
+        .ip-fill { height: 100%; border-radius: 3px; transition: width 1.5s ease; }
+
+        /* Post actions */
+        .post-actions {
+            display: flex;
+            gap: 6px;
+            padding: 12px 20px 16px;
+        }
+        .post-btn {
+            padding: 8px 16px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .post-btn-primary {
+            background: var(--accent2);
+            color: white;
+        }
+        .post-btn-primary:hover { background: var(--accent); box-shadow: 0 4px 16px rgba(99,102,241,0.3); }
+        .post-btn-secondary {
+            background: var(--surface2);
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+        .post-btn-secondary:hover { color: var(--text); background: var(--surface3); }
+
+        /* Left accent border */
+        .post-accent-left {
+            border-left: 3px solid;
+            border-radius: 16px;
+        }
+
+        /* ── FAB ── */
+        .fab-wrap {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 8px;
+        }
+        .fab-main {
+            width: 52px; height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent2), #a855f7);
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.4);
+            transition: all 0.3s;
+        }
+        .fab-main:hover { transform: scale(1.08); }
+        .fab-main.open { transform: rotate(45deg); }
+
+        .fab-menu {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 6px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.25s;
+        }
+        .fab-menu.visible {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+        .fab-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px 8px 8px;
+            border-radius: 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .fab-item:hover { background: var(--surface3); border-color: var(--border2); }
+        .fab-item-av {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700; color: white;
+        }
+        .fab-item-text { font-size: 12px; font-weight: 500; }
+
+        /* ── Scroll-reveal ── */
+        .post { opacity: 0; transform: translateY(12px); }
+        .post.visible { opacity: 1; transform: translateY(0); transition: all 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .sidebar { display: none; }
+            .stream { max-width: 100%; padding: 0 16px; }
+        }
+        @media (max-width: 640px) {
+            .metric-val { font-size: 24px; }
+            .metric-label { font-size: 9px; }
+            .post-body { padding: 12px 16px; }
+            .post-actions { padding: 10px 16px 14px; }
+            .inline-stat-num { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="shell">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-mark">K</div>
+            <div class="logo-text">Krew</div>
+        </div>
+
+        <a class="sidebar-link active" href="/home2"><span class="sl-icon">&#9673;</span> My Day <span class="sl-badge">5</span></a>
+        <a class="sidebar-link" href="/chat"><span class="sl-icon">&#128172;</span> Chat</a>
+        <a class="sidebar-link" href="/knowledge"><span class="sl-icon">&#128218;</span> Knowledge</a>
+        <a class="sidebar-link" href="/admin"><span class="sl-icon">&#9881;</span> Admin</a>
+
+        <div class="sidebar-section">AI Team</div>
+
+        <div class="agent-item" onclick="go('@deema ')">
+            <div class="agent-av" style="background:linear-gradient(135deg,#4f46e5,#818cf8)">D</div>
+            <div class="agent-meta">
+                <div class="agent-name">Deema</div>
+                <div class="agent-role">Employee Services</div>
+            </div>
+        </div>
+        <div class="agent-item" onclick="go('@ahmad ')">
+            <div class="agent-av" style="background:linear-gradient(135deg,#1e3a5f,#3b82f6)">A</div>
+            <div class="agent-meta">
+                <div class="agent-name">Ahmad</div>
+                <div class="agent-role">CHRO Analytics</div>
+            </div>
+        </div>
+        <div class="agent-item" onclick="go('@mohammad ')">
+            <div class="agent-av" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">M</div>
+            <div class="agent-meta">
+                <div class="agent-name">Mohammad</div>
+                <div class="agent-role">Recruitment</div>
+            </div>
+        </div>
+        <div class="agent-item" onclick="go('@waleed ')">
+            <div class="agent-av" style="background:linear-gradient(135deg,#ea580c,#fb923c)">W</div>
+            <div class="agent-meta">
+                <div class="agent-name">Waleed</div>
+                <div class="agent-role">Onboarding</div>
+            </div>
+        </div>
+        <div class="agent-item" onclick="go('@yara ')">
+            <div class="agent-av" style="background:linear-gradient(135deg,#0d9488,#2dd4bf)">Y</div>
+            <div class="agent-meta">
+                <div class="agent-name">Yara</div>
+                <div class="agent-role">AI Architect</div>
+            </div>
+        </div>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-user">
+            <div class="user-av">AA</div>
+            <div>
+                <div class="user-name">Ahmed Al-Rashidi</div>
+                <div class="user-role">Engineering Manager</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── MAIN STREAM ── -->
+    <main class="stream">
+
+        <!-- Sticky Metrics -->
+        <div class="metrics-strip">
+            <div class="metrics-row">
+                <div class="metric-cell" onclick="go('@ahmad headcount summary')">
+                    <div class="metric-val" style="color:var(--cyan)">247</div>
+                    <div class="metric-label" style="color:var(--text3)">Headcount</div>
+                </div>
+                <div class="metric-cell" onclick="go('@ahmad diversity metrics')">
+                    <div class="metric-val" style="color:var(--green)">68%</div>
+                    <div class="metric-label" style="color:var(--text3)">Saudization</div>
+                </div>
+                <div class="metric-cell" onclick="go('@ahmad predict attrition risk')">
+                    <div class="metric-val" style="color:var(--orange)">35%</div>
+                    <div class="metric-label" style="color:var(--text3)">Attrition</div>
+                </div>
+                <div class="metric-cell" onclick="go('@deema my leave balance')">
+                    <div class="metric-val" style="color:var(--red)">2d</div>
+                    <div class="metric-label" style="color:var(--text3)">Leave Left</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Greeting -->
+        <div class="greeting-block">
+            <h1 id="greetH1">Good morning, Ahmed</h1>
+            <p><strong>5 items</strong> need your attention today</p>
+        </div>
+
+        <!-- POST 1: Deema — Leave Warning -->
+        <div class="post post-accent-left" style="border-left-color:var(--red)" onclick="go('@deema my leave balance')">
+            <div class="post-header">
+                <div class="post-av" style="background:linear-gradient(135deg,#4f46e5,#818cf8)">D</div>
+                <div>
+                    <div class="post-agent-name">Deema</div>
+                    <div class="post-agent-role">Employee Services</div>
+                </div>
+                <span class="post-priority" style="color:var(--red);background:var(--red-dim)">Urgent</span>
+                <div class="post-time">2 min ago</div>
+            </div>
+            <div class="post-body">
+                <div class="post-title">Your leave balance is running critically low</div>
+                <div class="post-text">
+                    You have <strong>2 days</strong> of annual leave remaining. Your balance resets on <strong>June 30</strong>. You've used 19 of 21 days this year.
+                </div>
+                <div class="inline-stat">
+                    <div class="inline-stat-num" style="color:var(--red)">2</div>
+                    <div class="inline-stat-unit">days remaining of 21</div>
+                </div>
+            </div>
+            <div class="post-visual">
+                <div class="inline-chart">
+                    <div class="inline-bars" id="leaveBars"></div>
+                </div>
+            </div>
+            <div class="post-actions">
+                <button class="post-btn post-btn-primary" onclick="event.stopPropagation();go('@deema request annual leave')">Request Leave</button>
+                <button class="post-btn post-btn-secondary" onclick="event.stopPropagation();go('@deema show leave history')">View History</button>
+            </div>
+        </div>
+
+        <!-- POST 2: Ahmad — Attrition -->
+        <div class="post post-accent-left" style="border-left-color:var(--orange)" onclick="go('@ahmad predict attrition risk engineering')">
+            <div class="post-header">
+                <div class="post-av" style="background:linear-gradient(135deg,#1e3a5f,#3b82f6)">A</div>
+                <div>
+                    <div class="post-agent-name">Ahmad</div>
+                    <div class="post-agent-role">CHRO Analytics</div>
+                </div>
+                <span class="post-priority" style="color:var(--orange);background:var(--orange-dim)">Alert</span>
+                <div class="post-time">18 min ago</div>
+            </div>
+            <div class="post-body">
+                <div class="post-title">Attrition risk rising in Engineering</div>
+                <div class="post-text">
+                    Risk score increased from <strong>23%</strong> to <strong>35%</strong> this month. Key drivers: 2 employees past salary review date, below-market compensation detected for 3 roles.
+                </div>
+            </div>
+            <div class="post-visual">
+                <div class="inline-chart">
+                    <svg class="inline-spark-svg" id="attritionSpark" viewBox="0 0 400 48" preserveAspectRatio="none"></svg>
+                </div>
+            </div>
+            <div class="post-actions">
+                <button class="post-btn post-btn-primary" onclick="event.stopPropagation();go('@ahmad detailed attrition analysis')">See Analysis</button>
+                <button class="post-btn post-btn-secondary" onclick="event.stopPropagation();go('@ahmad recommend retention actions')">Recommendations</button>
+            </div>
+        </div>
+
+        <!-- POST 3: Mohammad — Candidates -->
+        <div class="post post-accent-left" style="border-left-color:var(--purple)" onclick="go('@mohammad show pending candidates')">
+            <div class="post-header">
+                <div class="post-av" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">M</div>
+                <div>
+                    <div class="post-agent-name">Mohammad</div>
+                    <div class="post-agent-role">Recruitment</div>
+                </div>
+                <span class="post-priority" style="color:var(--purple);background:var(--purple-dim)">Action</span>
+                <div class="post-time">1 hour ago</div>
+            </div>
+            <div class="post-body">
+                <div class="post-title">3 candidates waiting for your interview feedback</div>
+                <div class="post-text">
+                    <strong>Sr. Backend Engineer</strong> — interviews completed 2+ days ago. Your team's average time-to-feedback is 1.5 days. These are overdue.
+                </div>
+                <div style="display:flex;gap:24px;margin-top:14px">
+                    <div>
+                        <div class="inline-stat-num" style="color:var(--purple);font-size:36px">3</div>
+                        <div style="font-size:11px;color:var(--text3)">Pending Review</div>
+                    </div>
+                    <div>
+                        <div class="inline-stat-num" style="color:var(--text2);font-size:36px">12</div>
+                        <div style="font-size:11px;color:var(--text3)">Total Pipeline</div>
+                    </div>
+                    <div>
+                        <div class="inline-stat-num" style="color:var(--orange);font-size:36px">18d</div>
+                        <div style="font-size:11px;color:var(--text3)">Avg Time-to-Hire</div>
+                    </div>
+                </div>
+            </div>
+            <div class="post-actions">
+                <button class="post-btn post-btn-primary" onclick="event.stopPropagation();go('@mohammad review candidates for backend engineer')">Review Now</button>
+                <button class="post-btn post-btn-secondary" onclick="event.stopPropagation();go('@mohammad recruitment pipeline overview')">Full Pipeline</button>
+            </div>
+        </div>
+
+        <!-- POST 4: Waleed — Onboarding -->
+        <div class="post post-accent-left" style="border-left-color:var(--green)" onclick="go('@waleed onboarding status')">
+            <div class="post-header">
+                <div class="post-av" style="background:linear-gradient(135deg,#ea580c,#fb923c)">W</div>
+                <div>
+                    <div class="post-agent-name">Waleed</div>
+                    <div class="post-agent-role">Onboarding</div>
+                </div>
+                <span class="post-priority" style="color:var(--green);background:var(--green-dim)">On Track</span>
+                <div class="post-time">3 hours ago</div>
+            </div>
+            <div class="post-body">
+                <div class="post-title">2 new hires onboarding this week</div>
+                <div class="post-text">
+                    <strong>Sara Al-Otaibi</strong> (Marketing) starts Monday. <strong>Rayan Al-Harbi</strong> (Engineering) starts Wednesday. IT access and equipment requests have been submitted.
+                </div>
+                <div class="inline-progress">
+                    <div class="ip-row">
+                        <div class="ip-header"><span class="ip-name">Sara Al-Otaibi</span><span class="ip-pct" style="color:var(--green)">85%</span></div>
+                        <div class="ip-track"><div class="ip-fill" style="width:85%;background:var(--green)"></div></div>
+                    </div>
+                    <div class="ip-row">
+                        <div class="ip-header"><span class="ip-name">Rayan Al-Harbi</span><span class="ip-pct" style="color:var(--orange)">55%</span></div>
+                        <div class="ip-track"><div class="ip-fill" style="width:55%;background:var(--orange)"></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="post-actions">
+                <button class="post-btn post-btn-primary" onclick="event.stopPropagation();go('@waleed prepare onboarding Sara')">Prepare Sara</button>
+                <button class="post-btn post-btn-secondary" onclick="event.stopPropagation();go('@waleed onboarding checklist Rayan')">Check Rayan</button>
+            </div>
+        </div>
+
+        <!-- POST 5: Ahmad — GOSI -->
+        <div class="post post-accent-left" style="border-left-color:var(--cyan)" onclick="go('@ahmad audit gosi compliance')">
+            <div class="post-header">
+                <div class="post-av" style="background:linear-gradient(135deg,#1e3a5f,#3b82f6)">A</div>
+                <div>
+                    <div class="post-agent-name">Ahmad</div>
+                    <div class="post-agent-role">CHRO Analytics</div>
+                </div>
+                <span class="post-priority" style="color:var(--cyan);background:var(--cyan-dim)">Review</span>
+                <div class="post-time">Yesterday</div>
+            </div>
+            <div class="post-body">
+                <div class="post-title">GOSI compliance audit — 2 discrepancies found</div>
+                <div class="post-text">
+                    Monthly GOSI audit detected <strong>2 employees</strong> with salary mismatches between payroll and GOSI registration. Total exposure: <strong>SAR 3,200/mo</strong>. Requires HR review before next filing.
+                </div>
+                <div style="display:flex;gap:24px;margin-top:14px">
+                    <div>
+                        <div class="inline-stat-num" style="color:var(--green);font-size:36px">82%</div>
+                        <div style="font-size:11px;color:var(--text3)">Compliant</div>
+                    </div>
+                    <div>
+                        <div class="inline-stat-num" style="color:var(--red);font-size:36px">2</div>
+                        <div style="font-size:11px;color:var(--text3)">Gaps Found</div>
+                    </div>
+                    <div>
+                        <div class="inline-stat-num" style="color:var(--orange);font-size:36px">3.2K</div>
+                        <div style="font-size:11px;color:var(--text3)">SAR/mo Exposure</div>
+                    </div>
+                </div>
+            </div>
+            <div class="post-actions">
+                <button class="post-btn post-btn-primary" onclick="event.stopPropagation();go('@ahmad gosi compliance audit details')">View Details</button>
+                <button class="post-btn post-btn-secondary" onclick="event.stopPropagation();go('@ahmad forecast budget impact of gosi gaps')">Budget Impact</button>
+            </div>
+        </div>
+
+        <!-- POST 6: Yara — Weekly Report -->
+        <div class="post" onclick="go('@yara governance report')">
+            <div class="post-header">
+                <div class="post-av" style="background:linear-gradient(135deg,#0d9488,#2dd4bf)">Y</div>
+                <div>
+                    <div class="post-agent-name">Yara</div>
+                    <div class="post-agent-role">AI Workforce Architect</div>
+                </div>
+                <div class="post-time">Yesterday</div>
+            </div>
+            <div class="post-body">
+                <div class="post-title">Weekly AI workforce report</div>
+                <div class="post-text">
+                    Your AI team handled <strong>847 conversations</strong> this week with a <strong>91% resolution rate</strong>. Escalation rate dropped 3% compared to last week. Deema led with 412 conversations.
+                </div>
+            </div>
+            <div class="post-visual">
+                <div class="inline-chart">
+                    <div class="inline-bars" id="agentBars"></div>
+                    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:6px;padding:0 2px">
+                        <span>Deema</span><span>Mohammad</span><span>Waleed</span><span>Ahmad</span><span>Yara</span>
+                    </div>
+                </div>
+            </div>
+            <div class="post-actions">
+                <button class="post-btn post-btn-primary" onclick="event.stopPropagation();go('@yara governance report this week')">Full Report</button>
+                <button class="post-btn post-btn-secondary" onclick="event.stopPropagation();go('@yara detect drift all agents')">Check Drift</button>
+            </div>
+        </div>
+
+        <div style="height: 120px;"></div>
+    </main>
+</div>
+
+<!-- FAB -->
+<div class="fab-wrap">
+    <button class="fab-main" id="fabBtn" onclick="toggleFab()">+</button>
+    <div class="fab-menu" id="fabMenu">
+        <div class="fab-item" onclick="go('@deema ')"><div class="fab-item-av" style="background:linear-gradient(135deg,#4f46e5,#818cf8)">D</div><span class="fab-item-text">Ask Deema</span></div>
+        <div class="fab-item" onclick="go('@ahmad ')"><div class="fab-item-av" style="background:linear-gradient(135deg,#1e3a5f,#3b82f6)">A</div><span class="fab-item-text">Ask Ahmad</span></div>
+        <div class="fab-item" onclick="go('@mohammad ')"><div class="fab-item-av" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">M</div><span class="fab-item-text">Ask Mohammad</span></div>
+        <div class="fab-item" onclick="go('@waleed ')"><div class="fab-item-av" style="background:linear-gradient(135deg,#ea580c,#fb923c)">W</div><span class="fab-item-text">Ask Waleed</span></div>
+        <div class="fab-item" onclick="go('@yara ')"><div class="fab-item-av" style="background:linear-gradient(135deg,#0d9488,#2dd4bf)">Y</div><span class="fab-item-text">Ask Yara</span></div>
+    </div>
+</div>
+
+<script>
+    // ── Greeting ──
+    const h = new Date().getHours();
+    document.getElementById('greetH1').textContent =
+        (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening') + ', Ahmed';
+
+    // ── Navigate ──
+    function go(msg) {
+        if (msg && msg.trim()) sessionStorage.setItem('krew_prefill', msg.trim());
+        window.location.href = '/chat';
+    }
+
+    // ── FAB ──
+    let fabOpen = false;
+    function toggleFab() {
+        fabOpen = !fabOpen;
+        document.getElementById('fabBtn').classList.toggle('open', fabOpen);
+        document.getElementById('fabMenu').classList.toggle('visible', fabOpen);
+    }
+
+    // ── Scroll reveal ──
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                observer.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.post').forEach(p => observer.observe(p));
+
+    // ── Leave bars ──
+    (function(){
+        const c = document.getElementById('leaveBars');
+        const vals = [3,2,1,2,3,2,2,1,2,0.5];
+        const mx = Math.max(...vals);
+        vals.forEach((v,i) => {
+            const bar = document.createElement('div');
+            bar.className = 'inline-bar';
+            bar.style.height = Math.max((v/mx)*100, 8) + '%';
+            bar.style.background = i >= 8 ? 'var(--red)' : 'rgba(255,255,255,0.08)';
+            c.appendChild(bar);
+        });
+    })();
+
+    // ── Attrition sparkline ──
+    (function(){
+        const svg = document.getElementById('attritionSpark');
+        const pts = [18,20,19,22,21,23,25,28,31,35];
+        const mx = 50, w = 400, ht = 48, p = 4;
+        const coords = pts.map((v,i) => [(p + (i/(pts.length-1))*(w-p*2)), (ht-p-(v/mx)*(ht-p*2))]);
+        const d = coords.map((c,i) => (i?'L':'M')+c[0]+','+c[1]).join(' ');
+
+        const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+        const grad = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+        grad.id='g1'; grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+        grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+        let s = document.createElementNS('http://www.w3.org/2000/svg','stop');
+        s.setAttribute('offset','0%'); s.setAttribute('stop-color','var(--orange)'); s.setAttribute('stop-opacity','0.25');
+        grad.appendChild(s);
+        s = document.createElementNS('http://www.w3.org/2000/svg','stop');
+        s.setAttribute('offset','100%'); s.setAttribute('stop-color','var(--orange)'); s.setAttribute('stop-opacity','0');
+        grad.appendChild(s);
+        defs.appendChild(grad); svg.appendChild(defs);
+
+        const area = document.createElementNS('http://www.w3.org/2000/svg','path');
+        area.setAttribute('d', d+` L${coords.at(-1)[0]},${ht} L${coords[0][0]},${ht} Z`);
+        area.setAttribute('fill','url(#g1)');
+        svg.appendChild(area);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg','path');
+        line.setAttribute('d',d); line.setAttribute('fill','none');
+        line.setAttribute('stroke','var(--orange)'); line.setAttribute('stroke-width','2');
+        line.setAttribute('stroke-linecap','round');
+        svg.appendChild(line);
+
+        const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dot.setAttribute('cx',coords.at(-1)[0]); dot.setAttribute('cy',coords.at(-1)[1]);
+        dot.setAttribute('r','4'); dot.setAttribute('fill','var(--orange)');
+        svg.appendChild(dot);
+    })();
+
+    // ── Agent bars ──
+    (function(){
+        const c = document.getElementById('agentBars');
+        const vals = [412,186,128,89,32];
+        const colors = ['#818cf8','#a78bfa','#fb923c','#3b82f6','#2dd4bf'];
+        const mx = Math.max(...vals);
+        vals.forEach((v,i) => {
+            const bar = document.createElement('div');
+            bar.className = 'inline-bar';
+            bar.style.height = ((v/mx)*100) + '%';
+            bar.style.background = colors[i];
+            bar.style.opacity = '0.7';
+            c.appendChild(bar);
+        });
+    })();
+</script>
+
+</body>
+</html>

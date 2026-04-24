@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krew · Nerve Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg: #0a0a10;
+  --surface: #12121a;
+  --surface2: #1a1a25;
+  --surface3: #232330;
+  --border: #2a2a38;
+  --text: #e8e8f0;
+  --text-dim: #8a8a9a;
+  --text-faint: #5a5a6a;
+  --accent: #6366f1;
+  --accent-glow: rgba(99,102,241,0.4);
+  --deema: #6366f1;
+  --mohammad: #10b981;
+  --waleed: #f59e0b;
+  --yara: #f43f5e;
+  --ahmad: #3b82f6;
+  --green: #10b981;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --blue: #3b82f6;
+}
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  font-size: 14px;
+}
+
+/* ============ AGENT STATUS RAIL (far left) ============ */
+.rail {
+  width: 64px;
+  background: #06060c;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.rail-logo {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: white; font-size: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+}
+.rail-divider { width: 24px; height: 1px; background: var(--border); margin: 4px 0; }
+.rail-agent {
+  position: relative;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; color: white;
+  cursor: pointer;
+  transition: all .2s;
+}
+.rail-agent::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all .3s;
+}
+.rail-agent.working::before {
+  border-color: currentColor;
+  animation: pulse 2s ease-in-out infinite;
+}
+.rail-agent.active::before {
+  border-color: var(--text);
+  border-width: 2.5px;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.6; }
+}
+.rail-agent[data-agent="deema"] { background: var(--deema); color: var(--deema); }
+.rail-agent[data-agent="mohammad"] { background: var(--mohammad); color: var(--mohammad); }
+.rail-agent[data-agent="waleed"] { background: var(--waleed); color: var(--waleed); }
+.rail-agent[data-agent="yara"] { background: var(--yara); color: var(--yara); }
+.rail-agent[data-agent="ahmad"] { background: var(--ahmad); color: var(--ahmad); }
+.rail-agent span { color: white; }
+.rail-agent .dot {
+  position: absolute;
+  bottom: -2px; right: -2px;
+  width: 12px; height: 12px;
+  background: var(--green);
+  border: 2px solid #06060c;
+  border-radius: 50%;
+}
+.rail-tooltip {
+  position: absolute;
+  left: 60px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 10px;
+  white-space: nowrap;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .2s;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.rail-tooltip strong { display: block; margin-bottom: 2px; color: var(--text); }
+.rail-tooltip span { color: var(--text-dim); }
+.rail-agent:hover .rail-tooltip { opacity: 1; transform: translateX(4px); }
+
+/* ============ SIDEBAR (channels/threads) ============ */
+.sidebar {
+  width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.sidebar-header {
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.workspace-name {
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.workspace-name svg { width: 16px; height: 16px; color: var(--text-dim); }
+.workspace-meta { font-size: 11px; color: var(--text-dim); }
+.workspace-meta .pill {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.sidebar-search {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-search input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
+.sidebar-search input::placeholder { color: var(--text-faint); }
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.section {
+  margin-bottom: 14px;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 18px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  letter-spacing: 0.5px;
+}
+.section-title .add {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-faint);
+  transition: color .2s;
+}
+.section-title .add:hover { color: var(--text); }
+.channel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 18px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-dim);
+  transition: all .15s;
+  border-left: 2px solid transparent;
+}
+.channel:hover { background: var(--surface2); color: var(--text); }
+.channel.active {
+  background: rgba(99,102,241,0.15);
+  color: var(--text);
+  border-left-color: var(--accent);
+}
+.channel .icon {
+  width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.channel .agent-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.channel .badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+.channel .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.channel.unread .name { color: var(--text); font-weight: 600; }
+
+/* ============ MAIN CHAT AREA ============ */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  min-width: 0;
+}
+.chat-header {
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+}
+.chat-header-left { display: flex; align-items: center; gap: 14px; }
+.chat-header-avatar {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--deema), #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+.chat-header-info h2 {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chat-header-info h2 .status-pill {
+  font-size: 10px;
+  background: rgba(16,185,129,0.15);
+  color: var(--green);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.chat-header-info .meta {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.chat-header-actions {
+  display: flex;
+  gap: 8px;
+}
+.icon-btn {
+  width: 34px; height: 34px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all .2s;
+}
+.icon-btn:hover { color: var(--text); background: var(--surface3); }
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Day separator */
+.day-sep {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+  color: var(--text-faint);
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.day-sep::before, .day-sep::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Message */
+.msg {
+  display: flex;
+  gap: 12px;
+  max-width: 760px;
+}
+.msg-avatar {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: white;
+  flex-shrink: 0;
+}
+.msg-avatar.deema { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.msg-avatar.mohammad { background: linear-gradient(135deg, #10b981, #059669); }
+.msg-avatar.waleed { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.msg-avatar.yara { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+.msg-avatar.ahmad { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.msg-avatar.user { background: var(--surface3); color: var(--text); }
+
+.msg-body { flex: 1; min-width: 0; }
+.msg-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.msg-author {
+  font-weight: 600;
+  font-size: 14px;
+}
+.msg-author.deema { color: #a5b4fc; }
+.msg-author.mohammad { color: #6ee7b7; }
+.msg-author.waleed { color: #fcd34d; }
+.msg-author.yara { color: #fda4af; }
+.msg-author.ahmad { color: #93c5fd; }
+.agent-tag {
+  font-size: 10px;
+  background: var(--surface3);
+  color: var(--text-dim);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.msg-time { font-size: 11px; color: var(--text-faint); }
+.msg-text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* Side-note bubble (borrowed from Hive) */
+.side-note {
+  margin-top: 10px;
+  margin-left: 12px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border-left: 3px solid var(--yara);
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.side-note .sn-avatar {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--yara), #e11d48);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+.side-note .sn-author { color: #fda4af; font-weight: 600; }
+.side-note.ahmad { border-left-color: var(--ahmad); }
+.side-note.ahmad .sn-avatar { background: linear-gradient(135deg, var(--ahmad), #2563eb); }
+.side-note.ahmad .sn-author { color: #93c5fd; }
+
+/* Tool execution card */
+.tool-card {
+  margin-top: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 480px;
+}
+.tool-header {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.tool-icon {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: rgba(99,102,241,0.15);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  font-size: 14px;
+}
+.tool-name { font-size: 12px; font-weight: 600; flex: 1; }
+.tool-name code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); }
+.tool-status {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.tool-status.done { background: rgba(16,185,129,0.15); color: var(--green); }
+.tool-status.running { background: rgba(245,158,11,0.15); color: var(--orange); }
+.tool-body { padding: 14px; }
+
+/* Result: leave balance card */
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.result-label { font-size: 12px; color: var(--text-dim); }
+.result-value { font-size: 16px; font-weight: 700; }
+.result-value .unit { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+.bar {
+  height: 6px;
+  background: var(--surface3);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #8b5cf6);
+  border-radius: 4px;
+}
+.tool-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.btn {
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: inherit;
+  transition: all .2s;
+}
+.btn:hover { background: var(--surface3); }
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.btn.primary:hover { background: #5558e3; }
+
+/* Loading dots */
+.loading-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 8px 0;
+}
+.loading-dots span {
+  width: 6px; height: 6px;
+  background: var(--text-dim);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Handoff card */
+.handoff {
+  align-self: center;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.handoff .arrow { color: var(--accent); }
+.handoff strong { color: var(--text); font-weight: 600; }
+
+/* Input area */
+.composer {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.composer-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: border-color .2s;
+}
+.composer-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.composer-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  padding: 14px 16px 8px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: none;
+  min-height: 24px;
+  max-height: 200px;
+}
+.composer-input::placeholder { color: var(--text-faint); }
+.composer-actions {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px 8px;
+  gap: 4px;
+}
+.composer-btn {
+  width: 30px; height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all .15s;
+}
+.composer-btn:hover { background: var(--surface3); color: var(--text); }
+.composer-spacer { flex: 1; }
+.send-btn {
+  background: var(--accent);
+  color: white;
+  width: 32px; height: 32px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.send-btn:hover { background: #5558e3; transform: translateY(-1px); }
+.composer-hint {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 8px;
+  text-align: center;
+}
+.composer-hint kbd {
+  background: var(--surface3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  border: 1px solid var(--border);
+}
+
+/* ============ ACTIVITY FEED (right panel) ============ */
+.activity {
+  width: 320px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.activity-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.activity-header h3 {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.live-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.activity-header p { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+.activity-filters {
+  display: flex;
+  gap: 6px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.filter-chip {
+  font-size: 10px;
+  padding: 4px 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-weight: 600;
+  transition: all .15s;
+}
+.filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.activity-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.activity-item {
+  padding: 12px 20px;
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .15s;
+}
+.activity-item:hover { background: var(--surface2); }
+.activity-avatar {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.activity-content { flex: 1; min-width: 0; }
+.activity-action {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text);
+}
+.activity-action strong { font-weight: 600; }
+.activity-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--text-faint);
+}
+.activity-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.activity-status.done { background: rgba(16,185,129,0.15); color: var(--green); }
+.activity-status.running { background: rgba(245,158,11,0.15); color: var(--orange); }
+.activity-status.info { background: rgba(59,130,246,0.15); color: var(--blue); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--surface3); }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .activity { display: none; }
+}
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .rail { width: 56px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ AGENT STATUS RAIL ============ -->
+<div class="rail">
+  <div class="rail-logo">K</div>
+  <div class="rail-divider"></div>
+
+  <div class="rail-agent active working" data-agent="deema">
+    <span>D</span>
+    <div class="dot"></div>
+    <div class="rail-tooltip">
+      <strong>Deema · Employee Services</strong>
+      <span>Processing leave request for Fahad A.</span>
+    </div>
+  </div>
+
+  <div class="rail-agent working" data-agent="mohammad">
+    <span>M</span>
+    <div class="dot"></div>
+    <div class="rail-tooltip">
+      <strong>Mohammad · Recruitment</strong>
+      <span>Screening 3 candidates for Senior Dev</span>
+    </div>
+  </div>
+
+  <div class="rail-agent" data-agent="waleed">
+    <span>W</span>
+    <div class="dot"></div>
+    <div class="rail-tooltip">
+      <strong>Waleed · Onboarding</strong>
+      <span>Idle · 2 pending tasks</span>
+    </div>
+  </div>
+
+  <div class="rail-agent working" data-agent="yara">
+    <span>Y</span>
+    <div class="dot"></div>
+    <div class="rail-tooltip">
+      <strong>Yara · Compliance</strong>
+      <span>Auditing Saudization quotas</span>
+    </div>
+  </div>
+
+  <div class="rail-agent working" data-agent="ahmad">
+    <span>A</span>
+    <div class="dot"></div>
+    <div class="rail-tooltip">
+      <strong>Ahmad · CHRO</strong>
+      <span>Generating Q2 attrition forecast</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="workspace-name">
+      Krew HQ
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="workspace-meta"><span class="pill"></span>247 employees · 5 agents online</div>
+  </div>
+
+  <div class="sidebar-search">
+    <input placeholder="🔍  Search messages, tools, agents…">
+  </div>
+
+  <div class="sidebar-scroll">
+    <div class="section">
+      <div class="section-title">Agents <span class="add">+</span></div>
+      <div class="channel active">
+        <div class="agent-dot" style="background:var(--deema)"></div>
+        <div class="name">Deema</div>
+      </div>
+      <div class="channel unread">
+        <div class="agent-dot" style="background:var(--mohammad)"></div>
+        <div class="name">Mohammad</div>
+        <div class="badge">3</div>
+      </div>
+      <div class="channel">
+        <div class="agent-dot" style="background:var(--waleed)"></div>
+        <div class="name">Waleed</div>
+      </div>
+      <div class="channel">
+        <div class="agent-dot" style="background:var(--yara)"></div>
+        <div class="name">Yara</div>
+      </div>
+      <div class="channel unread">
+        <div class="agent-dot" style="background:var(--ahmad)"></div>
+        <div class="name">Ahmad</div>
+        <div class="badge">1</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Active Threads <span class="add">+</span></div>
+      <div class="channel">
+        <div class="icon">#</div>
+        <div class="name">leave-request-fahad</div>
+      </div>
+      <div class="channel unread">
+        <div class="icon">#</div>
+        <div class="name">new-hire-sara-onboarding</div>
+        <div class="badge">2</div>
+      </div>
+      <div class="channel">
+        <div class="icon">#</div>
+        <div class="name">q2-attrition-forecast</div>
+      </div>
+      <div class="channel">
+        <div class="icon">#</div>
+        <div class="name">remote-work-policy</div>
+      </div>
+      <div class="channel">
+        <div class="icon">#</div>
+        <div class="name">saudization-audit-mar</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Department Channels</div>
+      <div class="channel">
+        <div class="icon">🏢</div>
+        <div class="name">engineering</div>
+      </div>
+      <div class="channel">
+        <div class="icon">📊</div>
+        <div class="name">finance</div>
+      </div>
+      <div class="channel">
+        <div class="icon">🎨</div>
+        <div class="name">design</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Direct Messages</div>
+      <div class="channel">
+        <div class="agent-dot" style="background:#10b981"></div>
+        <div class="name">Fahad Al-Otaibi</div>
+      </div>
+      <div class="channel">
+        <div class="agent-dot" style="background:#10b981"></div>
+        <div class="name">Sara Al-Qahtani</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ============ MAIN CHAT ============ -->
+<main class="main">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-header-avatar">D</div>
+      <div class="chat-header-info">
+        <h2>Deema <span class="status-pill">● Active · Working</span></h2>
+        <div class="meta">Employee Services · 16 tools available · Working with 247 employees</div>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <button class="icon-btn" title="Pin">📌</button>
+      <button class="icon-btn" title="Search">🔍</button>
+      <button class="icon-btn" title="Settings">⚙️</button>
+    </div>
+  </div>
+
+  <div class="messages">
+    <div class="day-sep">Today · April 6</div>
+
+    <!-- User message -->
+    <div class="msg" style="margin-left:auto;flex-direction:row-reverse;">
+      <div class="msg-avatar user">FA</div>
+      <div class="msg-body" style="text-align:right;">
+        <div class="msg-header" style="justify-content:flex-end;">
+          <span class="msg-time">10:42 AM</span>
+          <span class="msg-author">Fahad (You)</span>
+        </div>
+        <div class="msg-text">Hey Deema, I need to take leave from April 15 to 20 for Eid. Can you check my balance and submit the request?</div>
+      </div>
+    </div>
+
+    <!-- Deema response -->
+    <div class="msg">
+      <div class="msg-avatar deema">D</div>
+      <div class="msg-body">
+        <div class="msg-header">
+          <span class="msg-author deema">Deema</span>
+          <span class="agent-tag">AI · Employee Services</span>
+          <span class="msg-time">10:42 AM</span>
+        </div>
+        <div class="msg-text">Of course Fahad. Let me pull up your leave balance first.</div>
+
+        <!-- Tool execution card -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-icon">⚡</div>
+            <div class="tool-name">Tool · <code>calculate_leave_balance</code></div>
+            <div class="tool-status done">Done · 0.4s</div>
+          </div>
+          <div class="tool-body">
+            <div class="result-row">
+              <div class="result-label">Annual Leave Balance</div>
+              <div class="result-value">21 <span class="unit">/ 30 days</span></div>
+            </div>
+            <div class="bar"><div class="bar-fill" style="width:70%"></div></div>
+            <div class="result-row" style="margin-top:14px;">
+              <div class="result-label">Eid leave (separate quota)</div>
+              <div class="result-value">5 <span class="unit">days available</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yara side-note -->
+        <div class="side-note">
+          <div class="sn-avatar">Y</div>
+          <div>
+            <span class="sn-author">Yara</span> <span style="color:var(--text-faint)">· compliance note</span><br>
+            Eid leave doesn't deduct from your annual balance per Article 113 of Saudi Labor Law. You'll still have all 21 days afterwards.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deema follow-up -->
+    <div class="msg">
+      <div class="msg-avatar deema">D</div>
+      <div class="msg-body">
+        <div class="msg-header">
+          <span class="msg-author deema">Deema</span>
+          <span class="msg-time">10:42 AM</span>
+        </div>
+        <div class="msg-text">Great news — Apr 15-20 falls under Eid leave, so it won't touch your annual quota. Submitting the request now.</div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-icon">📋</div>
+            <div class="tool-name">Tool · <code>submit_leave_request</code></div>
+            <div class="tool-status done">Approved</div>
+          </div>
+          <div class="tool-body">
+            <div class="result-row">
+              <div class="result-label">Request ID</div>
+              <div class="result-value" style="font-family:'JetBrains Mono',monospace;font-size:13px;">LR-2026-0412</div>
+            </div>
+            <div class="result-row">
+              <div class="result-label">Period</div>
+              <div class="result-value" style="font-size:13px;">Apr 15 → Apr 20 · 6 days</div>
+            </div>
+            <div class="result-row">
+              <div class="result-label">Type</div>
+              <div class="result-value" style="font-size:13px;">Eid Al-Fitr Leave</div>
+            </div>
+            <div class="result-row">
+              <div class="result-label">Manager Approval</div>
+              <div class="result-value" style="font-size:13px;color:var(--green);">✓ Auto-approved</div>
+            </div>
+            <div class="tool-actions">
+              <button class="btn primary">View Receipt</button>
+              <button class="btn">Add to Calendar</button>
+              <button class="btn">Notify Team</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Handoff -->
+    <div class="handoff">
+      <span>🔀</span>
+      <strong>Deema</strong> <span class="arrow">→</span> <strong>Ahmad</strong>
+      <span>· user asked about department metrics</span>
+    </div>
+
+    <!-- User -->
+    <div class="msg" style="margin-left:auto;flex-direction:row-reverse;">
+      <div class="msg-avatar user">FA</div>
+      <div class="msg-body" style="text-align:right;">
+        <div class="msg-header" style="justify-content:flex-end;">
+          <span class="msg-time">10:44 AM</span>
+          <span class="msg-author">Fahad (You)</span>
+        </div>
+        <div class="msg-text">Thanks! Quick question — how does engineering's attrition look this quarter? @Ahmad</div>
+      </div>
+    </div>
+
+    <!-- Ahmad working -->
+    <div class="msg">
+      <div class="msg-avatar ahmad">A</div>
+      <div class="msg-body">
+        <div class="msg-header">
+          <span class="msg-author ahmad">Ahmad</span>
+          <span class="agent-tag">AI · CHRO</span>
+          <span class="msg-time">10:44 AM</span>
+        </div>
+        <div class="msg-text">Pulling up engineering attrition for Q2…</div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-icon">📊</div>
+            <div class="tool-name">Tool · <code>calculate_attrition_rate</code></div>
+            <div class="tool-status running">Running…</div>
+          </div>
+          <div class="tool-body">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Composer -->
+  <div class="composer">
+    <div class="composer-box">
+      <textarea class="composer-input" placeholder="Message Deema, or @mention an agent…" rows="1"></textarea>
+      <div class="composer-actions">
+        <button class="composer-btn" title="Attach">📎</button>
+        <button class="composer-btn" title="Mention">@</button>
+        <button class="composer-btn" title="Command">/</button>
+        <button class="composer-btn" title="Voice">🎙️</button>
+        <button class="composer-btn" title="Emoji">😊</button>
+        <div class="composer-spacer"></div>
+        <button class="send-btn" title="Send">→</button>
+      </div>
+    </div>
+    <div class="composer-hint">
+      <kbd>@</kbd> mention agent &nbsp;·&nbsp; <kbd>/</kbd> run command &nbsp;·&nbsp; <kbd>⌘K</kbd> quick search &nbsp;·&nbsp; <kbd>Shift+Enter</kbd> new line
+    </div>
+  </div>
+</main>
+
+<!-- ============ LIVE ACTIVITY FEED ============ -->
+<aside class="activity">
+  <div class="activity-header">
+    <h3><span class="live-dot"></span> Live Activity</h3>
+    <p>What your AI team is doing across the org</p>
+  </div>
+
+  <div class="activity-filters">
+    <div class="filter-chip active">All</div>
+    <div class="filter-chip">Deema</div>
+    <div class="filter-chip">Mohammad</div>
+    <div class="filter-chip">Waleed</div>
+    <div class="filter-chip">Yara</div>
+    <div class="filter-chip">Ahmad</div>
+  </div>
+
+  <div class="activity-list">
+    <div class="activity-item">
+      <div class="activity-avatar" style="background:linear-gradient(135deg,var(--ahmad),#2563eb);">A</div>
+      <div class="activity-content">
+        <div class="activity-action"><strong>Ahmad</strong> is computing Q2 attrition forecast for engineering</div>
+        <div class="activity-meta">
+          <span class="activity-status running">● Running</span>
+          <span>just now</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-item">
+      <div class="activity-avatar" style="background:linear-gradient(135deg,var(--deema),#8b5cf6);">D</div>
+      <div class="activity-content">
+        <div class="activity-action"><strong>Deema</strong> approved Eid leave request <code style="font-family:'JetBrains Mono';font-size:10px;color:var(--text-dim);">LR-2026-0412</code> for Fahad A.</div>
+        <div class="activity-meta">
+          <span class="activity-status done">✓ Done</span>
+          <span>1 min ago</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-item">
+      <div class="activity-avatar" style="background:linear-gradient(135deg,var(--mohammad),#059669);">M</div>
+      <div class="activity-content">
+        <div class="activity-action"><strong>Mohammad</strong> is screening 3 candidates for Senior Backend Developer</div>
+        <div class="activity-meta">
+          <span class="activity-status running">● Running</span>
+          <span>3 min ago</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-item">
+      <div class="activity-avatar" style="background:linear-gradient(135deg,var(--yara),#e11d48);">Y</div>
+      <div class="activity-content">
+        <div class="activity-action"><strong>Yara</strong> flagged 2 contracts for compliance review (missing GOSI fields)</div>
+        <div class="activity-meta">
+          <span class="activity-status info">⚠ Action needed</span>
+          <span>8 min ago</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-item">
+      <div class="activity-avatar" style="background:linear-gradient(135deg,var(--waleed),#d97706);">W</div>
+      <div class="activity-content">
+        <div class="activity-action"><strong>Waleed</strong> completed onboarding checklist for Sara Al-Qahtani (12/12 tasks)</div>
+        <div class="activity-meta">
+          <span class="activity-status done">✓ Done</span>
+          <span>14 min ago</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-item">
+      <div class="activity-avatar" style="background:linear-gradient(135deg,var(--deema),#8b5cf6);">D</div>
+      <div class="activity-content">
+        <div class="activity-action"><strong>Deema</strong> generated payslip for 247 employees (March 2026)</div>
+        <div class="activity-meta">
+          <span class="activity-status done">✓ Done</span>
+          <span>22 min ago</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-item">
+      <div class="activity-avatar" style="background:linear-gradient(135deg,var(--ahmad),#2563eb);">A</div>
+      <div class="activity-content">
+        <div class="activity-action"><strong>Ahmad</strong> ran Saudization audit — current rate <strong style="color:var(--green);">68%</strong> (target 60%)</div>
+        <div class="activity-meta">
+          <span class="activity-status done">✓ Done</span>
+          <span>35 min ago</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-item">
+      <div class="activity-avatar" style="background:linear-gradient(135deg,var(--yara),#e11d48);">Y</div>
+      <div class="activity-content">
+        <div class="activity-action"><strong>Yara</strong> updated remote work policy (v2.3) with new Saudi labor amendments</div>
+        <div class="activity-meta">
+          <span class="activity-status done">✓ Done</span>
+          <span>1 hr ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+// Auto-grow textarea
+const ta = document.querySelector('.composer-input');
+ta.addEventListener('input', () => {
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 200) + 'px';
+});
+
+// Click rail agent → switch chat
+document.querySelectorAll('.rail-agent').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.rail-agent').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+  });
+});
+
+// Click sidebar channel
+document.querySelectorAll('.channel').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.channel').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+  });
+});
+
+// Filter chips
+document.querySelectorAll('.filter-chip').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+  });
+});
+
+// Auto-scroll messages to bottom
+const msgs = document.querySelector('.messages');
+msgs.scrollTop = msgs.scrollHeight;
+</script>
+
+</body>
+</html>
