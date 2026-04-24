@@ -3,7 +3,7 @@
   "buildCommand": "cd ../.. && pnpm build",
   "outputDirectory": ".next",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://YOUR-RAILWAY-BACKEND.up.railway.app/api/:path*" },
-    { "source": "/uploads/:path*", "destination": "https://YOUR-RAILWAY-BACKEND.up.railway.app/uploads/:path*" }
+    { "source": "/api/:path*", "destination": "https://krew-production-60b5.up.railway.app/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://krew-production-60b5.up.railway.app/uploads/:path*" }
   ]
 }
