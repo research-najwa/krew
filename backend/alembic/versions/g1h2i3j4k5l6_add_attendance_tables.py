@@ -1,4 +1,4 @@
-"""add attendance tables and documents table
+"""add attendance tables
 
 Revision ID: g1h2i3j4k5l6
 Revises: f6a7b8c9d0e2
@@ -17,52 +17,6 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # -- Documents table (model existed but migration was missing) ----------
-
-    # Create enum idempotently
-    op.execute(
-        "DO $$ BEGIN CREATE TYPE documentcategory AS ENUM "
-        "('leave_attachment','employee_document','policy_document'); "
-        "EXCEPTION WHEN duplicate_object THEN NULL; END $$"
-    )
-
-    documentcategory = PG_ENUM(
-        "leave_attachment", "employee_document", "policy_document",
-        name="documentcategory",
-        create_type=False,
-    )
-
-    op.create_table(
-        "documents",
-        sa.Column("id", sa.Uuid(), primary_key=True),
-        sa.Column("tenant_id", sa.Uuid(), sa.ForeignKey("tenants.id"), nullable=False),
-        sa.Column("uploaded_by", sa.Uuid(), sa.ForeignKey("employees.id"), nullable=False),
-        sa.Column("filename", sa.String(500), nullable=False),
-        sa.Column("original_filename", sa.String(500), nullable=False),
-        sa.Column("content_type", sa.String(100), nullable=False),
-        sa.Column("file_size", sa.Integer(), nullable=False),
-        sa.Column("storage_path", sa.String(1000), nullable=False),
-        sa.Column("category", documentcategory, nullable=False),
-        sa.Column("resource_type", sa.String(100), nullable=True),
-        sa.Column("resource_id", sa.Uuid(), nullable=True),
-        sa.Column("description", sa.String(1000), nullable=True),
-        sa.Column("is_deleted", sa.Boolean(), server_default="false", nullable=False),
-        sa.Column("deleted_at", sa.DateTime(), nullable=True),
-        sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False),
-    )
-
-    op.create_index(
-        "ix_documents_tenant_resource",
-        "documents",
-        ["tenant_id", "resource_type", "resource_id"],
-    )
-    op.create_index(
-        "ix_documents_tenant_uploader",
-        "documents",
-        ["tenant_id", "uploaded_by"],
-    )
-
     # -- Attendance enum ---------------------------------------------------
 
     op.execute(
@@ -126,9 +80,3 @@ def downgrade() -> None:
     op.drop_table("attendance_records")
 
     sa.Enum(name="attendancestatus").drop(op.get_bind(), checkfirst=True)
-
-    op.drop_index("ix_documents_tenant_uploader", table_name="documents")
-    op.drop_index("ix_documents_tenant_resource", table_name="documents")
-    op.drop_table("documents")
-
-    sa.Enum(name="documentcategory").drop(op.get_bind(), checkfirst=True)
