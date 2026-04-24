@@ -1,0 +1,128 @@
+site_name: AI HR Department — Startup Docs
+site_description: Internal documentation for the AI-powered HR department startup
+site_url: ""
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - toc.integrate
+  icon:
+    logo: material/account-group
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+
+  - Vision & Strategy:
+    - Mission & Vision: 01-vision-and-strategy/mission-and-vision.md
+    - Problem Statement: 01-vision-and-strategy/problem-statement.md
+    - Value Proposition: 01-vision-and-strategy/value-proposition.md
+    - Competitive Advantage: 01-vision-and-strategy/competitive-advantage.md
+
+  - Market Research:
+    - Industry Analysis: 02-market-research/industry-analysis.md
+    - Competitor Analysis: 02-market-research/competitor-analysis.md
+    - Ideal Customer Profiles: 02-market-research/ideal-customer-profiles.md
+    - Market Sizing (TAM/SAM/SOM): 02-market-research/market-sizing.md
+    - Trends to Track: 02-market-research/trends-to-track.md
+
+  - Product Definition:
+    - AI Agents Catalog: 03-product-definition/agents-catalog.md
+    - MVP Definition: 03-product-definition/mvp-definition.md
+    - Product Roadmap: 03-product-definition/roadmap.md
+    - User Journeys: 03-product-definition/user-journeys.md
+    - Integrations: 03-product-definition/integrations.md
+
+  - Business Model:
+    - Pricing Strategy: 04-business-model/pricing-strategy.md
+    - Revenue Streams: 04-business-model/revenue-streams.md
+    - Subscription Tiers: 04-business-model/tiers-detail.md
+    - Unit Economics: 04-business-model/unit-economics.md
+    - Partnerships: 04-business-model/partnerships.md
+
+  - Technology Architecture:
+    - LLM Strategy: 05-technology-architecture/llm-strategy.md
+    - Agent Architecture: 05-technology-architecture/agent-architecture.md
+    - Data Architecture: 05-technology-architecture/data-architecture.md
+    - Security Plan: 05-technology-architecture/security-plan.md
+    - Tech Stack: 05-technology-architecture/tech-stack.md
+
+  - Legal & Compliance:
+    - Company Registration: 06-legal-and-compliance/registration-checklist.md
+    - Data Protection: 06-legal-and-compliance/data-protection.md
+    - Regulatory Landscape: 06-legal-and-compliance/regulatory-landscape.md
+    - AI Employment Law Risks: 06-legal-and-compliance/ai-employment-law-risks.md
+    - Terms & Policies: 06-legal-and-compliance/terms-checklist.md
+
+  - Go-To-Market:
+    - Launch Plan: 07-go-to-market/launch-plan.md
+    - Sales Playbook: 07-go-to-market/sales-playbook.md
+    - Marketing Plan: 07-go-to-market/marketing-plan.md
+    - Content Strategy: 07-go-to-market/content-strategy.md
+    - Channel Partnerships: 07-go-to-market/channel-partnerships.md
+
+  - Financial Planning:
+    - Startup Costs: 08-financial-planning/startup-costs.md
+    - Revenue Projections: 08-financial-planning/revenue-projections.md
+    - Burn Rate & Runway: 08-financial-planning/burn-rate.md
+    - Funding Plan: 08-financial-planning/funding-plan.md
+    - Financial Model Instructions: 08-financial-planning/model-instructions.md
+
+  - Team & Operations:
+    - Founding Team: 09-team-and-operations/founding-team.md
+    - Hiring Plan: 09-team-and-operations/hiring-plan.md
+    - Advisory Board: 09-team-and-operations/advisory-board.md
+    - Tools Stack: 09-team-and-operations/tools-stack.md
+    - Milestones & OKRs: 09-team-and-operations/milestones.md
+
+  - Pitch & Fundraising:
+    - Pitch Deck Outline: 10-pitch-and-fundraising/pitch-deck-outline.md
+    - Executive Summary: 10-pitch-and-fundraising/executive-summary.md
+    - Investor Targets: 10-pitch-and-fundraising/investor-targets.md
+    - Data Room Checklist: 10-pitch-and-fundraising/data-room-checklist.md
+    - Cap Table Plan: 10-pitch-and-fundraising/cap-table-plan.md
+
+  - Branding & Identity:
+    - Naming Brainstorm: 11-branding-and-identity/naming-brainstorm.md
+    - Brand Guidelines: 11-branding-and-identity/brand-guidelines.md
+    - Messaging Guide: 11-branding-and-identity/messaging-guide.md
+    - Website Plan: 11-branding-and-identity/website-plan.md
+
+  - Resources & References:
+    - Benchmarks: 12-resources-and-references/benchmarks.md
+    - Reading List: 12-resources-and-references/reading-list.md
+    - Meeting Template: 12-resources-and-references/meeting-template.md
+    - Feedback Template: 12-resources-and-references/feedback-template.md

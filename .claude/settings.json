@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "gemini": {
+      "command": "python3",
+      "args": ["tools/gemini-mcp/server.py"],
+      "env": {
+        "GOOGLE_AI_API_KEY": "${GOOGLE_AI_API_KEY}"
+      }
+    },
+    "codex": {
+      "command": "python3",
+      "args": ["tools/codex-mcp/server.py"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
+    }
+  }
+}

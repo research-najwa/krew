@@ -1,0 +1,9 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm build",
+  "outputDirectory": ".next",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://YOUR-RAILWAY-BACKEND.up.railway.app/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://YOUR-RAILWAY-BACKEND.up.railway.app/uploads/:path*" }
+  ]
+}

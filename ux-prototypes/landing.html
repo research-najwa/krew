@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krew — Your AI HR Department</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface2: #f5f5f4;
+    --border: #e5e5e5;
+    --text: #1a1a1a;
+    --text2: #6b7280;
+    --text3: #9ca3af;
+    --accent: #4f46e5;
+    --accent2: #6366f1;
+    --accent-dim: rgba(79,70,229,0.06);
+    --green: #16a34a;
+    --green-dim: rgba(22,163,74,0.06);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 16px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(250,250,250,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  nav .logo {
+    font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
+    color: var(--accent);
+  }
+
+  nav .nav-links { display: flex; gap: 32px; align-items: center; }
+  nav .nav-links a {
+    font-size: 14px; color: var(--text2); text-decoration: none; font-weight: 500;
+    transition: color 0.15s;
+  }
+  nav .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    padding: 8px 20px; border-radius: 6px; font-size: 14px; font-weight: 600;
+    background: var(--accent); color: white; text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .nav-cta:hover { opacity: 0.9; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 160px 40px 100px;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-block; padding: 6px 16px; border-radius: 20px;
+    font-size: 12px; font-weight: 600; color: var(--accent);
+    background: var(--accent-dim); border: 1px solid rgba(79,70,229,0.1);
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: 56px; font-weight: 800; letter-spacing: -1.5px;
+    line-height: 1.1; margin-bottom: 20px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero p {
+    font-size: 19px; color: var(--text2); line-height: 1.6;
+    max-width: 620px; margin: 0 auto 36px;
+  }
+
+  .hero-actions { display: flex; gap: 12px; justify-content: center; }
+
+  .btn-primary {
+    padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: 600;
+    background: var(--accent); color: white; border: none; cursor: pointer;
+    transition: opacity 0.15s; text-decoration: none;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-secondary {
+    padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: 500;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    cursor: pointer; transition: background 0.15s; text-decoration: none;
+  }
+  .btn-secondary:hover { background: var(--surface2); }
+
+  /* ─── SOCIAL PROOF ─── */
+  .social-proof {
+    text-align: center; padding: 0 40px 80px;
+  }
+
+  .social-proof p {
+    font-size: 13px; color: var(--text3); text-transform: uppercase;
+    letter-spacing: 1px; font-weight: 500; margin-bottom: 20px;
+  }
+
+  .stats-row {
+    display: flex; justify-content: center; gap: 60px;
+  }
+
+  .stat { text-align: center; }
+  .stat .num { font-size: 36px; font-weight: 800; letter-spacing: -1px; color: var(--accent); display: block; }
+  .stat .label { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+  /* ─── SECTION ─── */
+  section {
+    padding: 80px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--accent); font-weight: 600; margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-size: 36px; font-weight: 700; letter-spacing: -0.8px;
+    margin-bottom: 12px; line-height: 1.2;
+  }
+
+  .section-sub {
+    font-size: 16px; color: var(--text2); line-height: 1.6;
+    max-width: 560px; margin-bottom: 48px;
+  }
+
+  /* ─── MEET YOUR KREW ─── */
+  .krew-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .krew-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px;
+    transition: border-color 0.15s;
+  }
+
+  .krew-card:hover { border-color: var(--accent); }
+
+  .krew-card .avatar {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; margin-bottom: 14px;
+  }
+
+  .krew-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+  .krew-card .role { font-size: 13px; color: var(--accent); font-weight: 500; margin-bottom: 10px; }
+  .krew-card p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* ─── HOW IT WORKS ─── */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .step {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 28px;
+  }
+
+  .step .step-num {
+    font-size: 32px; font-weight: 800; color: var(--accent-dim);
+    margin-bottom: 12px; letter-spacing: -1px;
+    -webkit-text-stroke: 1px rgba(79,70,229,0.2);
+  }
+
+  .step h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .step p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* ─── DIVISIONS ─── */
+  .div-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .div-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; text-align: center;
+    transition: border-color 0.15s;
+  }
+
+  .div-card:hover { border-color: var(--accent); }
+
+  .div-card .d-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin: 0 auto 12px;
+  }
+
+  .div-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .div-card p { font-size: 11px; color: var(--text3); line-height: 1.5; }
+
+  /* ─── PRICING ─── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .price-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 32px;
+    position: relative;
+  }
+
+  .price-card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 4px 24px rgba(79,70,229,0.08);
+  }
+
+  .price-card.featured .popular-tag {
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: white; font-size: 11px; font-weight: 600;
+    padding: 3px 12px; border-radius: 4px;
+  }
+
+  .price-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .price-card .price-desc { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+
+  .price-card .price {
+    font-size: 40px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px;
+  }
+
+  .price-card .price span { font-size: 16px; font-weight: 400; color: var(--text2); }
+  .price-card .price-note { font-size: 12px; color: var(--text3); margin-bottom: 24px; }
+
+  .price-card ul { list-style: none; margin-bottom: 24px; }
+  .price-card li {
+    font-size: 13px; padding: 6px 0; color: var(--text2);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .price-card li::before { content: "✓"; color: var(--green); font-weight: 700; font-size: 14px; }
+
+  .price-btn {
+    display: block; width: 100%; padding: 12px; border-radius: 6px;
+    font-size: 14px; font-weight: 600; text-align: center;
+    cursor: pointer; transition: opacity 0.15s; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); text-decoration: none;
+  }
+
+  .price-btn:hover { background: var(--surface2); }
+  .price-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .price-btn.primary:hover { opacity: 0.9; }
+
+  /* ─── ROI ─── */
+  .roi-section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 48px;
+    text-align: center;
+  }
+
+  .roi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    margin-top: 36px;
+  }
+
+  .roi-item .roi-num {
+    font-size: 42px; font-weight: 800; letter-spacing: -1px;
+    color: var(--green); display: block;
+  }
+
+  .roi-item .roi-label { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+  /* ─── CHANNELS ─── */
+  .channels-row {
+    display: flex; justify-content: center; gap: 40px;
+    margin-top: 36px;
+  }
+
+  .channel-item {
+    text-align: center;
+  }
+
+  .channel-item .ch-icon {
+    width: 56px; height: 56px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin: 0 auto 8px; background: var(--surface2);
+  }
+
+  .channel-item .ch-name { font-size: 13px; font-weight: 500; }
+
+  /* ─── CTA ─── */
+  .cta-section {
+    text-align: center;
+    padding: 100px 40px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cta-section h2 {
+    font-size: 40px; font-weight: 800; letter-spacing: -1px;
+    margin-bottom: 16px; line-height: 1.15;
+  }
+
+  .cta-section p {
+    font-size: 17px; color: var(--text2); line-height: 1.6; margin-bottom: 32px;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 40px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 1200px; margin: 0 auto;
+  }
+
+  footer .f-logo { font-size: 16px; font-weight: 700; color: var(--accent); }
+  footer .f-links { display: flex; gap: 24px; }
+  footer .f-links a { font-size: 13px; color: var(--text3); text-decoration: none; }
+  footer .f-links a:hover { color: var(--text); }
+  footer .f-copy { font-size: 12px; color: var(--text3); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero h1 { font-size: 36px; }
+    .krew-grid, .steps-grid, .pricing-grid { grid-template-columns: 1fr; }
+    .div-grid { grid-template-columns: repeat(2, 1fr); }
+    .roi-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-row { flex-wrap: wrap; gap: 32px; }
+    nav .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Krew</div>
+  <div class="nav-links">
+    <a href="#team">Your Krew</a>
+    <a href="#how">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#roi">ROI</a>
+    <a href="v2.html" class="nav-cta">See Live Demo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">The world's first AI HR department</div>
+  <h1>18 virtual employees.<br>5 divisions.<br><span>One subscription.</span></h1>
+  <p>Krew replaces your entire HR department with AI-powered virtual employees that work 24/7 across WhatsApp, Slack, Teams, and email — for 90% less than traditional staffing.</p>
+  <div class="hero-actions">
+    <a href="v2.html" class="btn-primary">See It In Action</a>
+    <a href="#how" class="btn-secondary">How It Works</a>
+  </div>
+</div>
+
+<!-- SOCIAL PROOF STATS -->
+<div class="social-proof">
+  <p>By the numbers</p>
+  <div class="stats-row">
+    <div class="stat"><span class="num">90%</span><span class="label">Cost reduction vs. traditional HR</span></div>
+    <div class="stat"><span class="num">18</span><span class="label">Virtual employees included</span></div>
+    <div class="stat"><span class="num">12s</span><span class="label">Average response time</span></div>
+    <div class="stat"><span class="num">24/7</span><span class="label">Always available</span></div>
+  </div>
+</div>
+
+<!-- MEET YOUR KREW -->
+<section id="team">
+  <div class="section-label">Meet Your Krew</div>
+  <div class="section-title">Not software. Colleagues.</div>
+  <div class="section-sub">Every Krew member has a name, a role, and a personality. Your employees don't interact with a tool — they talk to a teammate.</div>
+
+  <div class="krew-grid">
+    <div class="krew-card">
+      <div class="avatar" style="background: var(--accent-dim); color: var(--accent);">N</div>
+      <h3>Nora</h3>
+      <div class="role">Employee Services</div>
+      <p>Answers employee questions instantly — PTO balance, benefits, policies, workplace concerns. Via WhatsApp, Slack, or email.</p>
+    </div>
+    <div class="krew-card">
+      <div class="avatar" style="background: rgba(219,39,119,0.06); color: #db2777;">L</div>
+      <h3>Layla</h3>
+      <div class="role">Onboarding</div>
+      <p>Guides every new hire from offer letter to day 90. Personalized checklist, buddy matching, check-ins. Zero drop-off.</p>
+    </div>
+    <div class="krew-card">
+      <div class="avatar" style="background: var(--blue-dim); color: #2563eb;">K</div>
+      <h3>Karim</h3>
+      <div class="role">Recruitment</div>
+      <p>Writes job descriptions, screens resumes, ranks candidates, schedules interviews. Handles 80% of the hiring pipeline.</p>
+    </div>
+    <div class="krew-card">
+      <div class="avatar" style="background: var(--green-dim); color: #16a34a;">A</div>
+      <h3>Adam</h3>
+      <div class="role">Compliance</div>
+      <p>Monitors regulations across jurisdictions. Drafts policy updates, runs compliance audits, tracks training completion.</p>
+    </div>
+    <div class="krew-card">
+      <div class="avatar" style="background: rgba(234,88,12,0.06); color: #ea580c;">D</div>
+      <h3>Dana</h3>
+      <div class="role">Finance & Analytics</div>
+      <p>Tracks headcount budgets, forecasts workforce costs, flags overspending, benchmarks compensation against market.</p>
+    </div>
+    <div class="krew-card">
+      <div class="avatar" style="background: rgba(124,58,237,0.06); color: #7c3aed;">R</div>
+      <h3>Raya</h3>
+      <div class="role">Agent Factory</div>
+      <p>Analyzes any job description and tells you: does this role need a human, or can a virtual employee do it? Our secret weapon.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 DIVISIONS -->
+<section>
+  <div class="section-label">Full HR Function</div>
+  <div class="section-title">Five divisions. Complete coverage.</div>
+  <div class="section-sub">Krew isn't a chatbot or a single tool. It's a fully-staffed HR department modeled on the Ulrich HR Operating Model.</div>
+
+  <div class="div-grid">
+    <div class="div-card">
+      <div class="d-icon" style="background: var(--accent-dim);">🎧</div>
+      <h4>Shared Services</h4>
+      <p>Help desk, onboarding, recruitment, payroll, offboarding, records</p>
+    </div>
+    <div class="div-card">
+      <div class="d-icon" style="background: var(--green-dim);">🎓</div>
+      <h4>Centers of Excellence</h4>
+      <p>Compliance, L&D, performance, compensation, culture</p>
+    </div>
+    <div class="div-card">
+      <div class="d-icon" style="background: var(--blue-dim);">📊</div>
+      <h4>Analytics & Finance</h4>
+      <p>Workforce analytics, budget tracking, predictive insights</p>
+    </div>
+    <div class="div-card">
+      <div class="d-icon" style="background: rgba(219,39,119,0.06);">🤝</div>
+      <h4>HRBP</h4>
+      <p>Strategic partner bridging business needs and HR capabilities</p>
+    </div>
+    <div class="div-card">
+      <div class="d-icon" style="background: rgba(124,58,237,0.06);">🏭</div>
+      <h4>Agent Factory</h4>
+      <p>Analyze any JD, score AI readiness, deploy virtual employees</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-label">How It Works</div>
+  <div class="section-title">Live in hours. Not months.</div>
+  <div class="section-sub">Three steps to a fully-staffed AI HR department.</div>
+
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Subscribe & connect</h3>
+      <p>Choose your plan. Connect your WhatsApp, Slack, Teams, or email. Upload your existing HR policies and employee data.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Meet your Krew</h3>
+      <p>18 virtual employees are deployed instantly. Each one has a name, a role, and knows your company's policies from day one.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Your HR runs itself</h3>
+      <p>Employees ask questions, request leave, onboard — all through the channels they already use. You oversee from the CHRO dashboard.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CHANNELS -->
+<section style="text-align: center;">
+  <div class="section-label">Multi-Channel</div>
+  <div class="section-title" style="max-width: 500px; margin: 0 auto 12px;">Krew meets employees where they are</div>
+  <div class="section-sub" style="max-width: 500px; margin: 0 auto 0;">No new app to install. No portal to log into. Your Krew works inside the tools your team already uses every day.</div>
+
+  <div class="channels-row">
+    <div class="channel-item">
+      <div class="ch-icon" style="color: #16a34a;">💬</div>
+      <div class="ch-name">WhatsApp</div>
+    </div>
+    <div class="channel-item">
+      <div class="ch-icon" style="color: #2563eb;">💼</div>
+      <div class="ch-name">Slack</div>
+    </div>
+    <div class="channel-item">
+      <div class="ch-icon" style="color: #7c3aed;">🟣</div>
+      <div class="ch-name">Microsoft Teams</div>
+    </div>
+    <div class="channel-item">
+      <div class="ch-icon" style="color: #ea580c;">📧</div>
+      <div class="ch-name">Email</div>
+    </div>
+    <div class="channel-item">
+      <div class="ch-icon" style="color: var(--accent);">🌐</div>
+      <div class="ch-name">Web Portal</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROI -->
+<section id="roi">
+  <div class="roi-section">
+    <div class="section-label">The Business Case</div>
+    <div class="section-title">Traditional HR department: 4.5M SAR/year.<br>Krew: 518K SAR/year.</div>
+    <div class="roi-grid">
+      <div class="roi-item">
+        <span class="roi-num">90%</span>
+        <span class="roi-label">Cost reduction</span>
+      </div>
+      <div class="roi-item">
+        <span class="roi-num">94%</span>
+        <span class="roi-label">Auto-resolution rate</span>
+      </div>
+      <div class="roi-item">
+        <span class="roi-num">12s</span>
+        <span class="roi-label">Avg response time</span>
+      </div>
+      <div class="roi-item">
+        <span class="roi-num">4.7/5</span>
+        <span class="roi-label">Employee satisfaction</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div style="text-align: center;">
+    <div class="section-label">Pricing</div>
+    <div class="section-title">Simple, transparent pricing</div>
+    <div class="section-sub" style="max-width: 500px; margin: 0 auto 48px;">Every plan includes all 18 virtual employees and all 5 divisions.</div>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <h3>Starter</h3>
+      <div class="price-desc">For companies up to 50 employees</div>
+      <div class="price">9,375<span> SAR/mo</span></div>
+      <div class="price-note">Billed annually. 11,250 SAR/mo if monthly.</div>
+      <ul>
+        <li>18 virtual employees</li>
+        <li>All 5 HR divisions</li>
+        <li>2 channels (WhatsApp + 1 more)</li>
+        <li>Policy RAG (up to 50 docs)</li>
+        <li>Email support</li>
+      </ul>
+      <a href="#" class="price-btn">Get Started</a>
+    </div>
+    <div class="price-card featured">
+      <div class="popular-tag">Most Popular</div>
+      <h3>Growth</h3>
+      <div class="price-desc">For companies up to 250 employees</div>
+      <div class="price">22,500<span> SAR/mo</span></div>
+      <div class="price-note">Billed annually. 26,250 SAR/mo if monthly.</div>
+      <ul>
+        <li>Everything in Starter</li>
+        <li>All channels (WhatsApp, Slack, Teams, Email)</li>
+        <li>Agent Factory access</li>
+        <li>CHRO executive dashboard</li>
+        <li>Priority support + onboarding</li>
+      </ul>
+      <a href="#" class="price-btn primary">Get Started</a>
+    </div>
+    <div class="price-card">
+      <h3>Enterprise</h3>
+      <div class="price-desc">For companies 250+ employees</div>
+      <div class="price">Custom</div>
+      <div class="price-note">Let's talk about your needs.</div>
+      <ul>
+        <li>Everything in Growth</li>
+        <li>Custom agent training</li>
+        <li>Dedicated success manager</li>
+        <li>SLA guarantee</li>
+        <li>On-premise deployment option</li>
+      </ul>
+      <a href="#" class="price-btn">Contact Sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>Ready to meet your Krew?</h2>
+  <p>Deploy a complete AI HR department in hours. 18 virtual employees. 5 divisions. All channels. 90% less cost.</p>
+  <div class="hero-actions">
+    <a href="v2.html" class="btn-primary">See Live Demo</a>
+    <a href="#" class="btn-secondary">Talk to Founders</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Krew</div>
+  <div class="f-links">
+    <a href="#">About</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="f-copy">&copy; 2026 Krew. All rights reserved.</div>
+</footer>
+
+</body>
+</html>

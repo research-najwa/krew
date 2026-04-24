@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Lina's dark-mode tokens — single source of truth (HSL space-separated) */
+    --bg: 240 20% 5%;
+    --surface: 240 17% 9%;
+    --surface-2: 240 17% 12%;
+    --surface-3: 240 14% 16%;
+    --border: 240 14% 19%;
+    --text: 240 25% 92%;
+    --text-dim: 240 10% 57%;
+    --text-faint: 240 9% 39%;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  html {
+    @apply bg-bg text-ink antialiased;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans;
+  }
+
+  ::selection {
+    background: hsl(var(--surface-3));
+    color: hsl(var(--text));
+  }
+
+  /* Slack-style light chat area */
+  .chat-light {
+    --bg: 0 0% 100%;
+    --surface: 0 0% 100%;
+    --surface-2: 220 16% 96%;
+    --surface-3: 220 14% 92%;
+    --border: 220 13% 89%;
+    --text: 220 14% 14%;
+    --text-dim: 220 8% 46%;
+    --text-faint: 220 6% 60%;
+    color-scheme: light;
+  }
+
+  .chat-light .slack-msg {
+    padding: 8px 20px;
+    border-radius: 8px;
+    transition: background-color 0.1s;
+  }
+  .chat-light .slack-msg:hover {
+    background-color: hsl(220 16% 96%);
+  }
+}

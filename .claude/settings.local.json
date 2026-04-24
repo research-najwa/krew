@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(venv/bin/python -c \"from app.api.chat_auth import router; from app.main import app; print\\('ok'\\)\")"
+    ]
+  }
+}

@@ -1,0 +1,112 @@
+\begin{thebibliography}{10}
+
+\bibitem{beller2014}
+Moritz Beller, Alberto Bacchelli, Andy Zaidman, and Elmar Juergens.
+\newblock Modern code reviews in open-source projects: Which problems do they fix?
+\newblock In {\em Proc.\ MSR}, 2014.
+
+\bibitem{chen2021}
+Mark Chen et~al.
+\newblock Evaluating large language models trained on code.
+\newblock {\em arXiv:2107.03374}, 2021.
+
+\bibitem{deng2024}
+Gelei Deng et~al.
+\newblock {MasterKey}: Automated jailbreaking of large language model chatbots.
+\newblock In {\em Proc.\ NDSS}, 2024.
+
+\bibitem{greshake2023}
+Kai Greshake et~al.
+\newblock Not what you've signed up for: Compromising real-world {LLM}-integrated applications with indirect prompt injection.
+\newblock In {\em Proc.\ AISec}, 2023.
+
+\bibitem{hong2023}
+Sirui Hong et~al.
+\newblock {MetaGPT}: Meta programming for multi-agent collaborative framework.
+\newblock {\em arXiv:2308.00352}, 2023.
+
+\bibitem{huang2024}
+Dong Huang et~al.
+\newblock {AgentCoder}: Multi-agent-based code generation with iterative testing and optimisation.
+\newblock {\em arXiv:2312.13010}, 2024.
+
+\bibitem{islam2024}
+Md~Nazmus~Sakib Islam et~al.
+\newblock {MapCoder}: Multi-agent code generation for competitive programming.
+\newblock In {\em Proc.\ ACL}, 2024.
+
+\bibitem{jimenez2024}
+Carlos~E. Jimenez et~al.
+\newblock {SWE-bench}: Can language models resolve real-world {GitHub} issues?
+\newblock In {\em Proc.\ ICLR}, 2024.
+
+\bibitem{lemieux2023}
+Caroline Lemieux et~al.
+\newblock {CodaMosa}: Escaping coverage plateaus in test generation with pre-trained large language models.
+\newblock In {\em Proc.\ ICSE}, 2023.
+
+\bibitem{li2023starcoder}
+Raymond Li et~al.
+\newblock {StarCoder}: May the source be with you!
+\newblock {\em arXiv:2305.06161}, 2023.
+
+\bibitem{li2022}
+Zhiyu Li et~al.
+\newblock Automating code review activities by large-scale pre-training.
+\newblock In {\em Proc.\ FSE}, 2022.
+
+\bibitem{liu2024survey}
+Junwei Liu et~al.
+\newblock Large language model-based agents for software engineering: A survey.
+\newblock {\em arXiv:2409.02977}, 2024.
+
+\bibitem{lu2023}
+Shenao Lu et~al.
+\newblock {LLM}-based code review: A systematic literature review.
+\newblock {\em arXiv:2307.12929}, 2023.
+
+\bibitem{owasp2025}
+{OWASP}.
+\newblock {OWASP} top 10 for {LLM} applications, 2025.
+
+\bibitem{pearce2023}
+Hammond Pearce, Benjamin Tan, Baleegh Ahmad, Ramesh Karri, and Brendan Dolan-Gavitt.
+\newblock Examining zero-shot vulnerability repair with large language models.
+\newblock In {\em Proc.\ IEEE S\&P}, 2023.
+
+\bibitem{perez2022}
+Fábio Perez and Ian Ribeiro.
+\newblock Ignore this title and {HackAPrompt}: Evaluating prompt injection in large language models.
+\newblock {\em arXiv:2211.09527}, 2022.
+
+\bibitem{qian2023}
+Chen Qian et~al.
+\newblock {ChatDev}: Communicative agents for software development.
+\newblock {\em arXiv:2307.07924}, 2023.
+
+\bibitem{schick2023}
+Timo Schick et~al.
+\newblock Toolformer: Language models can teach themselves to use tools.
+\newblock In {\em Proc.\ NeurIPS}, 2023.
+
+\bibitem{tufano2022}
+Rosalia Tufano, Simone Masiero, Antonio Mastropaolo, Luca Pascarella, Denys Poshyvanyk, and Gabriele Bavota.
+\newblock Using pre-trained models to boost code review automation.
+\newblock In {\em Proc.\ ICSE}, 2022.
+
+\bibitem{wang2024openhands}
+Xingyao Wang et~al.
+\newblock {OpenHands}: An open platform for {AI} software developers as generalist agents.
+\newblock {\em arXiv:2407.16741}, 2024.
+
+\bibitem{wu2023}
+Qingyun Wu et~al.
+\newblock {AutoGen}: Enabling next-gen {LLM} applications via multi-agent conversation.
+\newblock {\em arXiv:2308.08155}, 2023.
+
+\bibitem{yang2024}
+John Yang et~al.
+\newblock {SWE-agent}: Agent-computer interfaces enable automated software engineering.
+\newblock {\em arXiv:2405.15793}, 2024.
+
+\end{thebibliography}

@@ -1,0 +1,41 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+.next/
+.vercel/
+.turbo/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+/tmp/
+
+# Database
+*.db
+*.sqlite3
+
+# Uploads (user data)
+backend/uploads/
+
+# Test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
