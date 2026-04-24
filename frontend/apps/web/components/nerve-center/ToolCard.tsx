@@ -364,7 +364,7 @@ function ExpandableRow({ summary, details, badge, action }: {
       >
         <div className="flex-1 min-w-0">
           <div className="text-xs font-semibold text-ink truncate">{summary.label}</div>
-          {summary.subtitle && (
+          {Boolean(summary.subtitle) && (
             <div className="text-[11px] text-ink-dim truncate mt-0.5">{summary.subtitle}</div>
           )}
         </div>
@@ -756,8 +756,8 @@ function renderJobOpening(data: Record<string, unknown>, locale: Locale = 'en'):
   return (
     <>
       {(data.title ?? data.job_title) && <KeyValue label={t('Job Title', locale)} value={safeStr(data.title ?? data.job_title)} />}
-      {data.department && <KeyValue label={t('Department', locale)} value={safeStr(data.department)} />}
-      {data.status && <KeyValue label={t('Status', locale)} value={safeStr(data.status)} />}
+      {Boolean(data.department) && <KeyValue label={t('Department', locale)} value={safeStr(data.department)} />}
+      {Boolean(data.status) && <KeyValue label={t('Status', locale)} value={safeStr(data.status)} />}
       {(data.applicants !== undefined || data.applicant_count !== undefined) && (
         <KeyValue label={t('Applicants', locale)} value={String(safeNum(data.applicants ?? data.applicant_count))} />
       )}
@@ -771,7 +771,7 @@ function renderScheduleInterview(data: Record<string, unknown>, locale: Locale =
       {(data.candidate ?? data.candidate_name) && <KeyValue label={t('Candidate', locale)} value={safeStr(data.candidate ?? data.candidate_name)} />}
       {(data.date ?? data.interview_date) && <KeyValue label={t('Date/Time', locale)} value={safeStr(data.date ?? data.interview_date)} />}
       {(data.interviewers ?? data.interviewer) && <KeyValue label={t('Interviewers', locale)} value={safeStr(data.interviewers ?? data.interviewer)} />}
-      {data.status && <KeyValue label={t('Status', locale)} value={safeStr(data.status)} />}
+      {Boolean(data.status) && <KeyValue label={t('Status', locale)} value={safeStr(data.status)} />}
     </>
   )
 }
@@ -1020,8 +1020,8 @@ function renderTurnoverRate(data: Record<string, unknown>, locale: Locale = 'en'
   return (
     <>
       <BigNumber value={`${rate.toFixed(1)}%`} unit={t('turnover rate', locale)} trend={trend} />
-      {data.period && <KeyValue label={t('Period', locale)} value={safeStr(data.period)} />}
-      {data.department && <KeyValue label={t('Department', locale)} value={safeStr(data.department)} />}
+      {Boolean(data.period) && <KeyValue label={t('Period', locale)} value={safeStr(data.period)} />}
+      {Boolean(data.department) && <KeyValue label={t('Department', locale)} value={safeStr(data.department)} />}
       {data.voluntary !== undefined && <KeyValue label={t('Voluntary', locale)} value={`${safeNum(data.voluntary).toFixed(1)}%`} />}
       {data.involuntary !== undefined && <KeyValue label={t('Involuntary', locale)} value={`${safeNum(data.involuntary).toFixed(1)}%`} />}
     </>
@@ -1286,7 +1286,7 @@ function renderCompensationOverview(data: Record<string, unknown>, locale: Local
           ]} />
         </div>
       )}
-      {budget.status && (
+      {Boolean(budget.status) && (
         <div className="flex items-center justify-between text-xs">
           <span className="text-ink-dim">{t('Budget Utilization', locale)}</span>
           <StatusBadge
@@ -1418,7 +1418,7 @@ function renderTeamCompliance(data: Record<string, unknown>, locale: Locale = 'e
   return (
     <div className="space-y-3">
       <div className="space-y-1.5">
-        {summary.total_employees && <KeyValue label={t('Team Size', locale)} value={String(safeNum(summary.total_employees))} />}
+        {Boolean(summary.total_employees) && <KeyValue label={t('Team Size', locale)} value={String(safeNum(summary.total_employees))} />}
         {summary.compliant_count !== undefined && <KeyValue label={t('Compliant', locale)} value={String(safeNum(summary.compliant_count))} />}
         {summary.non_compliant_count !== undefined && <KeyValue label={t('Non-Compliant', locale)} value={String(safeNum(summary.non_compliant_count))} />}
         {summary.expiring_documents !== undefined && <KeyValue label={t('Expiring Documents', locale)} value={String(safeNum(summary.expiring_documents))} />}
@@ -1453,32 +1453,32 @@ function renderPIPReport(data: Record<string, unknown>, agent: string, onAction?
       <div className="bg-surface-3 rounded-lg p-3">
         <div className="text-xs font-bold text-ink mb-2">{t('Performance Improvement Plan', locale)}</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
-          {emp.name && (
+          {Boolean(emp.name) && (
             <><span className="text-ink-dim">{t('Employee', locale)}</span><span className="text-ink font-medium">{safeStr(emp.name)}</span></>
           )}
-          {emp.job_title && (
+          {Boolean(emp.job_title) && (
             <><span className="text-ink-dim">{t('Role', locale)}</span><span className="text-ink font-medium">{safeStr(emp.job_title)}</span></>
           )}
-          {emp.department && (
+          {Boolean(emp.department) && (
             <><span className="text-ink-dim">{t('Department', locale)}</span><span className="text-ink font-medium">{safeStr(emp.department)}</span></>
           )}
-          {mgr.name && (
+          {Boolean(mgr.name) && (
             <><span className="text-ink-dim">{t('Manager', locale)}</span><span className="text-ink font-medium">{safeStr(mgr.name)}</span></>
           )}
-          {pip.pip_start_date && (
+          {Boolean(pip.pip_start_date) && (
             <><span className="text-ink-dim">{t('Start Date', locale)}</span><span className="text-ink font-medium">{safeStr(pip.pip_start_date)}</span></>
           )}
-          {pip.pip_end_date && (
+          {Boolean(pip.pip_end_date) && (
             <><span className="text-ink-dim">{t('End Date', locale)}</span><span className="text-ink font-medium">{safeStr(pip.pip_end_date)}</span></>
           )}
-          {pip.pip_duration_days && (
+          {Boolean(pip.pip_duration_days) && (
             <><span className="text-ink-dim">{t('Duration', locale)}</span><span className="text-ink font-medium">{safeNum(pip.pip_duration_days)} {t('days', locale)}</span></>
           )}
         </div>
       </div>
 
       {/* Performance Issues */}
-      {pip.performance_issues && (
+      {Boolean(pip.performance_issues) && (
         <div>
           <div className="text-[10px] text-ink-faint uppercase font-semibold mb-1">{t('Performance Issues', locale)}</div>
           <div dir="auto" className="text-xs text-ink leading-relaxed bg-rose-500/5 rounded-lg p-2.5 border border-rose-500/10">
@@ -1545,7 +1545,7 @@ function renderPIPReport(data: Record<string, unknown>, agent: string, onAction?
       )}
 
       {/* Consequences */}
-      {consequences.description && (
+      {Boolean(consequences.description) && (
         <div>
           <div className="text-[10px] text-ink-faint uppercase font-semibold mb-1">{t('Consequences', locale)}</div>
           <div className="bg-amber-500/5 rounded-lg p-2.5 border border-amber-500/10">
@@ -1559,7 +1559,7 @@ function renderPIPReport(data: Record<string, unknown>, agent: string, onAction?
                 ))}
               </ul>
             )}
-            {consequences.legal_reference && (
+            {Boolean(consequences.legal_reference) && (
               <div className="text-[10px] text-ink-faint italic border-t border-amber-500/10 pt-1.5 mt-1.5">
                 {safeStr(consequences.legal_reference)}
               </div>
@@ -1584,7 +1584,7 @@ function renderPIPReport(data: Record<string, unknown>, agent: string, onAction?
       )}
 
       {/* Note */}
-      {data.note && (
+      {Boolean(data.note) && (
         <div className="text-[10px] text-ink-faint italic">{safeStr(data.note)}</div>
       )}
 
@@ -1625,8 +1625,8 @@ function renderOneOnOnePrep(data: Record<string, unknown>, locale: Locale = 'en'
     <div className="space-y-2">
       {(data.employee_name || emp.name) && <KeyValue label={t('Employee', locale)} value={safeStr(data.employee_name ?? emp.name)} />}
       {(data.job_title || emp.job_title) && <KeyValue label={t('Role', locale)} value={safeStr(data.job_title ?? emp.job_title)} />}
-      {data.tenure && <KeyValue label={t('Tenure', locale)} value={safeStr(data.tenure)} />}
-      {data.last_meeting && <KeyValue label={t('Last 1:1', locale)} value={safeStr(data.last_meeting)} />}
+      {Boolean(data.tenure) && <KeyValue label={t('Tenure', locale)} value={safeStr(data.tenure)} />}
+      {Boolean(data.last_meeting) && <KeyValue label={t('Last 1:1', locale)} value={safeStr(data.last_meeting)} />}
       {topics.length > 0 && (
         <div>
           <div className="text-[10px] text-ink-faint uppercase font-semibold mb-1.5">{t('Talking Points', locale)}</div>
@@ -1649,11 +1649,11 @@ function renderOneOnOnePrep(data: Record<string, unknown>, locale: Locale = 'en'
 function renderHeadcountRequest(data: Record<string, unknown>, locale: Locale = 'en'): ReactNode {
   return (
     <div className="space-y-1.5">
-      {data.request_id && <KeyValue label={t('Request ID', locale)} value={safeStr(data.request_id)} />}
-      {data.job_title && <KeyValue label={t('Role', locale)} value={safeStr(data.job_title)} />}
-      {data.department && <KeyValue label={t('Department', locale)} value={safeStr(data.department)} />}
-      {data.status && <StatusBadge text={safeStr(data.status)} variant={safeStr(data.status) === 'submitted' ? 'success' : 'warning'} />}
-      {data.message && <div className="text-xs text-ink-dim mt-1">{safeStr(data.message)}</div>}
+      {Boolean(data.request_id) && <KeyValue label={t('Request ID', locale)} value={safeStr(data.request_id)} />}
+      {Boolean(data.job_title) && <KeyValue label={t('Role', locale)} value={safeStr(data.job_title)} />}
+      {Boolean(data.department) && <KeyValue label={t('Department', locale)} value={safeStr(data.department)} />}
+      {Boolean(data.status) && <StatusBadge text={safeStr(data.status)} variant={safeStr(data.status) === 'submitted' ? 'success' : 'warning'} />}
+      {Boolean(data.message) && <div className="text-xs text-ink-dim mt-1">{safeStr(data.message)}</div>}
     </div>
   )
 }
