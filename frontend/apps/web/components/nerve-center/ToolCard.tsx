@@ -339,7 +339,7 @@ function CompactList({ items }: { items: Array<{ label: string; detail: string; 
           <span className="text-ink font-medium truncate">{item.label}</span>
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-ink-dim">{item.detail}</span>
-            {item.badge && <StatusBadge text={item.badge.text} variant={item.badge.variant} />}
+            {Boolean(item.badge) && <StatusBadge text={item.badge.text} variant={item.badge.variant} />}
           </div>
         </div>
       ))}
@@ -755,7 +755,7 @@ function renderJobPostings(data: Record<string, unknown>, locale: Locale = 'en')
 function renderJobOpening(data: Record<string, unknown>, locale: Locale = 'en'): ReactNode {
   return (
     <>
-      {(data.title ?? data.job_title) && <KeyValue label={t('Job Title', locale)} value={safeStr(data.title ?? data.job_title)} />}
+      {Boolean((data.title ?? data.job_title)) && <KeyValue label={t('Job Title', locale)} value={safeStr(data.title ?? data.job_title)} />}
       {Boolean(data.department) && <KeyValue label={t('Department', locale)} value={safeStr(data.department)} />}
       {Boolean(data.status) && <KeyValue label={t('Status', locale)} value={safeStr(data.status)} />}
       {(data.applicants !== undefined || data.applicant_count !== undefined) && (
@@ -768,9 +768,9 @@ function renderJobOpening(data: Record<string, unknown>, locale: Locale = 'en'):
 function renderScheduleInterview(data: Record<string, unknown>, locale: Locale = 'en'): ReactNode {
   return (
     <>
-      {(data.candidate ?? data.candidate_name) && <KeyValue label={t('Candidate', locale)} value={safeStr(data.candidate ?? data.candidate_name)} />}
-      {(data.date ?? data.interview_date) && <KeyValue label={t('Date/Time', locale)} value={safeStr(data.date ?? data.interview_date)} />}
-      {(data.interviewers ?? data.interviewer) && <KeyValue label={t('Interviewers', locale)} value={safeStr(data.interviewers ?? data.interviewer)} />}
+      {Boolean((data.candidate ?? data.candidate_name)) && <KeyValue label={t('Candidate', locale)} value={safeStr(data.candidate ?? data.candidate_name)} />}
+      {Boolean((data.date ?? data.interview_date)) && <KeyValue label={t('Date/Time', locale)} value={safeStr(data.date ?? data.interview_date)} />}
+      {Boolean((data.interviewers ?? data.interviewer)) && <KeyValue label={t('Interviewers', locale)} value={safeStr(data.interviewers ?? data.interviewer)} />}
       {Boolean(data.status) && <KeyValue label={t('Status', locale)} value={safeStr(data.status)} />}
     </>
   )
@@ -1623,8 +1623,8 @@ function renderOneOnOnePrep(data: Record<string, unknown>, locale: Locale = 'en'
   const emp = (data.employee ?? {}) as Record<string, unknown>
   return (
     <div className="space-y-2">
-      {(data.employee_name || emp.name) && <KeyValue label={t('Employee', locale)} value={safeStr(data.employee_name ?? emp.name)} />}
-      {(data.job_title || emp.job_title) && <KeyValue label={t('Role', locale)} value={safeStr(data.job_title ?? emp.job_title)} />}
+      {Boolean((data.employee_name || emp.name)) && <KeyValue label={t('Employee', locale)} value={safeStr(data.employee_name ?? emp.name)} />}
+      {Boolean((data.job_title || emp.job_title)) && <KeyValue label={t('Role', locale)} value={safeStr(data.job_title ?? emp.job_title)} />}
       {Boolean(data.tenure) && <KeyValue label={t('Tenure', locale)} value={safeStr(data.tenure)} />}
       {Boolean(data.last_meeting) && <KeyValue label={t('Last 1:1', locale)} value={safeStr(data.last_meeting)} />}
       {topics.length > 0 && (
