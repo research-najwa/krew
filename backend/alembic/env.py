@@ -1,4 +1,5 @@
 """Alembic migration environment."""
+import os
 import sys
 from pathlib import Path
 from logging.config import fileConfig
@@ -14,6 +15,12 @@ from app.models import *  # noqa: F401,F403 — import all models so Alembic see
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+db_url = os.environ.get("DATABASE_URL_SYNC") or os.environ.get("DATABASE_URL")
+if db_url:
+    if db_url.startswith("postgresql+asyncpg://"):
+        db_url = db_url.replace("postgresql+asyncpg://", "postgresql://", 1)
+    config.set_main_option("sqlalchemy.url", db_url)
 
 target_metadata = Base.metadata
 
