@@ -227,20 +227,12 @@ let _singleton: KrewWebSocket | null = null
 
 function buildWsUrl(): string {
   const base = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/api/v1/ws'
-  // Only append token as query param in development (cross-origin).
-  // In production the httpOnly cookie handles auth — never leak JWT in URLs.
-  if (process.env.NODE_ENV === 'development') {
-    // Import at call-time to avoid a hard dependency cycle
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { getAuthToken } = require('./auth') as typeof import('./auth')
-    const token = getAuthToken()
-    console.log('[ws] buildWsUrl: NODE_ENV=development, token=', token ? `${token.slice(0, 20)}...` : 'NULL')
-    if (token) {
-      const sep = base.includes('?') ? '&' : '?'
-      return `${base}${sep}token=${encodeURIComponent(token)}`
-    }
-  } else {
-    console.log('[ws] buildWsUrl: NODE_ENV=', process.env.NODE_ENV, '(not development, skipping token)')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { getAuthToken } = require('./auth') as typeof import('./auth')
+  const token = getAuthToken()
+  if (token) {
+    const sep = base.includes('?') ? '&' : '?'
+    return `${base}${sep}token=${encodeURIComponent(token)}`
   }
   return base
 }
