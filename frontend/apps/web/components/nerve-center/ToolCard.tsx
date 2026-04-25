@@ -339,7 +339,7 @@ function CompactList({ items }: { items: Array<{ label: string; detail: string; 
           <span className="text-ink font-medium truncate">{item.label}</span>
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-ink-dim">{item.detail}</span>
-            {Boolean(item.badge) && <StatusBadge text={item.badge.text} variant={item.badge.variant} />}
+            {item.badge && <StatusBadge text={item.badge.text} variant={item.badge.variant} />}
           </div>
         </div>
       ))}
