@@ -34,8 +34,8 @@ class DirectConversation(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     tenant_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("tenants.id"))
-    participant_a_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("employees.id"))
-    participant_b_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("employees.id"))
+    participant_a_id: Mapped[uuid.UUID] = mapped_column()
+    participant_b_id: Mapped[uuid.UUID] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
@@ -53,8 +53,16 @@ class DirectConversation(Base):
     pinned_message_ids: Mapped[list | None] = mapped_column(JSONB, default=None)
 
     tenant: Mapped["Tenant"] = relationship()
-    participant_a: Mapped["Employee"] = relationship(foreign_keys=[participant_a_id])
-    participant_b: Mapped["Employee"] = relationship(foreign_keys=[participant_b_id])
+    participant_a: Mapped["Employee"] = relationship(
+        foreign_keys=[participant_a_id],
+        primaryjoin="DirectConversation.participant_a_id == Employee.id",
+        viewonly=True,
+    )
+    participant_b: Mapped["Employee"] = relationship(
+        foreign_keys=[participant_b_id],
+        primaryjoin="DirectConversation.participant_b_id == Employee.id",
+        viewonly=True,
+    )
     messages: Mapped[list["DirectMessage"]] = relationship(
         back_populates="conversation", order_by="DirectMessage.created_at"
     )
