@@ -1124,21 +1124,38 @@ Important:
         try:
             response = await self.client.messages.create(
                 model="claude-haiku-4-5-20251001",
-                max_tokens=2000,
+                max_tokens=3000,
+                system="You are a JSON generator. Return ONLY valid JSON with no comments, no trailing commas, and no text outside the JSON object. Use \\n for newlines inside string values.",
                 messages=[{"role": "user", "content": design_prompt}],
             )
             spec_text = response.content[0].text
             start = spec_text.find("{")
             end = spec_text.rfind("}") + 1
-            if start >= 0 and end > start:
-                raw_json = spec_text[start:end]
-                # Fix common LLM JSON issues: trailing commas, comments
-                import re
-                raw_json = re.sub(r',\s*([}\]])', r'\1', raw_json)
-                raw_json = re.sub(r'//[^\n]*', '', raw_json)
-                spec = json.loads(raw_json)
-            else:
+            if start < 0 or end <= start:
                 raise ValueError("No JSON found in response")
+            raw_json = spec_text[start:end]
+            import re
+            raw_json = re.sub(r',\s*([}\]])', r'\1', raw_json)
+            raw_json = re.sub(r'//[^\n]*', '', raw_json)
+            # Fix unescaped control characters inside strings
+            raw_json = re.sub(r'[\x00-\x1f]', lambda m: f'\\u{ord(m.group()):04x}' if m.group() not in ('\n', '\r', '\t') else m.group(), raw_json)
+            raw_json = raw_json.replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
+            # Restore structural newlines (between JSON keys)
+            raw_json = raw_json.replace('\\n  ', '\n  ').replace('\\n}', '\n}').replace('\\n]', '\n]')
+            try:
+                spec = json.loads(raw_json)
+            except json.JSONDecodeError:
+                # Last resort: re-ask with stricter prompt
+                retry = await self.client.messages.create(
+                    model="claude-haiku-4-5-20251001",
+                    max_tokens=3000,
+                    system="Fix the following broken JSON. Return ONLY the corrected JSON, nothing else.",
+                    messages=[{"role": "user", "content": raw_json}],
+                )
+                retry_text = retry.content[0].text
+                rs = retry_text.find("{")
+                re_ = retry_text.rfind("}") + 1
+                spec = json.loads(retry_text[rs:re_])
         except Exception as e:
             logger.error(f"Agent design failed: {e}")
             return json.dumps({"error": "Failed to generate agent design. Please try again."})
