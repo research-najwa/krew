@@ -44,10 +44,10 @@ class YaraAgent(BaseAgent):
         "create_agent", "activate_agent", "deactivate_agent",
         "update_agent_prompt", "configure_agent_tools", "set_escalation_rules",
     }
-    _ALLOWED_ROLES: set[str] = {"hr_manager", "executive", "admin"}
+    _ALLOWED_ROLES: set[str] = {"hr_manager", "hr_admin", "executive", "admin", "c_suite"}
 
     # Roles that can see ALL departments; others are scoped to their own
-    _ORG_WIDE_ROLES: set[str] = {"hr_manager", "hr_admin"}
+    _ORG_WIDE_ROLES: set[str] = {"hr_manager", "hr_admin", "c_suite"}
 
     # -- Persona-based tool visibility --
     # Read-only tools (analyze, overview, etc.) → visible to all who pass agent_access_rules
