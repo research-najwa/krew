@@ -1131,7 +1131,12 @@ Important:
             start = spec_text.find("{")
             end = spec_text.rfind("}") + 1
             if start >= 0 and end > start:
-                spec = json.loads(spec_text[start:end])
+                raw_json = spec_text[start:end]
+                # Fix common LLM JSON issues: trailing commas, comments
+                import re
+                raw_json = re.sub(r',\s*([}\]])', r'\1', raw_json)
+                raw_json = re.sub(r'//[^\n]*', '', raw_json)
+                spec = json.loads(raw_json)
             else:
                 raise ValueError("No JSON found in response")
         except Exception as e:
