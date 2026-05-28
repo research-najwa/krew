@@ -373,13 +373,23 @@ async def _handle_chat_send(
                     employee_dept_id=employee_dept_id,
                 )
             except Exception as exc:
-                logger.exception("orchestrator failed in ws chat.send")
+                import uuid as _erruuid
+                correlation_id = str(_erruuid.uuid4())[:8]
+                logger.exception("orchestrator failed in ws chat.send [%s]", correlation_id)
                 await db.rollback()
+                err_type = type(exc).__name__
+                if "quota" in str(exc).lower() or "rate" in str(exc).lower():
+                    user_msg = "The AI service is temporarily at capacity. Please try again in a moment."
+                elif "timeout" in err_type.lower() or "timeout" in str(exc).lower():
+                    user_msg = "The request took too long. Please try a simpler question or try again."
+                else:
+                    user_msg = "Something went wrong processing your request. Please try again."
                 await websocket.send_json(_envelope(
                     "error",
                     {
                         "code": "agent_error",
-                        "message": "Agent failed to respond. Please try again.",
+                        "message": user_msg,
+                        "ref": correlation_id,
                     },
                     ref=ref,
                 ))

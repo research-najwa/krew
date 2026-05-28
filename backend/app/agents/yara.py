@@ -7,8 +7,10 @@ a product into a platform.
 Innovative, strategic, and analytical. She sees the big picture of how AI agents
 can transform HR operations across the organization.
 """
+import asyncio
 import json
 import logging
+import re as _re
 import uuid as _uuid
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
@@ -115,6 +117,26 @@ class YaraAgent(BaseAgent):
             )
 
         return base_prompt
+
+    # ──────────────────────────────────────────────────────────────
+    # Retry helper for Claude API calls
+    # ──────────────────────────────────────────────────────────────
+
+    async def _claude_call(self, *, model: str, max_tokens: int, messages: list, system: str | None = None, retries: int = 3) -> str:
+        """Call Claude with exponential backoff retry. Returns the text response."""
+        kwargs = dict(model=model, max_tokens=max_tokens, messages=messages)
+        if system:
+            kwargs["system"] = system
+        for attempt in range(retries):
+            try:
+                resp = await self.client.messages.create(**kwargs)
+                return resp.content[0].text
+            except Exception as e:
+                if attempt == retries - 1:
+                    raise
+                wait = (2 ** attempt) * 1
+                logger.warning("Claude API attempt %d/%d failed (%s), retrying in %ds", attempt + 1, retries, e, wait)
+                await asyncio.sleep(wait)
 
     # ──────────────────────────────────────────────────────────────
     # Tool definitions — S1 (workforce planning), S2 (factory), S3 (governance)
@@ -790,17 +812,18 @@ Respond in JSON format:
 {{"roles": [{{"role_title": "...", "headcount": N, "repetitiveness": N, "judgment_needed": N, "compliance_sensitivity": N, "ai_automation_pct": N, "recommendation": "full_automate|augment|human_only", "rationale": "..."}}]}}"""
 
         try:
-            ai_response = await self.client.messages.create(
+            analysis_text = await self._claude_call(
                 model="claude-haiku-4-5-20251001",
                 max_tokens=2000,
                 messages=[{"role": "user", "content": analysis_prompt}],
             )
-            analysis_text = ai_response.content[0].text
-            # Extract JSON from response
             start = analysis_text.find("{")
             end = analysis_text.rfind("}") + 1
             if start >= 0 and end > start:
-                analysis = json.loads(analysis_text[start:end])
+                raw = analysis_text[start:end]
+                raw = _re.sub(r',\s*([}\]])', r'\1', raw)
+                raw = _re.sub(r'//[^\n]*', '', raw)
+                analysis = json.loads(raw)
             else:
                 analysis = {"roles": []}
         except Exception as e:
@@ -1122,37 +1145,31 @@ Important:
 - Tools should be specific to the role's tasks"""
 
         try:
-            response = await self.client.messages.create(
+            spec_text = await self._claude_call(
                 model="claude-haiku-4-5-20251001",
                 max_tokens=3000,
                 system="You are a JSON generator. Return ONLY valid JSON with no comments, no trailing commas, and no text outside the JSON object. Use \\n for newlines inside string values.",
                 messages=[{"role": "user", "content": design_prompt}],
             )
-            spec_text = response.content[0].text
             start = spec_text.find("{")
             end = spec_text.rfind("}") + 1
             if start < 0 or end <= start:
                 raise ValueError("No JSON found in response")
             raw_json = spec_text[start:end]
-            import re
-            raw_json = re.sub(r',\s*([}\]])', r'\1', raw_json)
-            raw_json = re.sub(r'//[^\n]*', '', raw_json)
-            # Fix unescaped control characters inside strings
-            raw_json = re.sub(r'[\x00-\x1f]', lambda m: f'\\u{ord(m.group()):04x}' if m.group() not in ('\n', '\r', '\t') else m.group(), raw_json)
+            raw_json = _re.sub(r',\s*([}\]])', r'\1', raw_json)
+            raw_json = _re.sub(r'//[^\n]*', '', raw_json)
+            raw_json = _re.sub(r'[\x00-\x1f]', lambda m: f'\\u{ord(m.group()):04x}' if m.group() not in ('\n', '\r', '\t') else m.group(), raw_json)
             raw_json = raw_json.replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
-            # Restore structural newlines (between JSON keys)
             raw_json = raw_json.replace('\\n  ', '\n  ').replace('\\n}', '\n}').replace('\\n]', '\n]')
             try:
                 spec = json.loads(raw_json)
             except json.JSONDecodeError:
-                # Last resort: re-ask with stricter prompt
-                retry = await self.client.messages.create(
+                retry_text = await self._claude_call(
                     model="claude-haiku-4-5-20251001",
                     max_tokens=3000,
                     system="Fix the following broken JSON. Return ONLY the corrected JSON, nothing else.",
                     messages=[{"role": "user", "content": raw_json}],
                 )
-                retry_text = retry.content[0].text
                 rs = retry_text.find("{")
                 re_ = retry_text.rfind("}") + 1
                 spec = json.loads(retry_text[rs:re_])
@@ -1535,16 +1552,18 @@ Respond in JSON:
 }}"""
 
         try:
-            ai_response = await self.client.messages.create(
+            drift_text = await self._claude_call(
                 model="claude-haiku-4-5-20251001",
                 max_tokens=1500,
                 messages=[{"role": "user", "content": drift_prompt}],
             )
-            drift_text = ai_response.content[0].text
             start = drift_text.find("{")
             end = drift_text.rfind("}") + 1
             if start >= 0 and end > start:
-                drift = json.loads(drift_text[start:end])
+                raw = drift_text[start:end]
+                raw = _re.sub(r',\s*([}\]])', r'\1', raw)
+                raw = _re.sub(r'//[^\n]*', '', raw)
+                drift = json.loads(raw)
             else:
                 drift = {"drift_score": 0, "flagged_conversations": [], "recommendations": []}
         except Exception as e:

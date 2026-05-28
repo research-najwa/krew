@@ -372,7 +372,7 @@ async def _generate_ai_title(
                 conv.topic = title
                 await db.commit()
     except Exception as exc:
-        logger.debug("AI title generation failed (non-critical): %s", exc)
+        logger.warning("AI title generation failed (non-critical): %s: %s", type(exc).__name__, exc)
 
 
 @router.get("/agent-access/me")
